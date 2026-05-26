@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="titlebar"><div class="dot"></div> <span>Resonance Sanctuary — 432 Hz Healing DAO</span></div>
+<div class="titlebar"><div class="dot"></div> <span style="flex:1">Resonance Sanctuary</span><span style="font-size:8px;color:var(--muted);letter-spacing:.04em;font-weight:400;margin-right:8px">Resound to 432 · 432 Hz grid harmony through CQT method</span></div>
 <div class="main">
   <!-- LEFT -->
   <div class="left">
@@ -236,18 +236,18 @@ async function doHeal(pure){
   if(!S.file||S.healing)return;S.healing=true;st('Healing...');
   try{
     const r=await A.post('/api/heal',{file_path:S.file,target_tuning:+$('tgtSel').value,pure_432:true});
-    S.sid=r.session_id;S.lastHeal=r;
+    S.sid=r.session_id;S.srcName=r.source_name;S.lastHeal=r;
     st('✅ '+r.heal_result.original_tuning.toFixed(1)+' → '+r.heal_result.target_tuning.toFixed(1),'good');
-    log('Session: '+r.session_id);
+    log(r.source_name);
   }catch(e){st(e.message,1)}S.healing=false;
 }
 $('healBtn').onclick=()=>doHeal(false);$('pureBtn').onclick=()=>doHeal(true);
 
 async function save(fmt){
   if(!S.sid){st('Heal first',1);return}
-  const n=(S.file||'').split('/').pop().replace(/\.[^.]+$/,'')+'_432healed.'+fmt;
-  const d=await A.saveFile(n);if(!d)return;
-  try{const b=await A.downloadBuffer('/api/download/'+S.sid+'?format='+fmt);await A.writeFile(d,Array.from(new Uint8Array(b)));st('💾 '+fmt.toUpperCase()+' saved')}catch(e){st(e.message,1)}
+  const name=(S.srcName||S.file||'healed').split('/').pop().replace(/\.[^.]+$/,'')+'_432healed';
+  const d=await A.saveFile(name+'.'+fmt);if(!d)return;
+  try{const b=await A.downloadBuffer('/api/download/'+S.sid+'?format='+fmt+'&name='+encodeURIComponent(name));await A.writeFile(d,Array.from(new Uint8Array(b)));st('💾 '+fmt.toUpperCase()+' saved')}catch(e){st(e.message,1)}
 }
 $('sWav').onclick=()=>save('wav');$('sMp3').onclick=()=>save('mp3');
 $('rptBtn').onclick=async()=>{
