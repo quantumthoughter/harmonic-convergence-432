@@ -46,9 +46,13 @@ ipcMain.handle('dialog:openFile', async () => {
   return result.canceled ? null : result.filePaths[0];
 });
 ipcMain.handle('dialog:saveFile', async (event, defaultName) => {
+  const ext = defaultName.split('.').pop();
+  const isMp3 = ext === 'mp3';
   const result = await dialog.showSaveDialog(mainWindow, {
     defaultPath: path.join(os.homedir(), 'Desktop', '432_healed', defaultName),
-    filters: [{ name: 'WAV', extensions: ['wav'] }, { name: 'MP3', extensions: ['mp3'] }],
+    filters: isMp3 
+      ? [{ name: 'MP3', extensions: ['mp3'] }]
+      : [{ name: 'WAV', extensions: ['wav'] }],
   });
   return result.canceled ? null : result.filePath;
 });
