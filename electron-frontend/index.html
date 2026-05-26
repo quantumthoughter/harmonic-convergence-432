@@ -111,15 +111,25 @@ input[type="range"]::-webkit-slider-thumb{
 <div class="main">
   <!-- LEFT -->
   <div class="left">
-    <div class="drop-zone" id="dropZone">Drop audio or browse</div>
+    <div class="drop-zone" id="dropZone">Drop audio to heal to 432 Hz</div>
     <div class="card">
-      <div class="card-header"><h3>Session</h3><span id="detVal">—</span></div>
-      <div class="card-body" style="display:flex;gap:6px;flex-wrap:wrap;padding:8px">
-        <button class="pri-btn" id="healBtn" style="flex:1">✨ HEAL to 432</button>
-        <button class="sec-btn" id="pureBtn" style="flex:1">♮ Pure</button>
-        <button class="sm-btn" id="sWav" style="flex:1">WAV</button>
-        <button class="sm-btn" id="sMp3" style="flex:1">MP3</button>
-        <button class="sm-btn" id="rptBtn" style="flex:1">RPT</button>
+      <div class="card-header"><h3>🎯 432 Hz Healer</h3><span id="detVal">Ready</span></div>
+      <div class="card-body" style="padding:8px">
+        <div style="display:flex;gap:6px;align-items:center;margin-bottom:6px">
+          <span style="font-size:9px;color:var(--muted)">Target</span>
+          <select id="tgtSel" style="flex:1;background:rgba(15,10,30,.8);color:var(--text);border:1px solid rgba(155,109,255,.1);border-radius:8px;padding:5px 8px;font-size:11px">
+            <option value="432">432 Hz</option>
+            <option value="440">440 Hz</option>
+            <option value="444">444 Hz</option>
+          </select>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="pri-btn" id="healBtn" style="flex:1">✨ HEAL to 432</button>
+          <button class="sec-btn" id="pureBtn" style="flex:1">♮ Pure Shift</button>
+          <button class="sm-btn" id="sWav" style="flex:1">💾 WAV</button>
+          <button class="sm-btn" id="sMp3" style="flex:1">💾 MP3</button>
+          <button class="sm-btn" id="rptBtn" style="flex:1">📊 RPT</button>
+        </div>
       </div>
     </div>
     <div class="status" id="st" style="font-size:12px;text-align:center;color:var(--em);font-weight:600;padding:2px">✨ Ready</div>
