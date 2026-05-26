@@ -1,0 +1,11 @@
+numpy>=2.0
+librosa>=0.11
+soundfile>=0.13
+sounddevice>=0.5
+PyQt6>=6.6
+pyqtgraph>=0.14
+scipy>=1.13
+matplotlib>=3.9
+fastapi>=0.128
+uvicorn>=0.39
+pydub>=0.25

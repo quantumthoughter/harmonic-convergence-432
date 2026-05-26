@@ -1,0 +1,13 @@
+{
+  "name": "432-healing-dao",
+  "version": "2.0.0",
+  "description": "432 Hz Healing DAO — Resonance Sanctuary",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron ."
+  },
+  "dependencies": {
+    "electron": "^33.0.0"
+  }
+}

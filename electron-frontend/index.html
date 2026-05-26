@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resonance Sanctuary</title>
+<script src="CQTAnalyzer.js"></script>
+<style>
+:root{--bg:#080810;--bg2:#0c0c1a;--panel:#0f0f24;--panel2:#141430;--soft:#1c1c40;--line:#242450;--text:#d8d8f0;--muted:#8080b0;--ameth:#8b5cf6;--ameth2:#a78bfa;--em:#34d399;--em2:#6ee7b7;--gold:#d9aa3a;--gold2:#f0d382;--good:#7be0a4;--bad:#ff9a9a;--shadow:0 18px 50px rgba(0,0,0,.4)}
+*{box-sizing:border-box}body{margin:0;height:100vh;background:radial-gradient(circle at top,rgba(43,20,60,.6) 0%,var(--bg2) 40%,var(--bg) 100%);color:var(--text);font-family:-apple-system,system-ui,sans-serif;font-size:12px;overflow:hidden;display:flex;flex-direction:column}button,input,select{font:inherit}button{cursor:pointer;border:none;border-radius:10px;padding:8px 14px;background:linear-gradient(180deg,#1a1a38,#121228);color:var(--text);border:1px solid rgba(255,255,255,.04);transition:all .12s}button:hover{background:#242450}.btn-pri{background:linear-gradient(135deg,var(--ameth),#5a2aaf);color:#fff;font-weight:700;font-size:12px;padding:8px 14px}.btn-sec{background:linear-gradient(135deg,var(--em),#0a7048);color:#0a1a14;font-weight:700}.btn-sm{padding:3px 8px;font-size:9px}
+.titlebar{-webkit-app-region:drag;height:36px;display:flex;align-items:center;padding:0 14px;gap:8px;flex-shrink:0;background:linear-gradient(90deg,rgba(139,92,246,.08),transparent 50%);font-size:12px;font-weight:600;color:var(--gold);letter-spacing:.6px;user-select:none}
+.titlebar .dot{width:14px;height:14px;border-radius:50%;background:conic-gradient(var(--ameth),var(--em),var(--ameth),var(--ameth2),var(--ameth));-webkit-app-region:no-drag;flex-shrink:0}
+.titlebar span{-webkit-app-region:no-drag}
+.main{display:flex;flex:1;overflow:hidden;padding:0 10px 4px;gap:10px;min-height:0}
+.left{width:324px;min-width:324px;display:flex;flex-direction:column;gap:5px;overflow-y:auto}
+.right{flex:1;display:flex;flex-direction:column;gap:5px;min-width:0;padding-right:4px}
+.panel{background:linear-gradient(180deg,rgba(15,15,36,.96),rgba(10,10,22,.98));border:1px solid rgba(255,255,255,.04);border-radius:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden;min-height:0}
+.panel-h{display:flex;align-items:center;justify-content:space-between;padding:8px 12px 6px;border-bottom:1px solid var(--soft);flex-shrink:0}
+.panel-h h3{margin:0;font-size:11px;color:var(--gold2);text-transform:uppercase;letter-spacing:.12em;font-weight:700}
+.panel-h span{font-size:8px;color:var(--muted)}
+.panel-b{padding:6px 8px;overflow:auto;min-height:0}
+.panel-b::-webkit-scrollbar{width:3px}.panel-b::-webkit-scrollbar-thumb{background:var(--line);border-radius:2px}
+.dropzone{border:1px dashed var(--line);border-radius:10px;padding:10px;text-align:center;cursor:pointer;background:linear-gradient(180deg,rgba(15,15,36,.8),rgba(20,20,48,.4));font-size:11px;color:var(--muted);transition:.3s}
+.dropzone:hover{border-color:var(--ameth)}
+.dropzone.ok{border-color:var(--em);color:var(--em2)}
+.row{display:flex;align-items:center;gap:4px}.row label{font-size:9px;color:var(--muted);white-space:nowrap}
+select,input[type="number"]{background:var(--bg2);color:var(--text);border:1px solid var(--line);border-radius:5px;padding:3px 5px;font-size:10px;outline:none}
+.tab.on{color:var(--gold2)!important;border-bottom:1px solid var(--gold)!important;background:rgba(217,170,58,.04)!important}
+input[type="range"]{-webkit-appearance:none;appearance:none;height:4px;background:var(--line);border-radius:2px;outline:none;accent-color:var(--ameth)}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:10px;height:10px;border-radius:5px;background:var(--ameth);cursor:pointer}
+.toggle{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--muted)}.toggle input{width:12px;height:12px}
+.status{font-size:10px;text-align:center;color:var(--good);font-weight:600;min-height:14px}
+</style>
+</head>
+<body>
+<div class="titlebar"><div class="dot"></div> <span>Resonance Sanctuary</span></div>
+
+<div class="main">
+  <!-- LEFT PANEL -->
+  <div class="left">
+    <div id="dropZone" class="dropzone">Drop audio or click to load</div>
+    <div class="row"><span id="detVal" style="flex:1;font-size:10px;color:var(--muted)">Tuning: —</span><label>Target</label><select id="tgtSel"><option value="432">432</option><option value="440">440</option><option value="444">444</option></select></div>
+
+    <div class="panel">
+      <div class="panel-h"><h3>Presets</h3></div>
+      <div class="panel-b" style="display:grid;grid-template-columns:1fr 1fr;gap:3px" id="presetChips"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-h"><h3>Controls</h3></div>
+      <div class="panel-b" style="display:flex;gap:4px;flex-wrap:wrap">
+        <button class="btn btn-pri" id="healBtn" style="flex:1;font-size:10px;padding:6px">✨ HEAL</button>
+        <button class="btn btn-sec" id="pureBtn" style="flex:1;font-size:9px;padding:5px">♮ Pure</button>
+        <button class="btn-sm" id="sWav" style="flex:1">WAV</button>
+        <button class="btn-sm" id="sMp3" style="flex:1">MP3</button>
+        <button class="btn-sm" id="rptBtn" style="flex:1">RPT</button>
+      </div>
+    </div>
+
+    <div class="status" id="st">Ready</div>
+
+    <!-- A/B Comparison -->
+    <div style="border-top:1px solid var(--soft);padding-top:4px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">
+        <div style="border:1px solid var(--soft);border-radius:6px;overflow:hidden">
+          <div style="font-size:8px;color:var(--ameth2);padding:2px 5px;display:flex;justify-content:space-between;background:rgba(139,92,246,.06)"><span>🔵 Original</span><span id="origInfo" style="font-size:7px">—</span></div>
+          <canvas id="origCanvas" style="height:28px;width:100%;display:block"></canvas>
+          <div style="display:flex;align-items:center;gap:2px;padding:1px 4px">
+            <button id="origPlayBtn" style="font-size:7px;padding:1px 4px;border-radius:3px;background:transparent">▶</button>
+            <input type="range" id="origSeek" min="0" max="1000" value="0" style="flex:1;height:2px">
+            <span id="origTime" style="font-size:7px;color:var(--muted);min-width:28px;text-align:right">0:00</span>
+          </div>
+        </div>
+        <div style="border:1px solid var(--soft);border-radius:6px;overflow:hidden">
+          <div style="font-size:8px;color:var(--em2);padding:2px 5px;display:flex;justify-content:space-between;background:rgba(52,211,153,.06)"><span>🟢 Healed</span><span id="healInfo" style="font-size:7px">—</span></div>
+          <canvas id="healCanvas" style="height:28px;width:100%;display:block"></canvas>
+          <div style="display:flex;align-items:center;gap:2px;padding:1px 4px">
+            <button id="healPlayBtn" style="font-size:7px;padding:1px 4px;border-radius:3px;background:transparent">▶</button>
+            <input type="range" id="healSeek" min="0" max="1000" value="0" style="flex:1;height:2px;accent-color:var(--em)">
+            <span id="healTime" style="font-size:7px;color:var(--muted);min-width:28px;text-align:right">0:00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL — Solfeggio ∞ Pyt.Esla -->
+  <div class="right">
+    <div class="panel" style="flex:1">
+      <div class="panel-h"><h3>Solfeggio ∞ Pyt.Esla</h3><span>Pythagoras · Tesla</span></div>
+      <div class="panel-b" style="padding:6px 8px">
+        <div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin-bottom:6px">
+          <button class="btn-sm" id="pytInitBtn" style="font-size:10px;padding:4px 12px;font-weight:600">▶ Play</button>
+          <label class="toggle"><input type="checkbox" id="peEn" checked><span style="font-weight:700;color:var(--gold)">Pyt.Esla</span></label>
+          <label class="toggle"><input type="checkbox" id="hz1En" checked>1Hz</label>
+          <button class="btn-sm" id="pytRecBtn" style="color:var(--bad)">🔴 Rec</button>
+          <label style="display:flex;align-items:center;gap:2px;font-size:9px;color:var(--muted)">Hrs <input type="number" id="pytHrs" value="1" min="1" max="3" step="0.5" style="width:36px;font-size:9px;padding:1px 2px"></label>
+          <button class="btn-sm" id="pytSaveBtn">💾 Save</button>
+          <button class="btn-sm" id="pytStopBtn">⏹</button>
+        </div>
+        <div id="peInfo" style="font-size:8px;color:var(--em);margin-bottom:4px;display:none;padding:2px 8px;border:1px solid rgba(52,211,153,.1);border-radius:4px"><span style="color:var(--gold);font-weight:600">⚡ PYT.ESLA</span> — Left: Solfeggio · Right: Tesla Pair → 27/54 Hz Nakshatra beats</div>
+        <div id="solfCards" style="display:flex;flex-direction:column;gap:2px;min-height:0"></div>
+        <div style="display:flex;gap:4px;margin-top:6px;border-top:1px solid var(--soft);padding-top:4px">
+          <button class="btn-sm tab on" data-t="sol" style="font-size:7px;padding:2px 8px">Solf</button>
+          <button class="btn-sm tab" data-t="bin" style="font-size:7px;padding:2px 8px">Bin</button>
+          <button class="btn-sm tab" data-t="sch" style="font-size:7px;padding:2px 8px">Sch</button>
+          <button class="btn-sm tab" data-t="ext" style="font-size:7px;padding:2px 8px">Ext</button>
+          <span style="flex:1"></span>
+          <span id="stLog" style="font-size:8px;color:var(--muted);line-height:20px"></span>
+        </div>
+        <div id="tp-sol"></div>
+        <div id="tp-bin" style="display:none;margin-top:3px">
+          <div class="row"><label>L</label><input type="number" id="bL" value="430" step="0.1" style="flex:1"><label>R</label><input type="number" id="bR" value="434" step="0.1" style="flex:1"></div>
+          <div class="row"><label>Vol</label><input type="range" id="bVol" min="0" max="100" value="42" style="flex:1"><span style="font-size:9px;color:var(--gold2);width:18px;text-align:right">42</span></div>
+        </div>
+        <div id="tp-sch" style="display:none;margin-top:3px"><div id="schGrid"></div><div style="margin-top:2px"><input type="checkbox" id="stEn"><label style="font-size:9px;color:var(--muted);margin-left:4px">Stratosphere</label></div></div>
+        <div id="tp-ext" style="display:none;margin-top:3px">
+          <div><input type="checkbox" id="hEn"><label style="font-size:9px;color:var(--gold2);margin-left:4px">Heart</label></div>
+          <div><input type="checkbox" id="sgEn"><label style="font-size:9px;color:var(--gold2);margin-left:4px">Singularity</label><select id="sgMode" style="font-size:9px;margin-left:4px;padding:1px 3px"><option value="convergence">Converge</option><option value="mirror">Mirror</option><option value="pulse">Pulse</option></select></div>
+          <div><input type="checkbox" id="iEn"><label style="font-size:9px;color:var(--gold2);margin-left:4px">Infra</label></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" style="flex-shrink:0;max-height:56px">
+      <div class="panel-h"><h3>Modular Synth</h3></div>
+      <div class="panel-b" style="padding:3px 6px"><div style="display:flex;gap:3px;overflow-x:auto" id="synthGrid"></div></div>
+    </div>
+
+    <div class="panel" style="flex-shrink:0;max-height:30px">
+      <div style="display:flex;align-items:center;gap:4px;padding:3px 8px">
+        <button class="btn-sm" id="bBtn">📁</button>
+        <span id="bLabel" style="font-size:8px;color:var(--muted);flex:1;overflow:hidden">No folder</span>
+        <progress id="bProg" value="0" max="100" style="flex:1;max-width:60px;height:3px"></progress>
+        <button class="btn-sm" id="bHeal" disabled>▶ All</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const A = window.api;
+let S = {file:null,origBuf:null,healBuf:null,sid:null,sr:44100,detection:null,lastHeal:null,healing:false};
+const SCH = [{k:'7.83 Hz (Fundamental)',id:'sch0'},{k:'14.3 Hz (2nd)',id:'sch1'},{k:'20.8 Hz (3rd)',id:'sch2'},{k:'27.3 Hz (4th)',id:'sch3'},{k:'33.8 Hz (5th)',id:'sch4'},{k:'39.0 Hz (6th)',id:'sch5'}];
+const PRESETS={golden:{t:'432',b:{e:1,l:430,r:434,v:42},x:{h:1,sg:0,i:0}},deep:{t:'432',b:{e:1,l:428,r:432,v:34},x:{h:1,sg:0,i:1}},dream:{t:'432',b:{e:1,l:432,r:438,v:26},x:{h:0,sg:1,sgM:'mirror',i:0}},celes:{t:'444',b:{e:0},x:{h:0,sg:1,sgM:'convergence',i:0}}};
+function $(id){return document.getElementById(id)}
+function st(m,e){const el=$('st');el.textContent=m;el.className='status'+(e?' er':'')}
+function log(m){$('stLog').textContent=m}
+$('tgtSel').onchange=()=>S.file&&det();
+
+// Build UI
+(function(){
+  // Presets
+  const g3=$('presetChips');Object.entries(PRESETS).forEach(([k,p])=>{const b=document.createElement('button');b.textContent={golden:'Gold',deep:'Deep',dream:'Dream',celes:'Celest'}[k];b.style='padding:4px 6px;font-size:8px;border-radius:5px;background:linear-gradient(180deg,#1a1a38,#121228);color:var(--muted);border:1px solid var(--line);cursor:pointer';b.onmouseenter=()=>b.style.borderColor='var(--ameth)';b.onmouseleave=()=>b.style.borderColor='var(--line)';b.onclick=()=>applyPreset(k);g3.appendChild(b)});
+  // Schumann
+  const g2=$('schGrid');SCH.forEach(x=>{const d=document.createElement('div');d.style='display:flex;align-items:center;gap:3px;margin:2px 0';const l=document.createElement('label');l.textContent=x.k.split('(')[0];l.style='font-size:8px;color:var(--muted);width:44px';const s=document.createElement('input');s.type='range';s.min=0;s.max=100;s.value=30;s.id=x.id;s.style='flex:1;height:3px;accent-color:var(--em)';const v=document.createElement('span');v.style='font-size:7px;color:var(--em2);width:14px;text-align:right';v.textContent='30';s.oninput=()=>v.textContent=s.value;d.append(l,s,v);g2.appendChild(d)});
+  // Synth
+  const g4=$('synthGrid');[432,528,639,741,396,852].forEach((hz,i)=>{const d=document.createElement('div');d.style='background:var(--bg2);border:1px solid var(--line);border-radius:5px;padding:3px 4px;display:flex;flex-direction:column;align-items:center;gap:1px;min-width:44px';const f=document.createElement('div');f.textContent=hz;f.style='font-size:11px;font-weight:800;color:var(--gold)';const sl=document.createElement('input');sl.type='range';sl.min=0;sl.max=100;sl.value=0;sl.style='width:100%;height:3px';const v=document.createElement('div');v.style='font-size:7px;color:var(--muted)';v.textContent='0';sl.oninput=function(){v.textContent=this.value;d.style.borderColor=+this.value>0?'var(--em)':'var(--line)'};d.append(f,sl,v);g4.appendChild(d)});
+})();
+
+// PYT.ESLA ENGINE
+const PYT = {
+  SOLF:[174,285,396,417,528,639,741,852,963],
+  TESLA:[147,258,369,471,582,693,714,825,936],
+  NAMES:['Pain Relief','Healing','Liberation','Change','DNA Repair','Connection','Expression','Intuition','Transcendence'],
+  BEAT:['27Hz','27Hz','27Hz','54Hz','54Hz','54Hz','27Hz','27Hz','27Hz'],
+  oscs:[],ctx:null,masterGain:null,peEn:true,hz1Gain:null,
+  origViz:null,healViz:null,
+  init(){
+    this.ctx=new(window.AudioContext||window.webkitAudioContext)();
+    this.masterGain=this.ctx.createGain();this.masterGain.gain.value=0.5;
+    this.masterGain.connect(this.ctx.destination);
+    // 1Hz carrier
+    const hz1=this.ctx.createOscillator();hz1.type='sine';hz1.frequency.value=1;
+    this.hz1Gain=this.ctx.createGain();this.hz1Gain.gain.value=0;
+    hz1.connect(this.hz1Gain);this.hz1Gain.connect(this.masterGain);hz1.start();
+    // 9 oscillators
+    for(let i=0;i<9;i++){
+      const g=this.ctx.createGain();g.gain.value=0;
+      const p=this.ctx.createStereoPanner();p.pan.value=0;
+      g.connect(p);p.connect(this.masterGain);
+      const o=this.ctx.createOscillator();o.type='sine';o.frequency.value=this.SOLF[i];
+      const og=this.ctx.createGain();og.gain.value=0.3;
+      o.connect(og);og.connect(g);o.start();
+      this.oscs[i]={osc:o,gOsc:og,chGain:g,pan:p};
+    }
+    // Init CQT Analyzers on A/B canvases
+    setTimeout(()=>{
+      this.origViz=new CQTAnalyzer(this.ctx,{snapTolerance:1.5,gridFrequencies:[27,54,174,285,396,417,432,528,639,741,852,963]});
+      this.origViz.connectSource(this.masterGain);
+      this.origViz.bindCanvas($('origCanvas'));
+      this.origViz.start();
+      this.healViz=new CQTAnalyzer(this.ctx,{snapTolerance:1.5,gridFrequencies:[27,54,174,285,396,417,432,528,639,741,852,963]});
+      this.healViz.connectSource(this.masterGain);
+      this.healViz.bindCanvas($('healCanvas'));
+      this.healViz.start();
+    },200);
+  },
+  stop(){
+    if(this.ctx){this.ctx.close();this.ctx=null;this.oscs=[];this.hz1Gain=null;this.masterGain=null}
+    if(this.origViz){this.origViz.stop();this.origViz=null}
+    if(this.healViz){this.healViz.stop();this.healViz=null}
+  },
+  setVol(i,v){if(this.oscs[i])this.oscs[i].gOsc.gain.value=v*0.3},
+  setPan(i,v){if(this.oscs[i])this.oscs[i].pan.pan.value=v},
+  setWave(i,t){if(this.oscs[i])this.oscs[i].osc.type=t}
+};
+
+// Build Solfeggio cards
+(function(){
+  const g=$('solfCards');
+  PYT.SOLF.forEach((hz,i)=>{
+    const c=document.createElement('div');c.style='display:grid;grid-template-columns:1fr;padding:4px 6px;border-radius:6px;border:1px solid var(--soft);margin-bottom:1px';
+    c.onmouseenter=()=>c.style.borderColor='var(--ameth)';c.onmouseleave=()=>c.style.borderColor='var(--soft)';
+    // Row 1
+    const r1=document.createElement('div');r1.style='display:flex;align-items:center;gap:5px';
+    const fr=document.createElement('span');fr.textContent=hz;fr.style='font-size:12px;font-weight:800;color:var(--gold2);min-width:36px';
+    const nm=document.createElement('span');nm.textContent=PYT.NAMES[i];nm.style='font-size:7px;color:var(--muted);min-width:52px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap';
+    const mu=document.createElement('button');mu.textContent='♮';mu.style='font-size:10px;width:20px;height:20px;padding:0;border-radius:3px;background:transparent;color:var(--em2);border:1px solid var(--line)';
+    let muted=false;
+    const ps=document.createElement('input');ps.type='range';ps.min='-100';ps.max='100';ps.value='0';ps.style='flex:1;max-width:48px;height:3px';
+    const pv=document.createElement('span');pv.textContent='C';pv.style='font-size:8px;color:var(--ameth2);min-width:12px;text-align:center';
+    const ts=document.createElement('span');ts.id='peD'+i;ts.textContent='⚡'+PYT.TESLA[i];ts.style='font-size:7px;color:var(--em);min-width:40px;text-align:right;display:none';
+    r1.append(fr,nm,mu,ps,pv,ts);
+    // Row 2
+    const r2=document.createElement('div');r2.style='display:flex;align-items:center;gap:5px;margin-top:1px';
+    const vs=document.createElement('input');vs.type='range';vs.min='0';vs.max='100';vs.value='50';vs.style='flex:1;max-width:48px;height:4px;accent-color:var(--gold)';
+    const vv=document.createElement('span');vv.textContent='50';vv.style='font-size:9px;color:var(--gold2);min-width:16px;text-align:right;font-weight:600';
+    const ws=document.createElement('select');ws.style='font-size:7px;padding:1px;background:#0d1218;color:var(--text);border:1px solid var(--line);border-radius:3px';
+    ['sine','tri','saw','sqr','pul'].forEach(w=>{const o=document.createElement('option');o.value=w;o.textContent=w[0].toUpperCase()+w.slice(1);ws.appendChild(o)});
+    const bt=document.createElement('span');bt.id='peB'+i;bt.textContent='♮ '+PYT.BEAT[i];bt.style='font-size:8px;color:var(--em2);min-width:30px;text-align:center';
+    r2.append(vs,vv,ws,bt);
+    mu.onclick=function(){muted=!muted;PYT.setVol(i,muted?0:+vs.value/100);mu.style.background=muted?'rgba(255,0,0,.12)':'transparent';mu.style.color=muted?'var(--bad)':'var(--em2)';c.style.opacity=muted?'0.4':'1'};
+    ps.oninput=function(){PYT.setPan(i,this.value/100);pv.textContent=+this.value<-10?'L':+this.value>10?'R':'C'};
+    vs.oninput=function(){vv.textContent=this.value;if(!muted)PYT.setVol(i,this.value/100)};
+    ws.onchange=function(){PYT.setWave(i,this.value==='pul'?'sawtooth':this.value==='sqr'?'square':this.value==='tri'?'triangle':this.value)};
+    c.append(r1,r2);g.appendChild(c);
+  });
+  // Pyt.Esla toggle
+  $('peEn').onchange=function(){
+    PYT.peEn=this.checked;const s=this.checked;
+    if($('peInfo'))$('peInfo').style.display=s?'block':'none';
+    for(let i=0;i<9;i++){const d=$('peD'+i);if(d)d.style.display=s?'block':'none';const b=$('peB'+i);if(b)b.style.color=s?'var(--gold)':'var(--em2)'}
+  };
+  setTimeout(()=>{if($('peEn').checked)$('peEn').onchange()},100);
+  $('hz1En').onchange=function(){if(PYT.hz1Gain)PYT.hz1Gain.gain.value=this.checked?0.12:0};
+})();
+
+// Drop + File
+const dz=$('dropZone');
+dz.onclick=async()=>{const f=await A.openFile();if(f)loadFile(f)};
+dz.ondragover=e=>{e.preventDefault();dz.style.borderColor='var(--ameth)'};
+dz.ondragleave=()=>dz.style.borderColor='';
+dz.ondrop=async e=>{e.preventDefault();dz.style.borderColor='';const p=A.getPathForFile(e.dataTransfer.files[0]);if(p)loadFile(p)};
+
+async function loadFile(f){
+  S.file=f;dz.textContent='🎵 '+f.split('/').pop();dz.classList.add('ok');
+  try{
+    const r=await fetch('file://'+f);const b=await r.arrayBuffer();const c=new AudioContext();
+    S.origBuf=await c.decodeAudioData(b);c.close();
+    $('origInfo').textContent=f.split('/').pop();await det();
+  }catch(e){st(e.message,1)}
+}
+async function det(){
+  try{
+    const r=await A.post('/api/detect',{file_path:S.file});S.detection=r;
+    const t=+$('tgtSel').value;$('detVal').innerHTML=Math.abs(r.tuning-t)<=1.5
+      ?'<span style="color:var(--em)">✓ '+r.tuning.toFixed(1)+'</span>':'<span style="color:var(--gold)">'+r.tuning.toFixed(1)+'→'+t+'</span>';
+    st(Math.abs(r.tuning-t)<=1.5?'✅ Aligned':'Detected: '+r.tuning.toFixed(1));
+  }catch(e){st(e.message,1)}
+}
+
+// Heal + Pure
+async function doHeal(pure){
+  if(!S.file||S.healing)return;S.healing=true;st('Healing...');
+  const b=pure?{file_path:S.file,target_tuning:+$('tgtSel').value,pure_432:true}:{file_path:S.file,target_tuning:+$('tgtSel').value,solfeggio:{},binaural_enabled:$('bEn').checked,binaural_left:+$('bL').value,binaural_right:+$('bR').value,binaural_volume:+$('bVol').value/100,schumann_enabled:0,heart_enabled:$('hEn').checked,singularity_enabled:$('sgEn').checked,infrasound_enabled:$('iEn').checked,master_volume:0.85};
+  try{
+    const r=await A.post('/api/heal',b);S.sid=r.session_id;S.lastHeal=r;
+    const buf=await A.downloadBuffer('/api/download/'+r.session_id+'?format=wav');
+    const ctx=new AudioContext();S.healBuf=await ctx.decodeAudioData(buf.buffer.slice(0));ctx.close();
+    $('healInfo').textContent=r.heal_result.target_tuning.toFixed(0)+'Hz';
+    st('✅ '+r.heal_result.original_tuning.toFixed(1)+'→'+r.heal_result.target_tuning.toFixed(1),'good');
+    log('Session: '+r.session_id);
+  }catch(e){st(e.message,1)}S.healing=false;
+}
+$('healBtn').onclick=()=>doHeal(false);$('pureBtn').onclick=()=>doHeal(true);
+
+// Save
+async function save(f){
+  if(!S.sid){st('Heal first',1);return}
+  const n=(S.file||'').split('/').pop().replace(/\.[^.]+$/,'')+'_432healed.'+f;
+  const d=await A.saveFile(n);if(!d)return;
+  try{const b=await A.downloadBuffer('/api/download/'+S.sid+'?format='+f);await A.writeFile(d,Array.from(new Uint8Array(b)));st('💾 '+f.toUpperCase())}catch(e){st(e.message,1)}
+}
+$('sWav').onclick=()=>save('wav');$('sMp3').onclick=()=>save('mp3');
+$('rptBtn').onclick=async()=>{if(!S.file||!S.sid){st('Heal first',1);return}try{const r=await A.post('/api/report',{input_path:S.file,output_path:S.lastHeal?.output_path||''});st('Report: '+r.summary.harmonic_alignment_improvement,'good')}catch(e){st(e.message,1)}};
+
+// Presets
+function applyPreset(k){
+  const p=PRESETS[k];if(!p)return;
+  document.querySelectorAll('#presetChips button').forEach(b=>b.style.borderColor='var(--line)');
+  if(event)event.target.style.borderColor='var(--ameth)';
+  if(p.b){$('bEn').checked=!!p.b.e;$('bL').value=p.b.l||430;$('bR').value=p.b.r||434;$('bVol').value=p.b.v||42}
+  if(p.x){$('hEn').checked=!!p.x.h;$('sgEn').checked=!!p.x.sg;p.x.sgM&&($('sgMode').value=p.x.sgM);$('iEn').checked=!!p.x.i}
+}
+
+// Tabs
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x===b));
+  document.querySelectorAll('[id^="tp-"]').forEach(p=>p.style.display='none');
+  const t=$('tp-'+b.dataset.t);if(t)t.style.display='block'
+});
+document.querySelector('.tab').classList.add('on');
+
+// Pyt.Esla play/stop
+$('pytInitBtn').onclick=()=>{
+  if(!PYT.ctx||!PYT.masterGain){PYT.init();$('pytInitBtn').textContent='⏹ Stop';$('pytInitBtn').style.background='linear-gradient(135deg,var(--bad),#aa3030)';$('pytInitBtn').style.color='#fff'}
+  else{PYT.stop();$('pytInitBtn').textContent='▶ Play';$('pytInitBtn').style.background='';$('pytInitBtn').style.color=''}};
+
+// Batch
+$('bBtn').onclick=async()=>{const d=await A.selectFolder();if(!d)return;const files=await A.listAudio(d)||[];$('bLabel').textContent=d.split('/').pop()+' ('+files.length+')';$('bHeal').disabled=files.length===0;log(files.length+' files');S.batchFiles=files};
+$('bHeal').onclick=async()=>{if(!S.batchFiles?.length)return;for(const f of S.batchFiles){try{await A.post('/api/heal',{file_path:f,target_tuning:+$('tgtSel').value,pure_432:true})}catch(e){}}st('✅ Batch done','good')};
+
+// Modular Synth save
+document.querySelectorAll('.tab').forEach(()=>{}); // placeholder
+</script>
+</body>
+</html>
