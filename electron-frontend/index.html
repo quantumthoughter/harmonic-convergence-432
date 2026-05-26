@@ -4,70 +4,167 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Resonance Sanctuary</title>
-<link rel="stylesheet" href="style.css">
+<style>
+:root {
+  --bg: #0a0612; --ameth: #9b6dff; --ameth2: #b896ff; --em: #34d399; --gold: #d9aa3a;
+  --text: #d8d0f0; --muted: #9080b8; --panel: #14102a; --soft: #2a2050;
+}
+*{margin:0;box-sizing:border-box}
+body{
+  height:100vh;background:linear-gradient(135deg,#0a0612,#100828);color:var(--text);
+  font-family:'Inter',system-ui,sans-serif;overflow:hidden;display:flex;flex-direction:column
+}
+.titlebar{
+  -webkit-app-region:drag;height:40px;display:flex;align-items:center;padding:0 16px;
+  background:linear-gradient(90deg,rgba(155,109,255,.1),transparent 30%,transparent 70%,rgba(52,211,153,.08));
+  font-size:13px;font-weight:600;color:var(--gold);letter-spacing:.5px;gap:12px;flex-shrink:0
+}
+.titlebar .dot{
+  width:18px;height:18px;border-radius:50%;
+  background:conic-gradient(var(--ameth),var(--em),var(--ameth),var(--ameth2),var(--ameth));
+  box-shadow:0 0 16px rgba(155,109,255,.4);-webkit-app-region:no-drag
+}
+.main{display:flex;flex:1;padding:4px;gap:6px;overflow:hidden}
+.left{width:280px;display:flex;flex-direction:column;gap:6px;overflow-y:auto}
+.right{flex:1;display:flex;flex-direction:column;gap:6px;overflow:hidden}
+
+/* Crystal Card — replaces all panels */
+.card{
+  background:linear-gradient(145deg,rgba(20,16,42,.92),rgba(15,10,30,.95));
+  border:1px solid rgba(155,109,255,.08);border-radius:16px;overflow:hidden;
+  backdrop-filter:blur(8px)
+}
+.card-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 12px 6px;border-bottom:1px solid rgba(155,109,255,.06)
+}
+.card-header h3{font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:.1em}
+.card-header span{font-size:8px;color:var(--muted)}
+.card-body{padding:6px 8px}
+
+/* Bigger Everything */
+button{
+  cursor:pointer;border:none;border-radius:10px;font-weight:600;transition:all .2s
+}
+.pri-btn{
+  background:linear-gradient(135deg,#9b6dff,#6a3db8);color:#fff;
+  box-shadow:0 2px 20px rgba(155,109,255,.25);font-size:13px;padding:10px 20px
+}
+.pri-btn:hover{box-shadow:0 4px 30px rgba(155,109,255,.4);transform:translateY(-1px)}
+.sec-btn{
+  background:linear-gradient(135deg,#34d399,#0a8060);color:#0a2014;
+  box-shadow:0 2px 16px rgba(52,211,153,.2);font-size:11px;padding:8px 16px
+}
+.sec-btn:hover{box-shadow:0 4px 24px rgba(52,211,153,.35);transform:translateY(-1px)}
+.sm-btn{
+  background:rgba(155,109,255,.08);color:var(--text);border:1px solid rgba(155,109,255,.1);
+  font-size:9px;padding:5px 10px;border-radius:8px
+}
+.sm-btn:hover{background:rgba(155,109,255,.15);border-color:var(--ameth)}
+
+/* Drop zone */
+.drop-zone{
+  border:1.5px dashed rgba(155,109,255,.15);border-radius:12px;padding:12px;
+  text-align:center;cursor:pointer;font-size:11px;color:var(--muted);transition:all .3s
+}
+.drop-zone:hover{border-color:var(--ameth);box-shadow:inset 0 0 24px rgba(155,109,255,.05)}
+
+/* Sliders */
+input[type="range"]{-webkit-appearance:none;height:4px;background:rgba(155,109,255,.15);border-radius:2px;outline:none}
+input[type="range"]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:14px;height:14px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#b896ff,#7a4ddf);
+  box-shadow:0 0 10px rgba(155,109,255,.3);cursor:pointer
+}
+
+/* CQT */
+.cqt-wrap{background:#03020a;border-radius:10px;padding:2px;border:1px solid rgba(155,109,255,.06)}
+.cqt-wrap canvas{display:block;width:100%;height:90px;background:#000;border-radius:8px}
+
+/* Freq cards */
+.freq-row{display:flex;flex-direction:column;gap:6px;overflow-y:auto}
+.freq-card{
+  background:linear-gradient(135deg,rgba(26,21,56,.6),rgba(20,16,42,.3));
+  border-radius:10px;padding:8px 10px;border:1px solid rgba(155,109,255,.06);
+  display:flex;align-items:center;gap:8px
+}
+.freq-card:hover{border-color:rgba(155,109,255,.2)}
+.freq-label{font-size:14px;font-weight:800;font-family:monospace;color:var(--gold);min-width:48px}
+.freq-name{font-size:9px;color:var(--muted);min-width:60px}
+.freq-ctrl{display:flex;align-items:center;gap:6px;flex:1}
+.freq-ctrl span{font-size:8px;color:var(--muted)}
+.freq-ctrl input[type="range"]{flex:1;max-width:44px;height:3px}
+.freq-val{font-size:9px;color:var(--gold2);min-width:18px;text-align:right;font-weight:600}
+.freq-beat{font-size:8px;color:var(--em);min-width:30px;text-align:center}
+
+/* Tabs */
+.tab{font-size:8px;padding:4px 10px;border-radius:6px 6px 0 0;background:transparent;color:var(--muted);border:none;border-bottom:2px solid transparent}
+.tab.on{color:var(--gold);border-bottom-color:var(--gold)}
+
+/* Scroll */
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-thumb{background:rgba(155,109,255,.15);border-radius:2px}
+</style>
 </head>
 <body>
-<div class="titlebar"><div class="dot"></div> <span style="flex:1">Resonance Sanctuary</span><span style="font-size:8px;color:var(--muted);letter-spacing:.04em;font-weight:400;margin-right:8px">Resound to 432 · 432 Hz grid harmony through CQT method</span></div>
+<div class="titlebar"><div class="dot"></div><span style="flex:1">Resonance Sanctuary</span><span style="font-size:9px;color:var(--muted)">Resound to 432 · CQT Harmonic Grid</span></div>
 <div class="main">
   <!-- LEFT -->
   <div class="left">
-    <div id="dropZone" class="dropzone">Drop audio or click to load</div>
-    <div class="row"><span id="detVal" style="flex:1;font-size:9px;color:var(--muted)">Tuning: —</span><label>Target</label><select id="tgtSel"><option value="432">432</option><option value="440">440</option><option value="444">444</option><option value="420">420</option></select></div>
-    <div class="panel"><div class="panel-h"><h3>Presets</h3></div><div class="panel-b" style="display:grid;grid-template-columns:1fr 1fr;gap:2px" id="presetChips"></div></div>
-    <div class="panel"><div class="panel-h"><h3>Controls</h3></div>
-      <div class="panel-b" style="display:flex;gap:3px;flex-wrap:wrap">
-          <button class="btn-pri" id="healBtn" style="flex:1;font-size:12px;padding:10px 16px">✨ HEAL to 432</button>
-          <button class="btn-sec" id="pureBtn" style="flex:1;font-size:11px;padding:8px 12px">♮ Pure Shift</button>
-        <button class="btn-sm" id="sWav" style="flex:1">💾 WAV</button>
-        <button class="btn-sm" id="sMp3" style="flex:1">💾 MP3</button>
-        <button class="btn-sm" id="rptBtn" style="flex:1">📊 RPT</button>
+    <div class="drop-zone" id="dropZone">Drop audio or browse</div>
+    <div class="card">
+      <div class="card-header"><h3>Session</h3><span id="detVal">—</span></div>
+      <div class="card-body" style="display:flex;gap:6px;flex-wrap:wrap;padding:8px">
+        <button class="pri-btn" id="healBtn" style="flex:1">✨ HEAL to 432</button>
+        <button class="sec-btn" id="pureBtn" style="flex:1">♮ Pure</button>
+        <button class="sm-btn" id="sWav" style="flex:1">WAV</button>
+        <button class="sm-btn" id="sMp3" style="flex:1">MP3</button>
+        <button class="sm-btn" id="rptBtn" style="flex:1">RPT</button>
       </div>
     </div>
-    <div class="status" id="st">✨ Ready</div>
+    <div class="status" id="st" style="font-size:12px;text-align:center;color:var(--em);font-weight:600;padding:2px">✨ Ready</div>
   </div>
 
   <!-- RIGHT -->
   <div class="right">
-    <div class="panel" style="flex:1">
-      <div class="panel-h"><h3>Solfeggio ∞ Pyt.Esla</h3><span>Pythagoras · Tesla · Nakshatra 27/54Hz</span></div>
-      <div class="panel-b" style="display:flex;flex-direction:column;gap:3px;padding:4px 6px">
-        <!-- Master controls -->
-        <div style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;flex-shrink:0">
-          <button id="initBtn" class="btn-pri" style="font-size:9px;padding:4px 10px">🎧 Init Engine</button>
-          <button id="stopBtn" class="btn-sm" style="color:var(--bad);border-color:rgba(255,154,154,.2)">⏹ Stop</button>
-          <label class="toggle"><input type="checkbox" id="pytToggle" checked><span style="font-weight:700;color:var(--gold)">Pyt.Esla</span></label>
-          <label class="toggle"><input type="checkbox" id="stereoToggle" checked>🎧 Stereo</label>
-        </div>
-        <div style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;flex-shrink:0">
-          <label style="display:flex;align-items:center;gap:2px;font-size:7px;color:var(--muted)">1Hz <input type="range" id="carrierVol" min="0" max="0.3" step="0.01" value="0.1" style="width:32px"><span id="carrierVal" style="font-size:7px;color:var(--muted);min-width:20px">0.10</span></label>
-          <label style="display:flex;align-items:center;gap:2px;font-size:7px;color:var(--muted)">Ambience <input type="range" id="ambMix" min="0" max="0.9" step="0.01" value="0.35" style="width:32px"><span id="ambiVal" style="font-size:7px;color:var(--muted);min-width:20px">0.35</span></label>
-          <button class="btn-sm" id="bBtn" style="font-size:7px">📁 Batch</button>
-          <span id="bLabel" style="font-size:7px;color:var(--muted);flex:1;overflow:hidden">None</span>
-          <progress id="bProg" value="0" max="100" style="max-width:40px"></progress>
-          <button class="btn-sm" id="bHeal" disabled style="font-size:7px">▶ All</button>
-          <span id="stLog" style="font-size:7px;color:var(--muted);flex:1;text-align:right;overflow:hidden"></span>
+    <div class="card" style="flex:1;display:flex;flex-direction:column">
+      <div class="card-header">
+        <h3>Solfeggio ∞ Pyt.Esla</h3>
+        <span style="display:flex;gap:6px">
+          <button class="sm-btn" id="initBtn" style="font-size:10px;padding:6px 14px">🎧 Init</button>
+          <button class="sm-btn" id="stopBtn" style="color:#ff7a7a">⏹ Stop</button>
+        </span>
+      </div>
+      <div class="card-body" style="display:flex;flex-direction:column;gap:4px;flex:1;padding:6px 8px">
+        <!-- Master bar -->
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+          <label style="display:flex;align-items:center;gap:4px;font-size:9px;color:var(--muted)"><input type="checkbox" id="pytToggle" checked style="width:14px;height:14px;accent-color:var(--ameth)"><span style="font-weight:700;color:var(--gold)">Pyt.Esla</span></label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:9px;color:var(--muted)"><input type="checkbox" id="stereoToggle" checked style="width:14px;height:14px;accent-color:var(--em)">🎧 Stereo</label>
+          <label style="display:flex;align-items:center;gap:3px;font-size:8px;color:var(--muted)">1Hz<input type="range" id="carrierVol" min="0" max="0.3" step="0.01" value="0.1" style="width:36px"><span style="font-size:8px;color:var(--muted);min-width:16px" id="carrierVal">0.10</span></label>
+          <label style="display:flex;align-items:center;gap:3px;font-size:8px;color:var(--muted)">Amb<input type="range" id="ambMix" min="0" max="0.9" step="0.01" value="0.35" style="width:36px"><span style="font-size:8px;color:var(--muted);min-width:16px" id="ambiVal">0.35</span></label>
         </div>
         <!-- CQT -->
-        <div class="cqt-container">
-          <canvas id="cqtCanvas" width="800" height="80"></canvas>
-          <div class="cqt-labels"><span>20</span><span>60</span><span>100</span><span>200</span><span>500</span><span>1k</span><span>2k</span><span>5k</span><span>10k</span></div>
-        </div>
+        <div class="cqt-wrap"><canvas id="cqtCanvas" width="800" height="90"></canvas></div>
         <!-- Freq cards -->
-        <div class="freq-grid" id="freqGrid"></div>
-        <!-- Tabs -->
-        <div style="display:flex;gap:3px;border-top:1px solid var(--soft);padding-top:2px;flex-shrink:0">
-          <button class="btn-sm tab on" data-t="sol" style="font-size:7px;padding:1px 6px;flex:1">Solf</button>
-          <button class="btn-sm tab" data-t="bin" style="font-size:7px;padding:1px 6px;flex:1">Bin</button>
-          <button class="btn-sm tab" data-t="sch" style="font-size:7px;padding:1px 6px;flex:1">Sch</button>
-          <button class="btn-sm tab" data-t="ext" style="font-size:7px;padding:1px 6px;flex:1">Ext</button>
+        <div class="freq-row" id="freqGrid"></div>
+        <!-- Tabs extra -->
+        <div style="display:flex;gap:2px;border-top:1px solid rgba(155,109,255,.06);padding-top:4px;flex-shrink:0">
+          <button class="tab on" data-t="sol">Solf</button>
+          <button class="tab" data-t="bin">Bin</button>
+          <button class="tab" data-t="sch">Sch</button>
+          <button class="tab" data-t="ext">Ext</button>
+          <span id="stLog" style="font-size:8px;color:var(--muted);margin-left:auto"></span>
         </div>
         <div id="tp-sol"></div>
-        <div id="tp-bin" style="display:none"><div class="row"><label>L</label><input type="number" id="bL" value="430" style="flex:1"><label>R</label><input type="number" id="bR" value="434" style="flex:1"><label>Vol</label><input type="range" id="bVol" min="0" max="100" value="50" style="flex:1;max-width:40px"><span style="font-size:8px;color:var(--gold2)" id="bVolV">50</span></div></div>
-        <div id="tp-sch" style="display:none"><div id="schGrid"></div><div><input type="checkbox" id="stEn"><label style="font-size:8px;color:var(--muted);margin-left:4px">Stratosphere</label></div></div>
-        <div id="tp-ext" style="display:none">
-          <div><input type="checkbox" id="hEn"><label style="font-size:8px;color:var(--gold2);margin-left:4px">Heart</label></div>
-          <div><input type="checkbox" id="sgEn"><label style="font-size:8px;color:var(--gold2);margin-left:4px">Singularity</label><select id="sgMode" style="font-size:7px;margin-left:4px"><option value="convergence">Converge</option><option value="mirror">Mirror</option><option value="pulse">Pulse</option></select></div>
-          <div><input type="checkbox" id="iEn"><label style="font-size:8px;color:var(--gold2);margin-left:4px">Infra</label></div>
+        <div id="tp-bin" style="display:none;padding:4px">
+          <div style="display:flex;gap:6px"><label style="font-size:9px;color:var(--muted)">L</label><input type="number" id="bL" value="430" style="flex:1"><label style="font-size:9px;color:var(--muted)">R</label><input type="number" id="bR" value="434" style="flex:1"></div>
+          <div style="display:flex;gap:6px;margin-top:4px"><label style="font-size:9px;color:var(--muted)">Vol</label><input type="range" id="bVol" min="0" max="100" value="50" style="flex:1"><span id="bVolV" style="font-size:10px;color:var(--gold);font-weight:600">50</span></div>
+        </div>
+        <div id="tp-sch" style="display:none;padding:4px"><div id="schGrid"></div></div>
+        <div id="tp-ext" style="display:none;padding:4px">
+          <label style="font-size:9px;color:var(--muted);display:block;margin:4px 0"><input type="checkbox" id="hEn" style="width:14px;height:14px;accent-color:var(--gold)"> Heart</label>
+          <label style="font-size:9px;color:var(--muted);display:block;margin:4px 0"><input type="checkbox" id="sgEn" style="width:14px;height:14px;accent-color:var(--gold)"> Singularity <select id="sgMode" style="font-size:8px;padding:2px 4px;background:rgba(15,10,30,.8);color:var(--text);border:1px solid var(--soft);border-radius:4px"><option value="convergence">Converge</option><option value="mirror">Mirror</option><option value="pulse">Pulse</option></select></label>
+          <label style="font-size:9px;color:var(--muted);display:block;margin:4px 0"><input type="checkbox" id="iEn" style="width:14px;height:14px;accent-color:var(--gold)"> Infra</label>
         </div>
       </div>
     </div>
@@ -75,40 +172,44 @@
 </div>
 
 <script>
-const A=window.api;
-let S={file:null,sid:null,healing:false,detection:null,lastHeal:null};
+const A=window.api;let S={file:null,sid:null,healing:false,detection:null,lastHeal:null};
 const SOLF=[174,285,396,417,528,639,741,852,963];
 const TESLA=[147,258,369,471,582,693,714,825,936];
-const NAMES=['Pain Relief','Healing','Liberation','Change','DNA Repair','Connection','Expression','Intuition','Transcendence'];
-const SCH=[{k:'7.83 Hz (Fundamental)',id:'sch0'},{k:'14.3 Hz (2nd)',id:'sch1'},{k:'20.8 Hz (3rd)',id:'sch2'},{k:'27.3 Hz (4th)',id:'sch3'},{k:'33.8 Hz (5th)',id:'sch4'},{k:'39.0 Hz (6th)',id:'sch5'}];
+const NAMES=['Pain','Healing','Liberation','Change','DNA Repair','Connect','Expression','Intuition','Transcend'];
+const SCH=[{k:'7.83 Hz (Fundamental)',id:'s0'},{k:'14.3 Hz (2nd)',id:'s1'},{k:'20.8 Hz (3rd)',id:'s2'},{k:'27.3 Hz (4th)',id:'s3'},{k:'33.8 Hz (5th)',id:'s4'},{k:'39.0 Hz (6th)',id:'s5'}];
 function $(id){return document.getElementById(id)}
-function st(m,e){const el=$('st');el.textContent=m;el.className='status'+(e?' er':'')}
+function st(m){const e=$('st');e.textContent=m;e.style.color='var(--em)'}
 function log(m){$('stLog').textContent=m}
 
-// ─── CQT + PYTHAGORAS / TESLA ENGINE ───
-let audioCtx=null,isInit=false,cards=[],masterGain=null;
-let dryGain=null,wetGain=null,convolver=null,delayNode=null,feedback=null;
-let carrierOsc=null,carrierGain=null,analyserNode=null,animId=null;
+let audioCtx=null,isInit=false,cards=[],masterGain=null,analyserNode=null,animId=null;
+let dryGain=null,wetGain=null,convolver=null,delayNode=null,feedback=null,carrierGain=null;
 let pytMode=true,stereoMode=true;
 
-function buildUI(){
-  const g=$('freqGrid');g.innerHTML='';
-  for(let i=0;i<SOLF.length;i++){
-    const c=document.createElement('div');c.className='freq-card';c.dataset.idx=i;
-    c.innerHTML=`<div class="freq-title">${SOLF[i]} Hz · ${NAMES[i]}</div>
-      <div class="ctrl-row"><span>L</span><input type="range" class="vl" min="0" max="1" step="0.01" value="0.6"><span class="vlv">0.60</span><span>↔</span><input type="range" class="pl" min="-1" max="1" step="0.01" value="-0.7"><span class="plv">-0.70</span></div>
-      <div class="ctrl-row"><span>R</span><input type="range" class="vr" min="0" max="1" step="0.01" value="0.6"><span class="vrv">0.60</span><span>↔</span><input type="range" class="pr" min="-1" max="1" step="0.01" value="0.7"><span class="prv">0.70</span><span class="badge" id="bb${i}">⏣ ${Math.abs(SOLF[i]-TESLA[i])}Hz</span></div>`;
+(function build(){
+  const g=$('freqGrid');
+  SOLF.forEach((hz,i)=>{
+    const c=document.createElement('div');c.className='freq-card';
+    c.innerHTML=`<span class="freq-label">${hz}</span><span class="freq-name">${NAMES[i]}</span>
+      <div class="freq-ctrl"><span>L</span><input type="range" class="vl" min="0" max="1" step="0.01" value="0.5"><span class="freq-val vlv">0.50</span><span>R</span><input type="range" class="vr" min="0" max="1" step="0.01" value="0.5"><span class="freq-val vrv">0.50</span><span>↔</span><input type="range" class="pl" min="-1" max="1" step="0.01" value="-0.6"><span class="freq-val plv">-0.60</span><input type="range" class="pr" min="-1" max="1" step="0.01" value="0.6"><span class="freq-val prv">0.60</span></div>
+      <span class="freq-beat" id="bb${i}">⏣${Math.abs(hz-TESLA[i])}</span>`;
     g.appendChild(c);
-  }
-  for(let i=0;i<SOLF.length;i++){
-    const card=$('freqGrid').children[i];
-    const vl=card.querySelector('.vl'),vr=card.querySelector('.vr'),pl=card.querySelector('.pl'),pr=card.querySelector('.pr');
-    vl.oninput=function(){if(cards[i])cards[i].lg.gain.value=+this.value;card.querySelector('.vlv').textContent=(+this.value).toFixed(2)};
-    vr.oninput=function(){if(cards[i])cards[i].rg.gain.value=+this.value;card.querySelector('.vrv').textContent=(+this.value).toFixed(2)};
-    pl.oninput=function(){if(cards[i])cards[i].lp.pan.value=+this.value;card.querySelector('.plv').textContent=(+this.value).toFixed(2)};
-    pr.oninput=function(){if(cards[i])cards[i].rp.pan.value=+this.value;card.querySelector('.prv').textContent=(+this.value).toFixed(2)};
-  }
-}
+  });
+  g.querySelectorAll('.freq-card').forEach((card,i)=>{
+    const v=card.querySelector('.vl'),r=card.querySelector('.vr'),pl=card.querySelector('.pl'),pr=card.querySelector('.pr');
+    v.oninput=function(){card.querySelector('.vlv').textContent=(+this.value).toFixed(2);if(cards[i])cards[i].lg.gain.value=+this.value};
+    r.oninput=function(){card.querySelector('.vrv').textContent=(+this.value).toFixed(2);if(cards[i])cards[i].rg.gain.value=+this.value};
+    pl.oninput=function(){card.querySelector('.plv').textContent=(+this.value).toFixed(2);if(cards[i])cards[i].lp.pan.value=+this.value};
+    pr.oninput=function(){card.querySelector('.prv').textContent=(+this.value).toFixed(2);if(cards[i])cards[i].rp.pan.value=+this.value};
+  });
+  // Schumann
+  const sg=$('schGrid');SCH.forEach(x=>{
+    const d=document.createElement('div');d.style='display:flex;align-items:center;gap:4px;margin:2px 0';
+    const l=document.createElement('span');l.textContent=x.k.split('(')[0];l.style='font-size:8px;color:var(--muted);width:40px';
+    const s=document.createElement('input');s.type='range';s.min=0;s.max=100;s.value=30;s.id=x.id;s.style='flex:1;height:3px';
+    const v=document.createElement('span');v.style='font-size:8px;color:var(--em);width:14px;text-align:right';v.textContent='30';
+    s.oninput=()=>v.textContent=s.value;d.append(l,s,v);sg.appendChild(d)
+  });
+})();
 
 async function initAudio(){
   if(isInit&&audioCtx){await audioCtx.resume();return}
@@ -120,88 +221,63 @@ async function initAudio(){
   for(let ch=0;ch<2;ch++){const c=imp.getChannelData(ch);for(let i=0;i<c.length;i++)c[i]=(Math.random()*2-1)*Math.exp(-i/700)}
   convolver=audioCtx.createConvolver();convolver.buffer=imp;
   delayNode=audioCtx.createDelay();delayNode.delayTime.value=0.12;
-  const dg=audioCtx.createGain();dg.gain.value=0.35;
-  feedback=audioCtx.createGain();feedback.gain.value=0.3;
-  delayNode.connect(dg);dg.connect(feedback);feedback.connect(delayNode);dg.connect(wetGain);convolver.connect(wetGain);
+  const dg=audioCtx.createGain();dg.gain.value=0.35;const fb=audioCtx.createGain();fb.gain.value=0.3;
+  delayNode.connect(dg);dg.connect(fb);fb.connect(delayNode);dg.connect(wetGain);convolver.connect(wetGain);
   const amb=+$('ambMix').value;dryGain.gain.value=1-amb;wetGain.gain.value=amb;
-
-  carrierOsc=audioCtx.createOscillator();carrierOsc.type='sine';carrierOsc.frequency.value=1;
+  const co=audioCtx.createOscillator();co.type='sine';co.frequency.value=1;
   carrierGain=audioCtx.createGain();carrierGain.gain.value=+$('carrierVol').value;
-  carrierOsc.connect(carrierGain);carrierGain.connect(masterGain);carrierOsc.start();
-
-  for(let i=0;i<SOLF.length;i++){
-    const lo=audioCtx.createOscillator(),ro=audioCtx.createOscillator();
-    const lg=audioCtx.createGain(),rg=audioCtx.createGain();
-    const lp=audioCtx.createStereoPanner(),rp=audioCtx.createStereoPanner();
-    lo.type='sine';ro.type='sine';lo.frequency.value=SOLF[i];ro.frequency.value=TESLA[i];
-    lg.gain.value=0.6;rg.gain.value=0.6;lp.pan.value=-0.7;rp.pan.value=0.7;
-    lo.connect(lg);lg.connect(lp);ro.connect(rg);rg.connect(rp);
-    lp.connect(dryGain);lp.connect(convolver);lp.connect(delayNode);
-    rp.connect(dryGain);rp.connect(convolver);rp.connect(delayNode);
-    lo.start();ro.start();cards[i]={lo,ro,lg,rg,lp,rp};
+  co.connect(carrierGain);carrierGain.connect(masterGain);co.start();
+  for(let i=0;i<9;i++){
+    const o=audioCtx.createOscillator(),o2=audioCtx.createOscillator();
+    const g=audioCtx.createGain(),g2=audioCtx.createGain();
+    const p=audioCtx.createStereoPanner(),p2=audioCtx.createStereoPanner();
+    o.type='sine';o2.type='sine';o.frequency.value=SOLF[i];o2.frequency.value=TESLA[i];
+    g.gain.value=0.5;g2.gain.value=0.5;p.pan.value=-0.6;p2.pan.value=0.6;
+    o.connect(g);g.connect(p);o2.connect(g2);g2.connect(p2);
+    p.connect(dryGain);p.connect(convolver);p.connect(delayNode);
+    p2.connect(dryGain);p2.connect(convolver);p2.connect(delayNode);
+    o.start();o2.start();cards[i]={lo:o,ro:o2,lg:g,rg:g2,lp:p,rp:p2};
   }
-
   analyserNode=audioCtx.createAnalyser();analyserNode.fftSize=8192;analyserNode.smoothingTimeConstant=0.3;
-  masterGain.connect(analyserNode);refreshFreqs();isInit=true;await audioCtx.resume();startCQT();
-  $('initBtn').textContent='✅ Active';log('Engine live | '+SOLF.length+' voices');
+  masterGain.connect(analyserNode);isInit=true;await audioCtx.resume();
+  refreshFreqs();startCQT();$('initBtn').textContent='✅ Active';log('Engine live');
 }
 
 function stopAll(){
   if(!isInit||!audioCtx)return;
-  for(const c of cards){try{c.lo.stop();c.ro.stop()}catch(e){}}
-  if(carrierOsc)carrierOsc.stop();if(animId)cancelAnimationFrame(animId);
+  cards.forEach(c=>{try{c.lo.stop();c.ro.stop()}catch(e){}})
+  if(animId)cancelAnimationFrame(animId);
   audioCtx.close().then(()=>{audioCtx=null;isInit=false;cards=[];analyserNode=null});
-  $('initBtn').textContent='🎧 Init Engine';log('Stopped');
+  $('initBtn').textContent='🎧 Init';log('Stopped');
 }
 
 function refreshFreqs(){
-  for(let i=0;i<SOLF.length;i++){
-    let lf=SOLF[i],rf=SOLF[i];
-    if(stereoMode&&pytMode){lf=SOLF[i];rf=TESLA[i]}
-    else if(stereoMode&&!pytMode){lf=SOLF[i];rf=SOLF[i]}
-    else{lf=SOLF[i];rf=SOLF[i]}
-    $('bb'+i).textContent='⏣ '+Math.abs(lf-rf)+'Hz';
+  for(let i=0;i<9;i++){
+    const lf=SOLF[i],rf=stereoMode&&pytMode?TESLA[i]:SOLF[i];
+    $('bb'+i).textContent='⏣'+Math.abs(lf-rf);
     if(cards[i]){cards[i].lo.frequency.value=lf;cards[i].ro.frequency.value=rf}
   }
 }
 
 function startCQT(){
   if(!analyserNode)return;
-  const bufLen=analyserNode.frequencyBinCount,data=new Uint8Array(bufLen);
+  const b=analyserNode.frequencyBinCount,d=new Uint8Array(b);
   const cv=$('cqtCanvas'),ctx=cv.getContext('2d');
-  const W=cv.clientWidth;cv.width=W;const H=80;
-  const fMin=20,fMax=10000,bpo=24;
-  const nBins=Math.floor(bpo*Math.log2(fMax/fMin))+1;
-  const cf=[];for(let i=0;i<=nBins;i++){const f=fMin*Math.pow(2,i/bpo);if(f<=fMax)cf.push(f)}
-  const fftIdx=[];const sr=audioCtx?audioCtx.sampleRate:44100;
-  for(let i=0;i<cf.length;i++)fftIdx.push(Math.min(Math.round(cf[i]*analyserNode.fftSize/sr),bufLen-1));
-  // Grid lines
-  const gridHz=[27,54,174,285,396,417,432,528,639,741,852,963];
+  cv.width=cv.clientWidth;const H=90,fMin=20,fMax=10000,bpo=24;
+  const nb=Math.floor(bpo*Math.log2(fMax/fMin))+1,cf=[];
+  for(let i=0;i<=nb;i++){const f=fMin*Math.pow(2,i/bpo);if(f<=fMax)cf.push(f)}
+  const fi=[];const sr=audioCtx.sampleRate;
+  for(let i=0;i<cf.length;i++)fi.push(Math.min(Math.round(cf[i]*analyserNode.fftSize/sr),b-1));
+  const ghz=[27,54,174,285,396,417,432,528,639,741,852,963];
   function draw(){
-    if(!analyserNode||!isInit)return;analyserNode.getByteFrequencyData(data);
-    ctx.fillStyle='#000';ctx.fillRect(0,0,W,H);
-    // Grid lines
-    const logMin=Math.log10(fMin),logMax=Math.log10(fMax);
-    for(const ghz of gridHz){
-      if(ghz<fMin||ghz>fMax)continue;
-      const x=((Math.log10(ghz)-logMin)/(logMax-logMin))*W;
-      ctx.strokeStyle='rgba(100,150,255,.12)';ctx.lineWidth=0.5;
-      ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H-6);ctx.stroke();
-    }
-    // Spectrum
-    const bw=W/cf.length;
-    for(let i=0;i<cf.length;i++){
-      let v=data[fftIdx[i]]/255;v=Math.pow(v,0.8);
-      const hue=240+v*60;ctx.fillStyle=`hsl(${hue},100%,50%)`;
-      ctx.fillRect(i*bw,H-v*H,bw-1,v*H);
-    }
-    // Grid labels at bottom
-    ctx.fillStyle='rgba(255,255,255,.15)';ctx.font='6px monospace';ctx.textAlign='center';
-    for(const ghz of gridHz){
-      if(ghz<fMin||ghz>fMax)continue;
-      const x=((Math.log10(ghz)-logMin)/(logMax-logMin))*W;
-      ctx.fillText(ghz+'Hz',x,H-2);
-    }
+    if(!analyserNode||!isInit)return;analyserNode.getByteFrequencyData(d);
+    ctx.fillStyle='#000';ctx.fillRect(0,0,cv.width,H);
+    const lm=Math.log10(fMin),lx=Math.log10(fMax);
+    for(const g of ghz){if(g<fMin||g>fMax)continue;const x=((Math.log10(g)-lm)/(lx-lm))*cv.width;ctx.strokeStyle='rgba(155,109,255,.08)';ctx.lineWidth=.5;ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H-6);ctx.stroke()}
+    const bw=cv.width/cf.length;
+    for(let i=0;i<cf.length;i++){let v=d[fi[i]]/255;v=Math.pow(v,.8);ctx.fillStyle=`hsl(${240+v*60},80%,50%)`;ctx.fillRect(i*bw,H-v*H,bw-1,v*H)}
+    ctx.fillStyle='rgba(255,255,255,.1)';ctx.font='6px monospace';ctx.textAlign='center';
+    for(const g of ghz){if(g<fMin||g>fMax)continue;const x=((Math.log10(g)-lm)/(lx-lm))*cv.width;ctx.fillText(g+'Hz',x,H-2)}
     animId=requestAnimationFrame(draw);
   }
   draw();
@@ -214,7 +290,7 @@ $('stereoToggle').onchange=function(){stereoMode=this.checked;if(isInit)refreshF
 $('carrierVol').oninput=function(){if(carrierGain)carrierGain.gain.value=+this.value;$('carrierVal').textContent=(+this.value).toFixed(2)};
 $('ambMix').oninput=function(){const v=+this.value;if(dryGain&&wetGain){dryGain.gain.value=1-v;wetGain.gain.value=v}$('ambiVal').textContent=v.toFixed(2)};
 
-// ─── Drop + Detect + Heal ───
+// Drop
 const dz=$('dropZone');
 dz.onclick=async()=>{const f=await A.openFile();if(f)loadFile(f)};
 dz.ondragover=e=>{e.preventDefault();dz.style.borderColor='var(--ameth)'};
@@ -222,85 +298,23 @@ dz.ondragleave=()=>dz.style.borderColor='';
 dz.ondrop=async e=>{e.preventDefault();dz.style.borderColor='';const p=A.getPathForFile(e.dataTransfer.files[0]);if(p)loadFile(p)};
 
 async function loadFile(f){
-  S.file=f;dz.textContent='🎵 '+f.split('/').pop();dz.classList.add('ok');
-  try{const r=await A.post('/api/detect',{file_path:f});S.detection=r;
-    const t=+$('tgtSel').value;$('detVal').innerHTML=Math.abs(r.tuning-t)<=1.5
-      ?'<span style="color:var(--em)">✓ '+r.tuning.toFixed(1)+'</span>'
-      :'<span style="color:var(--gold)">'+r.tuning.toFixed(1)+'→'+t+'</span>';
-    st(Math.abs(r.tuning-t)<=1.5?'✅ At target':'→ '+t+'Hz')
-  }catch(e){st(e.message,1)}
+  S.file=f;dz.textContent='🎵'+f.split('/').pop();dz.style.borderColor='var(--em)';
+  try{const r=await A.post('/api/detect',{file_path:f});S.detection=r;const t=+$('tgtSel').value;$('detVal').innerHTML=Math.abs(r.tuning-t)<=1.5?'<span style="color:var(--em)">✓'+r.tuning.toFixed(1)+'</span>':'<span style="color:var(--gold)">'+r.tuning.toFixed(1)+'→'+t+'</span>',st(Math.abs(r.tuning-t)<=1.5?'✅ Aligned':'→ '+t+'Hz')}catch(e){st(e.message,1)}
 }
-$('tgtSel').onchange=()=>{if(S.file)loadFile(S.file)};
-
-async function doHeal(pure){
+function doHeal(p){
   if(!S.file||S.healing)return;S.healing=true;st('Healing...');
-  try{
-    const r=await A.post('/api/heal',{file_path:S.file,target_tuning:+$('tgtSel').value,pure_432:true});
-    S.sid=r.session_id;S.srcName=r.source_name;S.lastHeal=r;
-    st('✅ '+r.heal_result.original_tuning.toFixed(1)+' → '+r.heal_result.target_tuning.toFixed(1),'good');
-    log(r.source_name);
-  }catch(e){st(e.message,1)}S.healing=false;
+  A.post('/api/heal',{file_path:S.file,target_tuning:432,pure_432:true}).then(r=>{S.sid=r.session_id;S.srcName=r.source_name;S.lastHeal=r;st('✅ '+r.heal_result.original_tuning.toFixed(1)+'→'+r.heal_result.target_tuning.toFixed(1));log(r.source_name);S.healing=false}).catch(e=>{st(e.message,1);S.healing=false})
 }
 $('healBtn').onclick=()=>doHeal(false);$('pureBtn').onclick=()=>doHeal(true);
-
-async function save(fmt){
-  if(!S.sid){st('Heal first',1);return}
-  const name=(S.srcName||S.file||'healed').split('/').pop().replace(/\.[^.]+$/,'')+'_432healed';
-  const d=await A.saveFile(name+'.'+fmt);if(!d)return;
-  try{const b=await A.downloadBuffer('/api/download/'+S.sid+'?format='+fmt+'&name='+encodeURIComponent(name));await A.writeFile(d,Array.from(new Uint8Array(b)));st('💾 '+fmt.toUpperCase()+' saved')}catch(e){st(e.message,1)}
-}
 $('sWav').onclick=()=>save('wav');$('sMp3').onclick=()=>save('mp3');
-$('rptBtn').onclick=async()=>{
-  if(!S.file||!S.sid){st('Heal first',1);return}
-  try{const r=await A.post('/api/report',{input_path:S.file,output_path:S.lastHeal.output_path});
-    st('Report: alignment Δ'+r.summary.harmonic_alignment_improvement,'good')}catch(e){st(e.message,1)}
-};
-
-// ─── Batch ───
-$('bBtn').onclick=async()=>{
-  const d=await A.selectFolder();if(!d)return;
-  const f=await A.listAudio(d)||[];$('bLabel').textContent='📁 '+d.split('/').pop()+' ('+f.length+')';
-  $('bHeal').disabled=!f.length;S.batchFiles=f;
-};
-$('bHeal').onclick=async()=>{
-  if(!S.batchFiles?.length)return;$('bHeal').disabled=true;
-  for(let i=0;i<S.batchFiles.length;i++){
-    $('bProg').value=(i/S.batchFiles.length)*100;
-    try{await A.post('/api/heal',{file_path:S.batchFiles[i],target_tuning:+$('tgtSel').value,pure_432:true})}catch(e){}
-  }
-  $('bProg').value=100;$('bHeal').disabled=false;st('✅ Batch '+S.batchFiles.length+' files','good');
-};
-
-// ─── Tabs ───
-document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{
-  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x===b));
-  document.querySelectorAll('[id^="tp-"]').forEach(p=>p.style.display='none');
-  const t=$('tp-'+b.dataset.t);if(t)t.style.display='block'
-});
-document.querySelector('.tab').classList.add('on');
-
-// ─── Presets + Schumann ───
-const PG={golden:{t:'432',b:{l:430,r:434,v:42},x:{h:1,sg:0,i:0}},deep:{t:'432',b:{l:428,r:432,v:34},x:{h:1,sg:0,i:1}},dream:{t:'432',x:{h:0,sg:1,sgM:'mirror',i:0}}};
-const pc=$('presetChips');
-Object.entries(PG).forEach(([k,p])=>{const b=document.createElement('button');b.className='btn-sm';b.textContent=k[0].toUpperCase()+k.slice(1);b.onclick=()=>applyPreset(k);pc.appendChild(b)});
-function applyPreset(k){
-  const p=PG[k];if(!p)return;
-  if(p.b){$('bL').value=p.b.l||430;$('bR').value=p.b.r||434;$('bVol').value=p.b.v||42}
-  if(p.x){$('hEn').checked=!!p.x.h;$('sgEn').checked=!!p.x.sg;if(p.x.sgM)$('sgMode').value=p.x.sgM;$('iEn').checked=!!p.x.i}
+$('rptBtn').onclick=()=>{if(!S.file||!S.sid)return;A.post('/api/report',{input_path:S.file,output_path:S.lastHeal.output_path}).then(r=>{st('Δ'+r.summary.harmonic_alignment_improvement)}).catch(e=>{st(e.message)})};
+async function save(fmt){
+  if(!S.sid)return;const name=(S.srcName||S.file||'healed').split('/').pop().replace(/\.[^.]+$/,'')+'_432healed';
+  const d=await A.saveFile(name+'.'+fmt);if(!d)return;
+  try{const b=await A.downloadBuffer('/api/download/'+S.sid+'?format='+fmt+'&name='+encodeURIComponent(name));await A.writeFile(d,Array.from(new Uint8Array(b)));st('💾 '+fmt.toUpperCase())}catch(e){st(e.message)}
 }
-
-// Schumann
-const sg=$('schGrid');
-SCH.forEach(x=>{
-  const d=document.createElement('div');d.style='display:flex;align-items:center;gap:3px;margin:1px 0';
-  const l=document.createElement('label');l.textContent=x.k.split('(')[0];l.style='font-size:7px;color:var(--muted);width:40px';
-  const s=document.createElement('input');s.type='range';s.min=0;s.max=100;s.value=30;s.id=x.id;s.style='flex:1;height:3px;accent-color:var(--em)';
-  const v=document.createElement('span');v.style='font-size:7px;color:var(--em2);width:12px;text-align:right';v.textContent='30';
-  s.oninput=()=>v.textContent=s.value;d.append(l,s,v);sg.appendChild(d)
-});
-
-buildUI();
-st('✨ Ready');
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x===b));document.querySelectorAll('[id^="tp-"]').forEach(p=>p.style.display='none');const t=$('tp-'+b.dataset.t);if(t)t.style.display='block'});
+document.querySelector('.tab').classList.add('on');
 </script>
 </body>
 </html>
