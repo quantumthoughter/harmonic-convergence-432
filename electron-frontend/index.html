@@ -5,337 +5,200 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Resonance Sanctuary</title>
 <style>
-:root {
-  --bg: #0a0612; --ameth: #9b6dff; --ameth2: #b896ff; --em: #34d399; --gold: #d9aa3a;
-  --text: #d8d0f0; --muted: #9080b8; --panel: #14102a; --soft: #2a2050;
-}
+:root{--bg:#0a0612;--ameth:#9b6dff;--em:#34d399;--gold:#d9aa3a;--text:#d8d0f0;--muted:#9080b8;--panel:#14102a}
 *{margin:0;box-sizing:border-box}
-body{
-  height:100vh;background:linear-gradient(135deg,#0a0612,#100828);color:var(--text);
-  font-family:'Inter',system-ui,sans-serif;overflow:hidden;display:flex;flex-direction:column
-}
-.titlebar{
-  -webkit-app-region:drag;height:40px;display:flex;align-items:center;padding:0 16px;
-  background:linear-gradient(90deg,rgba(155,109,255,.1),transparent 30%,transparent 70%,rgba(52,211,153,.08));
-  font-size:13px;font-weight:600;color:var(--gold);letter-spacing:.5px;gap:12px;flex-shrink:0
-}
-.titlebar .dot{
-  width:18px;height:18px;border-radius:50%;
-  background:conic-gradient(var(--ameth),var(--em),var(--ameth),var(--ameth2),var(--ameth));
-  box-shadow:0 0 16px rgba(155,109,255,.4);-webkit-app-region:no-drag
-}
+body{height:100vh;background:linear-gradient(135deg,#0a0612,#100828);color:var(--text);font-family:'Inter',system-ui,sans-serif;overflow:hidden;display:flex;flex-direction:column}
+.titlebar{-webkit-app-region:drag;height:40px;display:flex;align-items:center;padding:0 16px;background:linear-gradient(90deg,rgba(155,109,255,.08),transparent);font-size:13px;color:var(--gold);gap:10px;flex-shrink:0}
+.titlebar .dot{width:16px;height:16px;border-radius:50%;background:conic-gradient(var(--ameth),var(--em),var(--ameth));box-shadow:0 0 12px rgba(155,109,255,.3);-webkit-app-region:no-drag}
 .main{display:flex;flex:1;padding:4px;gap:6px;overflow:hidden}
-.left{width:280px;display:flex;flex-direction:column;gap:6px;overflow-y:auto}
-.right{flex:1;display:flex;flex-direction:column;gap:6px;overflow:hidden}
-
-/* Crystal Card — replaces all panels */
-.card{
-  background:linear-gradient(145deg,rgba(20,16,42,.92),rgba(15,10,30,.95));
-  border:1px solid rgba(155,109,255,.08);border-radius:16px;overflow:hidden;
-  backdrop-filter:blur(8px)
-}
-.card-header{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:8px 12px 6px;border-bottom:1px solid rgba(155,109,255,.06)
-}
-.card-header h3{font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:.1em}
-.card-header span{font-size:8px;color:var(--muted)}
-.card-body{padding:6px 8px}
-
-/* Bigger Everything */
-button{
-  cursor:pointer;border:none;border-radius:10px;font-weight:600;transition:all .2s
-}
-.pri-btn{
-  background:linear-gradient(135deg,#9b6dff,#6a3db8);color:#fff;
-  box-shadow:0 2px 20px rgba(155,109,255,.25);font-size:13px;padding:10px 20px
-}
-.pri-btn:hover{box-shadow:0 4px 30px rgba(155,109,255,.4);transform:translateY(-1px)}
-.sec-btn{
-  background:linear-gradient(135deg,#34d399,#0a8060);color:#0a2014;
-  box-shadow:0 2px 16px rgba(52,211,153,.2);font-size:11px;padding:8px 16px
-}
-.sec-btn:hover{box-shadow:0 4px 24px rgba(52,211,153,.35);transform:translateY(-1px)}
-.sm-btn{
-  background:rgba(155,109,255,.08);color:var(--text);border:1px solid rgba(155,109,255,.1);
-  font-size:9px;padding:5px 10px;border-radius:8px
-}
-.sm-btn:hover{background:rgba(155,109,255,.15);border-color:var(--ameth)}
-
-/* Drop zone */
-.drop-zone{
-  border:1.5px dashed rgba(155,109,255,.15);border-radius:12px;padding:12px;
-  text-align:center;cursor:pointer;font-size:11px;color:var(--muted);transition:all .3s
-}
-.drop-zone:hover{border-color:var(--ameth);box-shadow:inset 0 0 24px rgba(155,109,255,.05)}
-
-/* Sliders */
-input[type="range"]{-webkit-appearance:none;height:4px;background:rgba(155,109,255,.15);border-radius:2px;outline:none}
-input[type="range"]::-webkit-slider-thumb{
-  -webkit-appearance:none;width:14px;height:14px;border-radius:50%;
-  background:radial-gradient(circle at 35% 35%,#b896ff,#7a4ddf);
-  box-shadow:0 0 10px rgba(155,109,255,.3);cursor:pointer
-}
-
-/* CQT */
-.cqt-wrap{background:#03020a;border-radius:10px;padding:2px;border:1px solid rgba(155,109,255,.06)}
-.cqt-wrap canvas{display:block;width:100%;height:90px;background:#000;border-radius:8px}
-
-/* Freq cards */
-.freq-row{display:flex;flex-direction:column;gap:6px;overflow-y:auto}
-.freq-card{
-  background:linear-gradient(135deg,rgba(26,21,56,.6),rgba(20,16,42,.3));
-  border-radius:10px;padding:8px 10px;border:1px solid rgba(155,109,255,.06);
-  display:flex;align-items:center;gap:8px
-}
+.left{width:280px;display:flex;flex-direction:column;gap:6px;overflow-y:auto;padding:4px 0}
+.right{flex:1;display:flex;flex-direction:column;gap:6px;overflow:hidden;padding:4px 4px 4px 0}
+.card{background:linear-gradient(145deg,rgba(20,16,42,.92),rgba(15,10,30,.95));border:1px solid rgba(155,109,255,.08);border-radius:14px;overflow:hidden}
+.card-h{display:flex;align-items:center;justify-content:space-between;padding:6px 12px;border-bottom:1px solid rgba(155,109,255,.06)}
+.card-h h3{font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:.08em}
+.card-b{padding:6px 8px}
+button{cursor:pointer;border:none;border-radius:8px;font-weight:600;transition:all .2s}
+.pri{background:linear-gradient(135deg,#9b6dff,#6a3db8);color:#fff;box-shadow:0 2px 16px rgba(155,109,255,.2);font-size:12px;padding:8px 16px}
+.pri:hover{box-shadow:0 4px 24px rgba(155,109,255,.35);transform:translateY(-1px)}
+.sec{background:linear-gradient(135deg,#34d399,#0a8060);color:#0a2014;box-shadow:0 2px 12px rgba(52,211,153,.15);font-size:10px;padding:6px 12px}
+.sec:hover{box-shadow:0 4px 20px rgba(52,211,153,.3);transform:translateY(-1px)}
+.sm{background:rgba(155,109,255,.06);color:var(--text);border:1px solid rgba(155,109,255,.08);font-size:9px;padding:4px 8px;border-radius:6px}
+.sm:hover{background:rgba(155,109,255,.12);border-color:var(--ameth)}
+input[type="range"]{-webkit-appearance:none;height:4px;background:rgba(155,109,255,.12);border-radius:2px;outline:none}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#b896ff,#7a4ddf);box-shadow:0 0 8px rgba(155,109,255,.25);cursor:pointer}
+#dropZone{border:1.5px dashed rgba(155,109,255,.15);border-radius:12px;padding:10px;text-align:center;cursor:pointer;font-size:10px;color:var(--muted);transition:all .3s}
+#dropZone:hover{border-color:var(--ameth);box-shadow:inset 0 0 20px rgba(155,109,255,.05)}
+#dropZone.ok{border-color:var(--em);color:var(--em2)}
+.cqt-wrap{background:#03020a;border-radius:10px;padding:2px;border:1px solid rgba(155,109,255,.06);position:relative}
+.cqt-wrap canvas{display:block;width:100%;height:80px;background:#000;border-radius:7px}
+.freq-grid{display:flex;flex-direction:column;gap:4px;overflow-y:auto;flex:1;min-height:0}
+.freq-card{background:linear-gradient(135deg,rgba(26,21,56,.5),rgba(20,16,42,.3));border-radius:8px;padding:5px 8px;border:1px solid rgba(155,109,255,.06);display:flex;align-items:center;gap:6px;transition:all .2s}
 .freq-card:hover{border-color:rgba(155,109,255,.2)}
-.freq-label{font-size:14px;font-weight:800;font-family:monospace;color:var(--gold);min-width:48px}
-.freq-name{font-size:9px;color:var(--muted);min-width:60px}
-.freq-ctrl{display:flex;align-items:center;gap:6px;flex:1}
-.freq-ctrl span{font-size:8px;color:var(--muted)}
-.freq-ctrl input[type="range"]{flex:1;max-width:44px;height:3px}
-.freq-val{font-size:9px;color:var(--gold2);min-width:18px;text-align:right;font-weight:600}
-.freq-beat{font-size:8px;color:var(--em);min-width:30px;text-align:center}
-.mute-btn{font-size:10px;width:20px;height:20px;padding:0;border-radius:50%;border:1px solid rgba(52,211,153,.2);background:transparent;color:var(--em);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
-.mute-btn:hover{border-color:var(--em);box-shadow:0 0 8px rgba(52,211,153,.2)}
-
-/* Flower of Life spinner */
-@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
-@keyframes flowerPulse{0%,100%{opacity:.3}50%{opacity:.6}}
-.fol-spinner{
-  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  pointer-events:none;z-index:5;animation:flowerPulse 2s ease-in-out infinite
-}
-.fol-spinner svg{width:60px;height:60px;animation:spin 6s linear infinite;opacity:.5}
-.fol-spinner svg circle{fill:none;stroke:var(--ameth);stroke-width:.5}
-
-/* Progress */
-.prog-bar{height:3px;border-radius:2px;overflow:hidden;background:rgba(155,109,255,.08);margin-top:4px}
+.freq-num{font-size:13px;font-weight:800;font-family:monospace;color:var(--gold);min-width:40px}
+.freq-name{font-size:8px;color:var(--muted);min-width:50px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.freq-ctrl{display:flex;align-items:center;gap:3px;flex:1;flex-wrap:nowrap}
+.freq-ctrl span.fvl{font-size:8px;color:var(--muted);min-width:10px}
+.freq-ctrl input[type="range"]{flex:1;max-width:38px;height:3px}
+.freq-ctrl .fval{font-size:8px;color:var(--gold2);min-width:16px;text-align:right;font-weight:600}
+.mute{width:22px;height:22px;padding:0;border-radius:50%;border:1px solid rgba(52,211,153,.15);background:transparent;color:var(--em);font-size:11px;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.mute:hover{border-color:var(--em);box-shadow:0 0 6px rgba(52,211,153,.15)}
+.mute.on{border-color:rgba(255,122,122,.2);color:#ff7a7a;background:rgba(255,122,122,.06)}
+.freq-beat{font-size:8px;color:var(--em);min-width:26px;text-align:center}
+.fol-spinner{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:5}
+.fol-spinner svg{width:50px;height:50px;animation:spin 5s linear infinite;opacity:.4}
+@keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:.6}}
+.fol-spinner{animation:pulse 2s ease-in-out infinite}
+.prog{height:3px;border-radius:2px;overflow:hidden;background:rgba(155,109,255,.06);margin-top:3px}
 .prog-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--ameth),var(--em));border-radius:2px;transition:width .3s}
-
-/* Tabs */
-.tab{font-size:8px;padding:4px 10px;border-radius:6px 6px 0 0;background:transparent;color:var(--muted);border:none;border-bottom:2px solid transparent}
-.tab.on{color:var(--gold);border-bottom-color:var(--gold)}
-
-/* Scroll */
-::-webkit-scrollbar{width:3px}
-::-webkit-scrollbar-thumb{background:rgba(155,109,255,.15);border-radius:2px}
+.tab{font-size:8px;padding:3px 8px;border-radius:5px 5px 0 0;background:transparent;color:var(--muted);border:none}
+.tab.on{color:var(--gold);background:rgba(217,170,58,.04)}
+.status{font-size:12px;text-align:center;color:var(--em);font-weight:600;padding:2px}
+select,input[type="number"]{background:rgba(15,10,30,.8);color:var(--text);border:1px solid rgba(155,109,255,.1);border-radius:6px;padding:4px 6px;font-size:10px;outline:none}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:rgba(155,109,255,.12);border-radius:2px}
 </style>
 </head>
 <body>
-<div class="titlebar"><div class="dot"></div><span style="flex:1">Resonance Sanctuary</span><span style="font-size:9px;color:var(--muted)">Resound to 432 · CQT Harmonic Grid</span></div>
+<div class="titlebar"><div class="dot"></div><span>Resonance Sanctuary</span><span style="font-size:9px;color:var(--muted);margin-left:auto">∞ 432 Hz · CQT Harmonic Grid</span></div>
 <div class="main">
-  <!-- LEFT -->
   <div class="left">
-    <div class="drop-zone" id="dropZone">Drop audio to heal to 432 Hz</div>
+    <div id="dropZone">Drop audio to heal to 432 Hz</div>
     <div class="card">
-      <div class="card-header"><h3>🎯 432 Hz Healer</h3><span id="detVal">Ready</span></div>
-      <div class="card-body" style="padding:8px">
-        <div style="display:flex;gap:6px;align-items:center;margin-bottom:6px">
-          <span style="font-size:9px;color:var(--muted)">Target</span>
-          <select id="tgtSel" style="flex:1;background:rgba(15,10,30,.8);color:var(--text);border:1px solid rgba(155,109,255,.1);border-radius:8px;padding:5px 8px;font-size:11px">
-            <option value="432">432 Hz</option>
-            <option value="440">440 Hz</option>
-            <option value="444">444 Hz</option>
-          </select>
-        </div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap">
-          <button class="pri-btn" id="healBtn" style="flex:1">✨ HEAL to 432</button>
-          <button class="sec-btn" id="pureBtn" style="flex:1">♮ Pure Shift</button>
-          <button class="sm-btn" id="sWav" style="flex:1">💾 WAV</button>
-          <button class="sm-btn" id="sMp3" style="flex:1">💾 MP3</button>
-          <button class="sm-btn" id="rptBtn" style="flex:1">📊 RPT</button>
-        </div>
+      <div class="card-h"><h3>🎯 432 Hz Healer</h3><span id="detVal" style="font-size:10px;color:var(--muted)">—</span></div>
+      <div class="card-b">
+        <div style="display:flex;gap:5px;margin-bottom:5px"><span style="font-size:8px;color:var(--muted);line-height:26px">Target</span><select id="tgtSel" style="flex:1"><option value="432">432 Hz</option><option value="440">440 Hz</option><option value="444">444 Hz</option></select></div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap"><button class="pri" id="healBtn" style="flex:1">✨ HEAL</button><button class="sec" id="pureBtn" style="flex:1">♮ Pure</button><button class="sm" id="sWav">WAV</button><button class="sm" id="sMp3">MP3</button><button class="sm" id="rptBtn">RPT</button></div>
       </div>
     </div>
-    <div class="status" id="st" style="font-size:12px;text-align:center;color:var(--em);font-weight:600;padding:2px">✨ Ready</div>
+    <div class="status" id="st">✨ Ready</div>
   </div>
-
-  <!-- RIGHT -->
   <div class="right">
     <div class="card" style="flex:1;display:flex;flex-direction:column">
-      <div class="card-header">
-        <h3>Solfeggio ∞ Pyt.Esla</h3>
-        <span style="display:flex;gap:6px">
-          <button class="sm-btn" id="initBtn" style="font-size:10px;padding:6px 14px">🎧 Init</button>
-          <button class="sm-btn" id="stopBtn" style="color:#ff7a7a">⏹ Stop</button>
-        </span>
-      </div>
-      <div class="card-body" style="display:flex;flex-direction:column;gap:4px;flex:1;padding:6px 8px">
-        <!-- Master bar -->
-        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-          <label style="display:flex;align-items:center;gap:4px;font-size:9px;color:var(--muted)"><input type="checkbox" id="pytToggle" checked style="width:14px;height:14px;accent-color:var(--ameth)"><span style="font-weight:700;color:var(--gold)">Pyt.Esla</span></label>
-          <label style="display:flex;align-items:center;gap:4px;font-size:9px;color:var(--muted)"><input type="checkbox" id="stereoToggle" checked style="width:14px;height:14px;accent-color:var(--em)">🎧 Stereo</label>
-          <label style="display:flex;align-items:center;gap:3px;font-size:8px;color:var(--muted)">1Hz<input type="range" id="carrierVol" min="0" max="0.3" step="0.01" value="0.1" style="width:36px"><span style="font-size:8px;color:var(--muted);min-width:16px" id="carrierVal">0.10</span></label>
-          <label style="display:flex;align-items:center;gap:3px;font-size:8px;color:var(--muted)">Amb<input type="range" id="ambMix" min="0" max="0.9" step="0.01" value="0.35" style="width:36px"><span style="font-size:8px;color:var(--muted);min-width:16px" id="ambiVal">0.35</span></label>
-        </div>
-        <!-- CQT + Flower of Life -->
-        <div class="cqt-wrap" style="position:relative">
-          <canvas id="cqtCanvas" width="800" height="90"></canvas>
-          <div class="fol-spinner" id="folAnim" style="display:none">
-            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-              <!-- Flower of Life 7-circle pattern -->
-              <circle cx="50" cy="50" r="15"/><circle cx="42.5" cy="37" r="15"/><circle cx="57.5" cy="37" r="15"/>
-              <circle cx="35" cy="44" r="15"/><circle cx="65" cy="44" r="15"/><circle cx="42.5" cy="56" r="15"/><circle cx="57.5" cy="56" r="15"/>
-              <circle cx="50" cy="61" r="15"/>
-              <text x="50" y="53" text-anchor="middle" fill="var(--ameth)" font-size="16" font-weight="bold" opacity=".6">∞</text>
-            </svg>
-          </div>
-        </div>
-        <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
-        <!-- Freq cards -->
-        <div class="freq-row" id="freqGrid"></div>
-        <!-- Tabs extra -->
-        <div style="display:flex;gap:2px;border-top:1px solid rgba(155,109,255,.06);padding-top:4px;flex-shrink:0">
-          <button class="tab on" data-t="sol">Solf</button>
-          <button class="tab" data-t="bin">Bin</button>
-          <button class="tab" data-t="sch">Sch</button>
-          <button class="tab" data-t="ext">Ext</button>
+      <div class="card-h"><h3>Solfeggio ∞ Pyt.Esla</h3><span><button class="sm" id="initBtn">🎧 Init</button><button class="sm" id="stopBtn" style="color:#ff7a7a;margin-left:4px">⏹</button></span></div>
+      <div class="card-b" style="display:flex;flex-direction:column;gap:4px;flex:1;padding:5px 6px">
+        <div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap">
+          <label style="display:flex;align-items:center;gap:3px;font-size:8px;color:var(--muted)"><input type="checkbox" id="pytToggle" checked style="width:13px;height:13px;accent-color:var(--ameth)"><span style="font-weight:700;color:var(--gold)">Pyt</span></label>
+          <label style="display:flex;align-items:center;gap:3px;font-size:8px;color:var(--muted)"><input type="checkbox" id="stereoToggle" checked style="width:13px;height:13px;accent-color:var(--em)">🎧</label>
+          <label style="display:flex;align-items:center;gap:2px;font-size:7px;color:var(--muted)">1Hz<input type="range" id="carrierVol" min="0" max="0.3" step="0.01" value="0.1" style="width:30px"><span style="font-size:7px;min-width:14px" id="carrierVal">0.10</span></label>
+          <label style="display:flex;align-items:center;gap:2px;font-size:7px;color:var(--muted)">Amb<input type="range" id="ambMix" min="0" max="0.9" step="0.01" value="0.35" style="width:30px"><span style="font-size:7px;min-width:14px" id="ambiVal">0.35</span></label>
           <span id="stLog" style="font-size:8px;color:var(--muted);margin-left:auto"></span>
         </div>
+        <div class="cqt-wrap"><canvas id="cqtCanvas" width="800" height="80"></canvas><div class="fol-spinner" id="folAnim" style="display:none"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="15" stroke="var(--ameth)" fill="none" stroke-width=".5"/><circle cx="42.5" cy="37" r="15" stroke="var(--ameth)" fill="none" stroke-width=".5"/><circle cx="57.5" cy="37" r="15" stroke="var(--ameth)" fill="none" stroke-width=".5"/><circle cx="35" cy="44" r="15" stroke="var(--ameth)" fill="none" stroke-width=".5"/><circle cx="65" cy="44" r="15" stroke="var(--ameth)" fill="none" stroke-width=".5"/><circle cx="42.5" cy="56" r="15" stroke="var(--ameth)" fill="none" stroke-width=".5"/><circle cx="57.5" cy="56" r="15" stroke="var(--ameth)" fill="none" stroke-width=".5"/><text x="50" y="54" text-anchor="middle" fill="var(--ameth)" font-size="14" opacity=".6">∞</text></svg></div></div>
+        <div class="prog"><div class="prog-fill" id="progFill"></div></div>
+        <div class="freq-grid" id="freqGrid"></div>
+        <div style="display:flex;gap:2px;border-top:1px solid rgba(155,109,255,.05);padding-top:2px;flex-shrink:0"><button class="tab on" data-t="sol">Solf</button><button class="tab" data-t="bin">Bin</button><button class="tab" data-t="sch">Sch</button><button class="tab" data-t="ext">Ext</button></div>
         <div id="tp-sol"></div>
-        <div id="tp-bin" style="display:none;padding:4px">
-          <div style="display:flex;gap:6px"><label style="font-size:9px;color:var(--muted)">L</label><input type="number" id="bL" value="430" style="flex:1"><label style="font-size:9px;color:var(--muted)">R</label><input type="number" id="bR" value="434" style="flex:1"></div>
-          <div style="display:flex;gap:6px;margin-top:4px"><label style="font-size:9px;color:var(--muted)">Vol</label><input type="range" id="bVol" min="0" max="100" value="50" style="flex:1"><span id="bVolV" style="font-size:10px;color:var(--gold);font-weight:600">50</span></div>
-        </div>
-        <div id="tp-sch" style="display:none;padding:4px"><div id="schGrid"></div></div>
-        <div id="tp-ext" style="display:none;padding:4px">
-          <label style="font-size:9px;color:var(--muted);display:block;margin:4px 0"><input type="checkbox" id="hEn" style="width:14px;height:14px;accent-color:var(--gold)"> Heart</label>
-          <label style="font-size:9px;color:var(--muted);display:block;margin:4px 0"><input type="checkbox" id="sgEn" style="width:14px;height:14px;accent-color:var(--gold)"> Singularity <select id="sgMode" style="font-size:8px;padding:2px 4px;background:rgba(15,10,30,.8);color:var(--text);border:1px solid var(--soft);border-radius:4px"><option value="convergence">Converge</option><option value="mirror">Mirror</option><option value="pulse">Pulse</option></select></label>
-          <label style="font-size:9px;color:var(--muted);display:block;margin:4px 0"><input type="checkbox" id="iEn" style="width:14px;height:14px;accent-color:var(--gold)"> Infra</label>
+        <div id="tp-bin" style="display:none;padding:2px"><div style="display:flex;gap:4px"><label style="font-size:8px;color:var(--muted);line-height:24px">L</label><input type="number" id="bL" value="430" style="flex:1"><label style="font-size:8px;color:var(--muted);line-height:24px">R</label><input type="number" id="bR" value="434" style="flex:1"><label style="font-size:8px;color:var(--muted);line-height:24px">V</label><input type="range" id="bVol" min="0" max="100" value="50" style="flex:1;max-width:40px"><span style="font-size:9px;color:var(--gold);font-weight:600" id="bVolV">50</span></div></div>
+        <div id="tp-sch" style="display:none;padding:2px"><div id="schGrid"></div></div>
+        <div id="tp-ext" style="display:none;padding:2px">
+          <label style="font-size:8px;color:var(--muted);display:block;margin:2px 0"><input type="checkbox" id="hEn" style="width:12px;height:12px"> Heart</label>
+          <label style="font-size:8px;color:var(--muted);display:block;margin:2px 0"><input type="checkbox" id="sgEn" style="width:12px;height:12px"> Singularity <select id="sgMode" style="font-size:7px;padding:1px 3px"><option value="convergence">Converge</option><option value="mirror">Mirror</option><option value="pulse">Pulse</option></select></label>
+          <label style="font-size:8px;color:var(--muted);display:block;margin:2px 0"><input type="checkbox" id="iEn" style="width:12px;height:12px"> Infra</label>
         </div>
       </div>
     </div>
   </div>
 </div>
-
 <script>
-const A=window.api;let S={file:null,sid:null,healing:false,detection:null,lastHeal:null};
-const SOLF=[174,285,396,417,528,639,741,852,963];
-const TESLA=[147,258,369,471,582,693,714,825,936];
-const NAMES=['Pain','Healing','Liberation','Change','DNA Repair','Connect','Expression','Intuition','Transcend'];
+const A=window.api;let S={file:null,sid:null,srcName:null,healing:false,detection:null,lastHeal:null,audioBuf:null,playCtx:null};
+const SOLF=[174,285,396,417,528,639,741,852,963],TESLA=[147,258,369,471,582,693,714,825,936];
+const NAMES=['Pain','Healing','Liberation','Change','DNA','Connect','Express','Intuit','Transcend'];
 const SCH=[{k:'7.83 Hz (Fundamental)',id:'s0'},{k:'14.3 Hz (2nd)',id:'s1'},{k:'20.8 Hz (3rd)',id:'s2'},{k:'27.3 Hz (4th)',id:'s3'},{k:'33.8 Hz (5th)',id:'s4'},{k:'39.0 Hz (6th)',id:'s5'}];
 function $(id){return document.getElementById(id)}
 function st(m){const e=$('st');e.textContent=m;e.style.color='var(--em)'}
 function log(m){$('stLog').textContent=m}
 
-let audioCtx=null,isInit=false,cards=[],masterGain=null,analyserNode=null,animId=null;
-let dryGain=null,wetGain=null,convolver=null,delayNode=null,feedback=null,carrierGain=null;
-let pytMode=true,stereoMode=true;
-
-(function build(){
+// ─── PYT.ESLA ENGINE ───
+let ac=null,isInit=false,cs=[],mg=null,an=null,an2=null,aid=null;
+let dg=null,wg=null,cv=null,dl=null,fb=null,cg=null,pt=true,stm=true;
+(function bd(){
   const g=$('freqGrid');
-  SOLF.forEach((hz,i)=>{
+  SOLF.forEach((h,i)=>{
     const c=document.createElement('div');c.className='freq-card';
-    c.innerHTML=`<span class="freq-label">${hz}</span><span class="freq-name">${NAMES[i]}</span>
-      <div class="freq-ctrl">
-        <button class="mute-btn" id="m${i}">♮</button>
-        <span>L</span><input type="range" class="vl" min="0" max="1" step="0.01" value="0.5"><span class="freq-val vlv">0.50</span>
-        <span>R</span><input type="range" class="vr" min="0" max="1" step="0.01" value="0.5"><span class="freq-val vrv">0.50</span>
-        <span>↔</span><input type="range" class="pl" min="-1" max="1" step="0.01" value="-0.6"><span class="freq-val plv">-0.60</span><input type="range" class="pr" min="-1" max="1" step="0.01" value="0.6"><span class="freq-val prv">0.60</span>
-      </div>
-      <span class="freq-beat" id="bb${i}">⏣${Math.abs(hz-TESLA[i])}</span>`;
+    c.innerHTML=`<span class="freq-num">${h}</span><span class="freq-name">${NAMES[i]}</span><div class="freq-ctrl"><button class="mute" id="m${i}">♮</button><span class="fvl">L</span><input type="range" class="vl" min="0" max="1" step="0.01" value="0.5"><span class="fval vlv">0.50</span><span class="fvl">R</span><input type="range" class="vr" min="0" max="1" step="0.01" value="0.5"><span class="fval vrv">0.50</span><span class="fvl">↔</span><input type="range" class="pl" min="-1" max="1" step="0.01" value="-0.6"><span class="fval plv">-0.60</span><input type="range" class="pr" min="-1" max="1" step="0.01" value="0.6"><span class="fval prv">0.60</span></div><span class="freq-beat" id="bb${i}">⏣${Math.abs(h-TESLA[i])}</span>`;
     g.appendChild(c);
+    const v=c.querySelector('.vl'),r=c.querySelector('.vr'),pl=c.querySelector('.pl'),pr=c.querySelector('.pr'),mb=c.querySelector('.mute');let md=false;
+    v.oninput=function(){c.querySelector('.vlv').textContent=(+this.value).toFixed(2);if(cs[i]&&!md)cs[i].lg.gain.value=+this.value};
+    r.oninput=function(){c.querySelector('.vrv').textContent=(+this.value).toFixed(2);if(cs[i]&&!md)cs[i].rg.gain.value=+this.value};
+    pl.oninput=function(){c.querySelector('.plv').textContent=(+this.value).toFixed(2);if(cs[i])cs[i].lp.pan.value=+this.value};
+    pr.oninput=function(){c.querySelector('.prv').textContent=(+this.value).toFixed(2);if(cs[i])cs[i].rp.pan.value=+this.value};
+    mb.onclick=function(){md=!md;mb.classList.toggle('on',md);if(cs[i]){cs[i].lg.gain.value=md?0:+v.value;cs[i].rg.gain.value=md?0:+r.value}};
   });
-  g.querySelectorAll('.freq-card').forEach((card,i)=>{
-    const v=card.querySelector('.vl'),r=card.querySelector('.vr'),pl=card.querySelector('.pl'),pr=card.querySelector('.pr');
-    const mb=card.querySelector('.mute-btn');let muted=false;
-    v.oninput=function(){card.querySelector('.vlv').textContent=(+this.value).toFixed(2);if(cards[i]&&!muted)cards[i].lg.gain.value=+this.value};
-    r.oninput=function(){card.querySelector('.vrv').textContent=(+this.value).toFixed(2);if(cards[i]&&!muted)cards[i].rg.gain.value=+this.value};
-    pl.oninput=function(){card.querySelector('.plv').textContent=(+this.value).toFixed(2);if(cards[i])cards[i].lp.pan.value=+this.value};
-    pr.oninput=function(){card.querySelector('.prv').textContent=(+this.value).toFixed(2);if(cards[i])cards[i].rp.pan.value=+this.value};
-    mb.onclick=function(){muted=!muted;mb.style.color=muted?'#ff7a7a':'var(--em)';mb.style.background=muted?'rgba(255,122,122,.1)':'transparent';if(cards[i]){cards[i].lg.gain.value=muted?0:+v.value;cards[i].rg.gain.value=muted?0:+r.value}};
-  });
-  // Schumann
-  const sg=$('schGrid');SCH.forEach(x=>{
-    const d=document.createElement('div');d.style='display:flex;align-items:center;gap:4px;margin:2px 0';
-    const l=document.createElement('span');l.textContent=x.k.split('(')[0];l.style='font-size:8px;color:var(--muted);width:40px';
-    const s=document.createElement('input');s.type='range';s.min=0;s.max=100;s.value=30;s.id=x.id;s.style='flex:1;height:3px';
-    const v=document.createElement('span');v.style='font-size:8px;color:var(--em);width:14px;text-align:right';v.textContent='30';
-    s.oninput=()=>v.textContent=s.value;d.append(l,s,v);sg.appendChild(d)
-  });
+  const sg=$('schGrid');SCH.forEach(x=>{const d=document.createElement('div');d.style='display:flex;align-items:center;gap:3px;margin:1px 0';const l=document.createElement('span');l.textContent=x.k.split('(')[0];l.style='font-size:7px;color:var(--muted);width:36px';const s=document.createElement('input');s.type='range';s.min=0;s.max=100;s.value=30;s.id=x.id;s.style='flex:1;height:3px';const v=document.createElement('span');v.style='font-size:7px;color:var(--em);width:12px;text-align:right';v.textContent='30';s.oninput=()=>v.textContent=s.value;d.append(l,s,v);sg.appendChild(d)});
 })();
 
 async function initAudio(){
-  if(isInit&&audioCtx){await audioCtx.resume();return}
-  if(audioCtx)await audioCtx.close();
-  audioCtx=new(window.AudioContext||window.webkitAudioContext)();
-  masterGain=audioCtx.createGain();masterGain.gain.value=0.5;masterGain.connect(audioCtx.destination);
-  dryGain=audioCtx.createGain();wetGain=audioCtx.createGain();dryGain.connect(masterGain);wetGain.connect(masterGain);
-  const imp=audioCtx.createBuffer(2,22050,audioCtx.sampleRate);
-  for(let ch=0;ch<2;ch++){const c=imp.getChannelData(ch);for(let i=0;i<c.length;i++)c[i]=(Math.random()*2-1)*Math.exp(-i/700)}
-  convolver=audioCtx.createConvolver();convolver.buffer=imp;
-  delayNode=audioCtx.createDelay();delayNode.delayTime.value=0.12;
-  const dg=audioCtx.createGain();dg.gain.value=0.35;const fb=audioCtx.createGain();fb.gain.value=0.3;
-  delayNode.connect(dg);dg.connect(fb);fb.connect(delayNode);dg.connect(wetGain);convolver.connect(wetGain);
-  const amb=+$('ambMix').value;dryGain.gain.value=1-amb;wetGain.gain.value=amb;
-  const co=audioCtx.createOscillator();co.type='sine';co.frequency.value=1;
-  carrierGain=audioCtx.createGain();carrierGain.gain.value=+$('carrierVol').value;
-  co.connect(carrierGain);carrierGain.connect(masterGain);co.start();
+  if(isInit&&ac){await ac.resume();return}
+  if(ac)await ac.close();
+  ac=new(window.AudioContext||window.webkitAudioContext)();
+  mg=ac.createGain();mg.gain.value=0.5;mg.connect(ac.destination);
+  dg=ac.createGain();wg=ac.createGain();dg.connect(mg);wg.connect(mg);
+  const ip=ac.createBuffer(2,22050,ac.sampleRate);
+  for(let ch=0;ch<2;ch++){const c=ip.getChannelData(ch);for(let i=0;i<c.length;i++)c[i]=(Math.random()*2-1)*Math.exp(-i/700)}
+  cv=ac.createConvolver();cv.buffer=ip;
+  dl=ac.createDelay();dl.delayTime.value=0.12;
+  const dg2=ac.createGain();dg2.gain.value=0.35;fb=ac.createGain();fb.gain.value=0.3;
+  dl.connect(dg2);dg2.connect(fb);fb.connect(dl);dg2.connect(wg);cv.connect(wg);
+  const amb=+$('ambMix').value;dg.gain.value=1-amb;wg.gain.value=amb;
+  const co=ac.createOscillator();co.type='sine';co.frequency.value=1;
+  cg=ac.createGain();cg.gain.value=+$('carrierVol').value;
+  co.connect(cg);cg.connect(mg);co.start();
   for(let i=0;i<9;i++){
-    const o=audioCtx.createOscillator(),o2=audioCtx.createOscillator();
-    const g=audioCtx.createGain(),g2=audioCtx.createGain();
-    const p=audioCtx.createStereoPanner(),p2=audioCtx.createStereoPanner();
+    const o=ac.createOscillator(),o2=ac.createOscillator(),g=ac.createGain(),g2=ac.createGain(),p=ac.createStereoPanner(),p2=ac.createStereoPanner();
     o.type='sine';o2.type='sine';o.frequency.value=SOLF[i];o2.frequency.value=TESLA[i];
     g.gain.value=0.5;g2.gain.value=0.5;p.pan.value=-0.6;p2.pan.value=0.6;
     o.connect(g);g.connect(p);o2.connect(g2);g2.connect(p2);
-    p.connect(dryGain);p.connect(convolver);p.connect(delayNode);
-    p2.connect(dryGain);p2.connect(convolver);p2.connect(delayNode);
-    o.start();o2.start();cards[i]={lo:o,ro:o2,lg:g,rg:g2,lp:p,rp:p2};
+    p.connect(dg);p.connect(cv);p.connect(dl);p2.connect(dg);p2.connect(cv);p2.connect(dl);
+    o.start();o2.start();cs[i]={lo:o,ro:o2,lg:g,rg:g2,lp:p,rp:p2};
   }
-  analyserNode=audioCtx.createAnalyser();analyserNode.fftSize=8192;analyserNode.smoothingTimeConstant=0.3;
-  masterGain.connect(analyserNode);isInit=true;await audioCtx.resume();
-  refreshFreqs();startCQT();$('initBtn').textContent='✅ Active';log('Engine live');
+  an=ac.createAnalyser();an.fftSize=8192;an.smoothingTimeConstant=0.3;mg.connect(an);
+  // Second analyser for audio playback
+  an2=ac.createAnalyser();an2.fftSize=8192;an2.smoothingTimeConstant=0.3;
+  isInit=true;await ac.resume();rf();startCQT();
+  $('initBtn').textContent='✅';log('Live');
 }
-
 function stopAll(){
-  if(!isInit||!audioCtx)return;
-  cards.forEach(c=>{try{c.lo.stop();c.ro.stop()}catch(e){}})
-  if(animId)cancelAnimationFrame(animId);
-  audioCtx.close().then(()=>{audioCtx=null;isInit=false;cards=[];analyserNode=null});
-  $('initBtn').textContent='🎧 Init';log('Stopped');
+  if(!isInit||!ac)return;
+  cs.forEach(c=>{try{c.lo.stop();c.ro.stop()}catch(e){}})
+  if(aid)cancelAnimationFrame(aid);if(S.playCtx){S.playCtx.close();S.playCtx=null}
+  ac.close().then(()=>{ac=null;isInit=false;cs=[];an=null;an2=null;S.audioBuf=null});$('initBtn').textContent='🎧';log('Stopped')
 }
-
-function refreshFreqs(){
-  for(let i=0;i<9;i++){
-    const lf=SOLF[i],rf=stereoMode&&pytMode?TESLA[i]:SOLF[i];
-    $('bb'+i).textContent='⏣'+Math.abs(lf-rf);
-    if(cards[i]){cards[i].lo.frequency.value=lf;cards[i].ro.frequency.value=rf}
-  }
-}
-
+function rf(){for(let i=0;i<9;i++){const lf=SOLF[i],rf=stm&&pt?TESLA[i]:SOLF[i];$('bb'+i).textContent='⏣'+Math.abs(lf-rf);if(cs[i]){cs[i].lo.frequency.value=lf;cs[i].ro.frequency.value=rf}}}
 function startCQT(){
-  if(!analyserNode)return;
-  const b=analyserNode.frequencyBinCount,d=new Uint8Array(b);
-  const cv=$('cqtCanvas'),ctx=cv.getContext('2d');
-  cv.width=cv.clientWidth;const H=90,fMin=20,fMax=10000,bpo=24;
-  const nb=Math.floor(bpo*Math.log2(fMax/fMin))+1,cf=[];
-  for(let i=0;i<=nb;i++){const f=fMin*Math.pow(2,i/bpo);if(f<=fMax)cf.push(f)}
-  const fi=[];const sr=audioCtx.sampleRate;
-  for(let i=0;i<cf.length;i++)fi.push(Math.min(Math.round(cf[i]*analyserNode.fftSize/sr),b-1));
+  if(!an)return;
+  const bl=an.frequencyBinCount,da=new Uint8Array(bl);
+  const cv2=$('cqtCanvas'),ctx=cv2.getContext('2d');
+  cv2.width=cv2.clientWidth;const H=80,fm=20,fx=10000,bp=24;
+  const nb=Math.floor(bp*Math.log2(fx/fm))+1,cf=[];
+  for(let i=0;i<=nb;i++){const f=fm*Math.pow(2,i/bp);if(f<=fx)cf.push(f)}
+  const fi=[];const sr=ac.sampleRate;
+  for(let i=0;i<cf.length;i++)fi.push(Math.min(Math.round(cf[i]*an.fftSize/sr),bl-1));
   const ghz=[27,54,174,285,396,417,432,528,639,741,852,963];
   function draw(){
-    if(!analyserNode||!isInit)return;analyserNode.getByteFrequencyData(d);
-    ctx.fillStyle='#000';ctx.fillRect(0,0,cv.width,H);
-    const lm=Math.log10(fMin),lx=Math.log10(fMax);
-    for(const g of ghz){if(g<fMin||g>fMax)continue;const x=((Math.log10(g)-lm)/(lx-lm))*cv.width;ctx.strokeStyle='rgba(155,109,255,.08)';ctx.lineWidth=.5;ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H-6);ctx.stroke()}
-    const bw=cv.width/cf.length;
-    for(let i=0;i<cf.length;i++){let v=d[fi[i]]/255;v=Math.pow(v,.8);ctx.fillStyle=`hsl(${240+v*60},80%,50%)`;ctx.fillRect(i*bw,H-v*H,bw-1,v*H)}
-    ctx.fillStyle='rgba(255,255,255,.1)';ctx.font='6px monospace';ctx.textAlign='center';
-    for(const g of ghz){if(g<fMin||g>fMax)continue;const x=((Math.log10(g)-lm)/(lx-lm))*cv.width;ctx.fillText(g+'Hz',x,H-2)}
-    animId=requestAnimationFrame(draw);
+    if(!an||!isInit)return;
+    // Use an2 if audio file is playing, else use an (Pyt.Esla engine)
+    const src = (an2 && S.playCtx) ? an2 : an;
+    src.getByteFrequencyData(da);
+    ctx.fillStyle='#000';ctx.fillRect(0,0,cv2.width,H);
+    const lm=Math.log10(fm),lx=Math.log10(fx);
+    for(const g of ghz){if(g<fm||g>fx)continue;const x=((Math.log10(g)-lm)/(lx-lm))*cv2.width;ctx.strokeStyle='rgba(155,109,255,.06)';ctx.lineWidth=.5;ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H-4);ctx.stroke()}
+    const bw=cv2.width/cf.length;
+    for(let i=0;i<cf.length;i++){let v=da[fi[i]]/255;v=Math.pow(v,.8);ctx.fillStyle=`hsl(${240+v*60},70%,50%)`;ctx.fillRect(i*bw,H-v*H,bw-1,v*H)}
+    ctx.fillStyle='rgba(255,255,255,.08)';ctx.font='5px monospace';ctx.textAlign='center';
+    for(const g of ghz){if(g<fm||g>fx)continue;const x=((Math.log10(g)-lm)/(lx-lm))*cv2.width;ctx.fillText(g,cx,H-1)}
+    aid=requestAnimationFrame(draw);
   }
   draw();
 }
 
-$('initBtn').onclick=async()=>{if(isInit)await audioCtx.resume();else await initAudio()};
-$('stopBtn').onclick=()=>{if(audioCtx)stopAll()};
-$('pytToggle').onchange=function(){pytMode=this.checked;if(isInit)refreshFreqs()};
-$('stereoToggle').onchange=function(){stereoMode=this.checked;if(isInit)refreshFreqs()};
-$('carrierVol').oninput=function(){if(carrierGain)carrierGain.gain.value=+this.value;$('carrierVal').textContent=(+this.value).toFixed(2)};
-$('ambMix').oninput=function(){const v=+this.value;if(dryGain&&wetGain){dryGain.gain.value=1-v;wetGain.gain.value=v}$('ambiVal').textContent=v.toFixed(2)};
+$('initBtn').onclick=async()=>{if(isInit)await ac.resume();else await initAudio()};
+$('stopBtn').onclick=()=>{if(ac)stopAll()};
+$('pytToggle').onchange=function(){pt=this.checked;if(isInit)rf()};
+$('stereoToggle').onchange=function(){stm=this.checked;if(isInit)rf()};
+$('carrierVol').oninput=function(){if(cg)cg.gain.value=+this.value;$('carrierVal').textContent=(+this.value).toFixed(2)};
+$('ambMix').oninput=function(){const v=+this.value;if(dg&&wg){dg.gain.value=1-v;wg.gain.value=v}$('ambiVal').textContent=v.toFixed(2)};
 
-// Drop
+// ─── DROP + DETECT + HEAL + CQT AUDIO ───
 const dz=$('dropZone');
 dz.onclick=async()=>{const f=await A.openFile();if(f)loadFile(f)};
 dz.ondragover=e=>{e.preventDefault();dz.style.borderColor='var(--ameth)'};
@@ -344,12 +207,34 @@ dz.ondrop=async e=>{e.preventDefault();dz.style.borderColor='';const p=A.getPath
 
 async function loadFile(f){
   S.file=f;dz.textContent='🎵'+f.split('/').pop();dz.style.borderColor='var(--em)';
-  try{const r=await A.post('/api/detect',{file_path:f});S.detection=r;const t=+$('tgtSel').value;$('detVal').innerHTML=Math.abs(r.tuning-t)<=1.5?'<span style="color:var(--em)">✓'+r.tuning.toFixed(1)+'</span>':'<span style="color:var(--gold)">'+r.tuning.toFixed(1)+'→'+t+'</span>',st(Math.abs(r.tuning-t)<=1.5?'✅ Aligned':'→ '+t+'Hz')}catch(e){st(e.message,1)}
+  try{
+    // Detect
+    const r=await A.post('/api/detect',{file_path:f});S.detection=r;
+    const t=+$('tgtSel').value;
+    $('detVal').innerHTML=Math.abs(r.tuning-t)<=1.5
+      ?'<span style="color:var(--em)">✓'+r.tuning.toFixed(1)+'</span>'
+      :'<span style="color:var(--gold)">'+r.tuning.toFixed(1)+'→'+t+'</span>';
+    st(Math.abs(r.tuning-t)<=1.5?'✅ Aligned':'→ '+t+'Hz');
+    // Load audio into CQT analyzer via Web Audio
+    try{
+      const resp=await fetch('file://'+f);const buf=await resp.arrayBuffer();
+      if(S.playCtx){S.playCtx.close();S.playCtx=null}
+      S.playCtx=new(window.AudioContext||window.webkitAudioContext)();
+      S.audioBuf=await S.playCtx.decodeAudioData(buf);
+      // Connect to CQT analyzers
+      if(!ac||!isInit)await initAudio();
+      const src=S.playCtx.createBufferSource();src.buffer=S.audioBuf;src.loop=true;
+      if(an2)src.connect(an2); // Route through second analyser for CQT
+      src.start(0);
+      log('Loaded '+f.split('/').pop());
+    }catch(e){log('Audio load: '+e.message)}
+  }catch(e){st(e.message,1)}
 }
+
 function doHeal(p){
-  if(!S.file||S.healing)return;S.healing=true;$('folAnim').style.display='flex';
-  $('progFill').style.width='30%';st('🔄 Healing to 432...');
-  A.post('/api/heal',{file_path:S.file,target_tuning:432,pure_432:true}).then(r=>{
+  if(!S.file||S.healing)return;S.healing=true;$('folAnim').style.display='flex';$('progFill').style.width='30%';
+  st('🔄 Healing...');
+  A.post('/api/heal',{file_path:S.file,target_tuning:+$('tgtSel').value,pure_432:true}).then(r=>{
     S.sid=r.session_id;S.srcName=r.source_name;S.lastHeal=r;
     $('progFill').style.width='100%';
     setTimeout(()=>{$('folAnim').style.display='none';$('progFill').style.width='0%'},800);
@@ -358,14 +243,18 @@ function doHeal(p){
   }).catch(e=>{$('folAnim').style.display='none';st(e.message,1);S.healing=false})
 }
 $('healBtn').onclick=()=>doHeal(false);$('pureBtn').onclick=()=>doHeal(true);
-$('sWav').onclick=()=>save('wav');$('sMp3').onclick=()=>save('mp3');
-$('rptBtn').onclick=()=>{if(!S.file||!S.sid)return;A.post('/api/report',{input_path:S.file,output_path:S.lastHeal.output_path}).then(r=>{st('Δ'+r.summary.harmonic_alignment_improvement)}).catch(e=>{st(e.message)})};
+
 async function save(fmt){
-  if(!S.sid)return;const base=(S.srcName||S.file||'healed').split('/').pop().replace(/\.[^.]+$/,'');
+  if(!S.sid)return;
+  const base=(S.srcName||S.file||'healed').replace(/\.[^.]+$/,'').split('/').pop()+'';
   const name=base+'_432';
   const d=await A.saveFile(name+'.'+fmt);if(!d)return;
-  try{const b=await A.downloadBuffer('/api/download/'+S.sid+'?format='+fmt+'&name='+encodeURIComponent(name));await A.writeFile(d,Array.from(new Uint8Array(b)));st('💾 Saved '+name+'.'+fmt)}catch(e){st(e.message)}
+  try{const b=await A.downloadBuffer('/api/download/'+S.sid+'?format='+fmt+'&name='+encodeURIComponent(name));await A.writeFile(d,Array.from(new Uint8Array(b)));st('💾 '+name+'.'+fmt)}catch(e){st(e.message)}
 }
+$('sWav').onclick=()=>save('wav');$('sMp3').onclick=()=>save('mp3');
+$('rptBtn').onclick=()=>{if(!S.file||!S.sid)return;A.post('/api/report',{input_path:S.file,output_path:S.lastHeal.output_path}).then(r=>{st('Δ'+r.summary.harmonic_alignment_improvement)}).catch(e=>{st(e.message)})};
+
+// ─── TABS ───
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x===b));document.querySelectorAll('[id^="tp-"]').forEach(p=>p.style.display='none');const t=$('tp-'+b.dataset.t);if(t)t.style.display='block'});
 document.querySelector('.tab').classList.add('on');
 </script>

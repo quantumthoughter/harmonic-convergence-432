@@ -99,14 +99,14 @@ def download(session_id: str, format: str = "wav", name: str = "432_healed"):
     wav_path = os.path.join(WORK_DIR, f"{session_id}_final.wav")
     if not os.path.exists(wav_path):
         raise HTTPException(404, "Session not found")
-    safe_name = name.replace('_432healed', '')
+    fname = name.replace('_432healed', '').replace('_432', '') + '_432'
     if format == "wav":
-        return FileResponse(wav_path, media_type="audio/wav", filename=f"{safe_name}_432.wav")
+        return FileResponse(wav_path, media_type="audio/wav", filename=f"{fname}.wav")
     mp3_path = wav_path.replace('.wav', '.mp3')
     if not os.path.exists(mp3_path):
         import subprocess
-        subprocess.run(['ffmpeg', '-y', '-i', wav_path, '-b:a', '320k', '-q:a', '0', '-joint_stereo', '1', '-id3v2_version', '3', '-metadata', f'title={safe_name} 432 Hz', '-metadata', 'artist=Resonance Sanctuary', '-metadata', 'comment=Healed to 432Hz via Resonance Sanctuary', mp3_path], capture_output=True, timeout=120)
-    return FileResponse(mp3_path, media_type="audio/mpeg", filename=f"{safe_name}_432.mp3")
+        subprocess.run(['ffmpeg', '-y', '-i', wav_path, '-b:a', '320k', '-q:a', '0', '-joint_stereo', '1', '-id3v2_version', '3', '-metadata', f'title={fname}', '-metadata', 'artist=Resonance Sanctuary', '-metadata', 'comment=Healed to 432Hz via Resonance Sanctuary', mp3_path], capture_output=True, timeout=120)
+    return FileResponse(mp3_path, media_type="audio/mpeg", filename=f"{fname}.mp3")
 
 @app.post("/api/report")
 def generate_report(req: ReportRequest):
