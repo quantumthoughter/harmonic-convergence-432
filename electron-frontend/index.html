@@ -5,169 +5,164 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Resonance Sanctuary · 432 Hz Diagnostic</title>
 <style>
-:root{--bg:#0a0612;--ameth:#9b6dff;--em:#34d399;--gold:#d9aa3a;--text:#d8d0f0;--muted:#9080b8;--panel:#14102a}
+:root{--bg:#0a0612;--ameth:#9b6dff;--em:#34d399;--gold:#d9aa3a;--text:#dde0f0;--muted:#8880b0;--panel:#12102a;--soft:#1e1a3a}
 *{margin:0;box-sizing:border-box}
-body{height:100vh;background:linear-gradient(135deg,#0a0612,#100828);color:var(--text);font-family:'Inter',system-ui,sans-serif;overflow:hidden;display:flex;flex-direction:column}
-.titlebar{-webkit-app-region:drag;height:36px;display:flex;align-items:center;padding:0 14px;background:linear-gradient(90deg,rgba(155,109,255,.08),transparent);font-size:12px;color:var(--gold);gap:10px;flex-shrink:0}
-.titlebar .dot{width:14px;height:14px;border-radius:50%;background:conic-gradient(var(--ameth),var(--em),var(--ameth));box-shadow:0 0 10px rgba(155,109,255,.3);-webkit-app-region:no-drag}
-.main{display:flex;flex:1;padding:6px;gap:6px;overflow:hidden}
-.left{width:340px;display:flex;flex-direction:column;gap:6px;overflow-y:auto;padding:4px 0}
-.right{flex:1;display:flex;flex-direction:column;gap:6px;overflow:hidden;padding:4px 4px 4px 0}
+body{height:100vh;background:linear-gradient(145deg,#0a0612,#0e0820);color:var(--text);font-family:'Inter','Segoe UI',system-ui,sans-serif;overflow:hidden;display:flex;flex-direction:column;font-size:13px}
+.titlebar{-webkit-app-region:drag;height:42px;display:flex;align-items:center;padding:0 18px;background:linear-gradient(90deg,rgba(155,109,255,.06),transparent);gap:12px;flex-shrink:0;border-bottom:1px solid rgba(155,109,255,.06)}
+.titlebar .dot{width:18px;height:18px;border-radius:50%;background:conic-gradient(var(--ameth),var(--em),var(--ameth));box-shadow:0 0 14px rgba(155,109,255,.3);-webkit-app-region:no-drag}
+.titlebar h1{font-size:14px;font-weight:700;color:var(--gold);letter-spacing:.4px}
+.titlebar .sub{font-size:10px;color:var(--muted);margin-left:auto}
+.main{display:flex;flex:1;padding:8px;gap:10px;overflow:hidden}
+.left{width:340px;display:flex;flex-direction:column;gap:8px;overflow-y:auto}
+.right{flex:1;display:flex;flex-direction:column;gap:8px;overflow:hidden}
 
-.card{background:linear-gradient(145deg,rgba(20,16,42,.94),rgba(15,10,30,.96));border:1px solid rgba(155,109,255,.08);border-radius:12px;overflow:hidden}
-.card-h{display:flex;align-items:center;justify-content:space-between;padding:6px 12px;border-bottom:1px solid rgba(155,109,255,.05)}
-.card-h h3{font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:.08em}
-.card-b{padding:6px 8px}
+/* Cards */
+.card{background:linear-gradient(160deg,rgba(18,16,42,.94),rgba(12,8,28,.96));border:1px solid rgba(155,109,255,.08);border-radius:16px;overflow:hidden;backdrop-filter:blur(4px)}
+.card-h{display:flex;align-items:center;justify-content:space-between;padding:10px 16px 8px;border-bottom:1px solid rgba(155,109,255,.05)}
+.card-h h2{font-size:12px;color:var(--gold);text-transform:uppercase;letter-spacing:.1em;font-weight:700}
+.card-h span{font-size:10px;color:var(--muted)}
+.card-b{padding:10px 14px}
 
-button{cursor:pointer;border:none;border-radius:7px;font-weight:600;transition:all .15s;font-family:inherit}
-.heal-btn{background:linear-gradient(135deg,#9b6dff,#6a3db8);color:#fff;box-shadow:0 2px 16px rgba(155,109,255,.2);font-size:13px;padding:10px 18px;flex:1}
-.heal-btn:hover{box-shadow:0 4px 24px rgba(155,109,255,.35);transform:translateY(-1px)}
-.sm-btn{background:rgba(155,109,255,.06);color:var(--text);border:1px solid rgba(155,109,255,.08);font-size:9px;padding:4px 10px}
-.sm-btn:hover{background:rgba(155,109,255,.12);border-color:var(--ameth)}
+/* Drop Zone */
+#dropZone{border:2px dashed rgba(155,109,255,.12);border-radius:14px;padding:24px;text-align:center;cursor:pointer;font-size:13px;color:var(--muted);background:rgba(155,109,255,.02);transition:all .3s}
+#dropZone:hover{border-color:var(--ameth);background:rgba(155,109,255,.04)}
+#dropZone.ok{border-color:var(--em);color:var(--em2)}
 
-#dropZone{border:1.5px dashed rgba(155,109,255,.12);border-radius:10px;padding:12px;text-align:center;cursor:pointer;font-size:10px;color:var(--muted);transition:all .3s}
-#dropZone:hover{border-color:var(--ameth)}
+/* Buttons */
+button{cursor:pointer;border:none;border-radius:10px;font-weight:600;transition:all .15s;font-family:inherit}
+.heal-btn{background:linear-gradient(135deg,#9b6dff,#6a3db8);color:#fff;box-shadow:0 3px 20px rgba(155,109,255,.2);font-size:15px;padding:14px 24px;width:100%}
+.heal-btn:hover{box-shadow:0 5px 30px rgba(155,109,255,.35);transform:translateY(-1px)}
+.save-btn{background:rgba(155,109,255,.06);color:var(--text);border:1px solid rgba(155,109,255,.08);font-size:11px;padding:10px 14px;flex:1;text-align:center}
+.save-btn:hover{background:rgba(155,109,255,.12);border-color:var(--ameth)}
+.play-btn{background:rgba(155,109,255,.08);color:var(--text);font-size:12px;padding:5px 14px;border-radius:6px}
+.play-btn:hover{background:rgba(155,109,255,.15)}
 
-/* A/B Tracks */
-.ab-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;flex:1;min-height:0}
-.track{display:flex;flex-direction:column;border-radius:10px;overflow:hidden;border:1px solid rgba(155,109,255,.06)}
-.track-label{font-size:8px;text-transform:uppercase;letter-spacing:.06em;padding:4px 8px;display:flex;justify-content:space-between}
-.track-label.orig{color:var(--ameth2);background:rgba(155,109,255,.04)}
-.track-label.heal{color:var(--em);background:rgba(52,211,153,.04)}
-.track canvas{width:100%;height:80px;display:block;background:#03020a}
-.track-ctrl{display:flex;align-items:center;gap:3px;padding:2px 6px;border-top:1px solid rgba(155,109,255,.05)}
-.track-ctrl button{font-size:9px;padding:2px 8px}
-.track-seek{flex:1;height:3px;max-width:60px}
+/* Detection */
+.det-row{display:flex;gap:10px}
+.det-item{flex:1;background:rgba(8,4,18,.4);border-radius:10px;padding:10px 12px;border:1px solid rgba(155,109,255,.05)}
+.det-label{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.det-val{font-size:22px;font-weight:800;color:var(--gold2);margin-top:2px;font-variant-numeric:tabular-nums}
+.det-sub{font-size:9px;color:var(--muted);margin-top:2px}
 
-/* CQT labels */
-.cqt-labels{display:flex;justify-content:space-between;padding:0 8px;font-size:5px;color:var(--muted);margin-top:-1px}
+/* CQT canvas */
+.cqt-wrap{background:#03020a;border-radius:10px;padding:2px;border:1px solid rgba(155,109,255,.06);position:relative;flex-shrink:0}
+.cqt-wrap canvas{display:block;width:100%;height:80px;background:#000;border-radius:8px}
+.cqt-labels{display:flex;justify-content:space-between;padding:1px 10px;font-size:8px;color:var(--muted)}
 
-/* Diagnostics */
-.diag{font-size:8px;color:var(--muted);line-height:1.5;padding:4px 6px;background:rgba(15,10,30,.5);border-radius:6px;max-height:80px;overflow-y:auto}
-.diag strong{color:var(--gold2)}
-.diag .good{color:var(--em)}
-.diag .val{color:var(--text);font-weight:600}
-
-/* Status */
-.status{font-size:11px;text-align:center;color:var(--em);font-weight:600;min-height:16px}
-.status.er{color:#ff7a7a}
-
-/* Progress */
-.prog{height:2px;background:rgba(155,109,255,.05);border-radius:2px;overflow:hidden}
-.prog-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--ameth),var(--em));transition:width .3s}
+/* Tracks */
+.track{border-radius:12px;overflow:hidden;border:1px solid rgba(155,109,255,.06);display:flex;flex-direction:column}
+.track-h{font-size:10px;padding:6px 10px;display:flex;justify-content:space-between;font-weight:600}
+.track-h.orig{color:var(--ameth2);background:rgba(155,109,255,.04)}
+.track-h.heal{color:var(--em);background:rgba(52,211,153,.04)}
+.track canvas{width:100%;height:70px;display:block;background:#03020a}
+.track-ctrl{display:flex;align-items:center;gap:5px;padding:3px 8px}
+.track-ctrl input[type="range"]{flex:1;height:4px}
+.track-ctrl .time{font-size:9px;color:var(--muted);min-width:60px;text-align:right}
+.track-vol{display:flex;align-items:center;gap:4px;padding:1px 8px 4px}
+.track-vol input[type="range"]{flex:1;max-width:80px;height:3px}
+.track-vol label{font-size:8px;color:var(--muted)}
 
 /* Spinner */
 @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
 @keyframes pulse{0%,100%{opacity:.3}50%{opacity:.6}}
 .fol-spinner{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:5;animation:pulse 2s ease-in-out infinite}
-.fol-spinner svg{width:40px;height:40px;animation:spin 5s linear infinite;opacity:.4}
-.cqt-wrap{position:relative;background:#03020a;border-radius:8px;padding:1px;margin-bottom:2px}
-.cqt-wrap canvas{width:100%;height:70px;display:block;background:#000;border-radius:6px}
+.fol-spinner svg{width:44px;height:44px;animation:spin 5s linear infinite;opacity:.4}
 
-select,input[type="number"]{background:rgba(15,10,30,.8);color:var(--text);border:1px solid rgba(155,109,255,.1);border-radius:5px;padding:3px 5px;font-size:9px;outline:none}
-::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:rgba(155,109,255,.1);border-radius:2px}
+/* Progress */
+.prog{height:4px;background:rgba(155,109,255,.04);border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--ameth),var(--em));transition:width .4s}
+
+/* Diagnostic */
+.diag{font-size:9px;color:var(--muted);line-height:1.6;background:rgba(8,4,18,.4);border-radius:8px;padding:6px 10px;max-height:100px;overflow-y:auto}
+.diag strong{color:var(--gold2)}
+.diag .good{color:var(--em)}
+
+input[type="range"]{-webkit-appearance:none;height:4px;background:rgba(155,109,255,.1);border-radius:2px;outline:none}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#b896ff,#7a4ddf);box-shadow:0 0 10px rgba(155,109,255,.25);cursor:pointer}
+select{background:rgba(8,4,18,.6);color:var(--text);border:1px solid rgba(155,109,255,.1);border-radius:8px;padding:6px 10px;font-size:11px;outline:none}
+.status{font-size:13px;text-align:center;color:var(--em);font-weight:600;padding:4px 0}
+.status.er{color:#ff7a7a}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(155,109,255,.1);border-radius:2px}
 </style>
 </head>
 <body>
-<div class="titlebar"><div class="dot"></div><span>Resonance Sanctuary · 432 Hz Diagnostic</span></div>
+<div class="titlebar"><div class="dot"></div><h1>Resonance Sanctuary</h1><span class="sub">∞ 432 Hz Healer · CQT Diagnostic</span></div>
 <div class="main">
   <!-- LEFT -->
   <div class="left">
-    <div id="dropZone">Drop audio file to heal to 432 Hz</div>
+    <div id="dropZone">Drop audio file here to heal to 432 Hz</div>
     <div class="card">
-      <div class="card-h"><h3>🎯 432 Hz Healer</h3><span id="tuneDisplay" style="font-size:10px;color:var(--muted)">—</span></div>
-      <div class="card-b">
-        <div style="display:flex;gap:4px;align-items:center;margin-bottom:5px">
-          <span style="font-size:8px;color:var(--muted)">Target</span>
-          <select id="tgtSel" style="flex:1"><option value="432">432 Hz (Healing)</option><option value="440">440 Hz</option><option value="444">444 Hz</option></select>
-          <span style="font-size:8px;color:var(--muted)">Quality</span>
-          <select id="mp3Qual" style="width:70px"><option value="320k">320k</option><option value="256k">256k</option><option value="192k">192k</option></select>
+      <div class="card-h"><h2>🎯 432 Hz Healer</h2><span id="tuneDisplay">—</span></div>
+      <div class="card-b" style="display:flex;flex-direction:column;gap:8px">
+        <div class="det-row">
+          <div class="det-item"><div class="det-label">Original Tuning</div><div class="det-val" id="origTune">—</div><div class="det-sub" id="detMethod">Awaiting file</div></div>
+          <div class="det-item" style="text-align:right"><div class="det-label">Target</div><div class="det-val" style="color:var(--em)" id="tuneTarget">432 Hz</div></div>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <span style="font-size:10px;color:var(--muted)">Target</span>
+          <select id="tgtSel" style="flex:1"><option value="432">432 Hz</option><option value="440">440 Hz</option><option value="444">444 Hz</option></select>
+          <span style="font-size:10px;color:var(--muted)">MP3</span>
+          <select id="mp3Qual" style="width:80px"><option value="320k">320 kb/s</option><option value="256k">256 kb/s</option><option value="192k">192 kb/s</option></select>
         </div>
         <button class="heal-btn" id="healBtn">✨ HEAL TO 432 Hz</button>
-        <div style="display:flex;gap:4px;margin-top:4px">
-          <button class="sm-btn" id="wavBtn" style="flex:1">💾 WAV</button>
-          <button class="sm-btn" id="mp3Btn" style="flex:1">💾 MP3</button>
-          <button class="sm-btn" id="bothBtn" style="flex:1">💾 Both</button>
+        <div style="display:flex;gap:5px">
+          <button class="save-btn" id="wavBtn">💾 Save WAV</button>
+          <button class="save-btn" id="mp3Btn">💾 Save MP3</button>
+          <button class="save-btn" id="bothBtn">💾 Both</button>
         </div>
       </div>
     </div>
-    <div class="status" id="st">✨ Ready</div>
+    <div class="status" id="st">✨ Drop a file to begin</div>
     <div class="prog"><div class="prog-fill" id="progFill"></div></div>
-    <!-- Diagnostics Log -->
-    <div class="card" style="flex:1">
-      <div class="card-h"><h3>📋 Diagnostic Log</h3></div>
-      <div class="card-b" style="padding:4px 6px">
-        <div class="diag" id="diagLog">Drop a file to begin · detection and healing results will appear here.</div>
-      </div>
+    <div class="card" style="flex:1;min-height:0">
+      <div class="card-h"><h2>📋 Diagnostic Log</h2><span id="logCount">0</span></div>
+      <div class="card-b" style="padding:6px 10px;height:100%"><div class="diag" id="diagLog">Drop a file to begin · all detection and healing results appear here.</div></div>
     </div>
   </div>
 
-  <!-- RIGHT — A/B Comparison -->
+  <!-- RIGHT -->
   <div class="right">
-    <div class="ab-grid">
-      <!-- Original Track -->
-      <div class="track">
-        <div class="track-label orig"><span>🔵 Original</span><span id="origInfo">No file</span></div>
-        <canvas id="origCQT"></canvas>
-        <div class="cqt-labels"><span>20</span><span>100</span><span>432</span><span>1k</span><span>5k</span><span>10k</span></div>
-        <div class="track-ctrl">
-          <button id="origPlayBtn">▶</button>
-          <input type="range" class="track-seek" id="origSeek" min="0" max="1000" value="0" style="flex:1">
-          <span id="origTime" style="font-size:8px;color:var(--muted);min-width:55px;text-align:right">0:00</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:4px;padding:1px 6px 3px;border-top:1px solid rgba(155,109,255,.04)">
-          <span style="font-size:7px;color:var(--muted)">Vol</span>
-          <input type="range" id="origVol" min="0" max="100" value="70" style="flex:1;height:3px;max-width:60px">
-          <span id="origVolVal" style="font-size:7px;color:var(--muted)">70</span>
-        </div>
-      </div>
-      </div>
-      <!-- Healed Track -->
-      <div class="track">
-        <div class="track-label heal"><span>🟢 Healed to 432 Hz</span><span id="healInfo">Not yet healed</span></div>
-        <canvas id="healCQT"></canvas>
-        <div class="cqt-labels"><span>20</span><span>100</span><span>432</span><span>1k</span><span>5k</span><span>10k</span></div>
-        <div class="track-ctrl">
-          <button id="healPlayBtn">▶</button>
-          <input type="range" class="track-seek" id="healSeek" min="0" max="1000" value="0" style="flex:1">
-          <span id="healTime" style="font-size:8px;color:var(--muted);min-width:55px;text-align:right">0:00</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:4px;padding:1px 6px 3px;border-top:1px solid rgba(155,109,255,.04)">
-          <span style="font-size:7px;color:var(--muted)">Vol</span>
-          <input type="range" id="healVol" min="0" max="100" value="70" style="flex:1;height:3px;max-width:60px">
-          <span id="healVolVal" style="font-size:7px;color:var(--muted)">70</span>
-        </div>
-      </div>
+    <div class="cqt-wrap">
+      <canvas id="cqtCanvas" width="800" height="80"></canvas>
+      <div class="cqt-labels"><span>20Hz</span><span>60</span><span>100</span><span>200</span><span>432</span><span>500</span><span>1k</span><span>2k</span><span>5k</span><span>10k</span></div>
+      <div class="fol-spinner" id="folAnim" style="display:none"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="15" stroke="var(--ameth)" fill="none" stroke-width=".6"/><circle cx="42.5" cy="37" r="15" stroke="var(--ameth)" fill="none" stroke-width=".6"/><circle cx="57.5" cy="37" r="15" stroke="var(--ameth)" fill="none" stroke-width=".6"/><circle cx="35" cy="44" r="15" stroke="var(--ameth)" fill="none" stroke-width=".6"/><circle cx="65" cy="44" r="15" stroke="var(--ameth)" fill="none" stroke-width=".6"/><circle cx="42.5" cy="56" r="15" stroke="var(--ameth)" fill="none" stroke-width=".6"/><circle cx="57.5" cy="56" r="15" stroke="var(--ameth)" fill="none" stroke-width=".6"/><text x="50" y="54" text-anchor="middle" fill="var(--ameth)" font-size="14" opacity=".6">∞</text></svg></div>
     </div>
-    <!-- Heal progress overlay -->
-    <div class="cqt-wrap" style="margin:0">
-      <div style="height:4px"></div>
-      <div class="fol-spinner" id="folAnim" style="display:none">
-        <svg viewBox="0 0 100 100">
-          <circle cx="50" cy="50" r="15" stroke="var(--ameth)" fill="none" stroke-width=".5"/>
-          <circle cx="42.5" cy="37" r="15" stroke="var(--ameth)" fill="none" stroke-width=".5"/>
-          <circle cx="57.5" cy="37" r="15" stroke="var(--ameth)" fill="none" stroke-width=".5"/>
-          <circle cx="35" cy="44" r="15" stroke="var(--ameth)" fill="none" stroke-width=".5"/>
-          <circle cx="65" cy="44" r="15" stroke="var(--ameth)" fill="none" stroke-width=".5"/>
-          <circle cx="42.5" cy="56" r="15" stroke="var(--ameth)" fill="none" stroke-width=".5"/>
-          <circle cx="57.5" cy="56" r="15" stroke="var(--ameth)" fill="none" stroke-width=".5"/>
-          <text x="50" y="54" text-anchor="middle" fill="var(--ameth)" font-size="14" opacity=".6">∞</text>
-        </svg>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:1;min-height:0">
+      <!-- Original -->
+      <div class="track">
+        <div class="track-h orig"><span>🔵 Original</span><span id="origInfo">—</span></div>
+        <canvas id="origCQT"></canvas>
+        <div class="track-ctrl">
+          <button class="play-btn" id="origPlayBtn">▶</button>
+          <input type="range" id="origSeek" min="0" max="1000" value="0">
+          <span class="time" id="origTime">0:00</span>
+        </div>
+        <div class="track-vol"><label>Vol</label><input type="range" id="origVol" min="0" max="100" value="70"><span id="origVolVal" style="font-size:9px;color:var(--muted)">70</span></div>
+      </div>
+      <!-- Healed -->
+      <div class="track">
+        <div class="track-h heal"><span>🟢 Healed 432</span><span id="healInfo">—</span></div>
+        <canvas id="healCQT"></canvas>
+        <div class="track-ctrl">
+          <button class="play-btn" id="healPlayBtn">▶</button>
+          <input type="range" id="healSeek" min="0" max="1000" value="0">
+          <span class="time" id="healTime">0:00</span>
+        </div>
+        <div class="track-vol"><label>Vol</label><input type="range" id="healVol" min="0" max="100" value="70"><span id="healVolVal" style="font-size:9px;color:var(--muted)">70</span></div>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-const A=window.api;let S={file:null,sid:null,srcName:null,healing:false,detection:null,healResult:null};
-let acOrig=null,acHeal=null,anOrig=null,anHeal=null,aidOrig=null,aidHeal=null,srcOrig=null,srcHeal=null;
-let origPlaying=false,healPlaying=false;
-let origDur=0,healDur=0;
-
+const A=window.api;let S={file:null,sid:null,srcName:null,healing:false};
+let ac=null,an=null,aid=null,acOrig=null,acHeal=null,anOrig=null,anHeal=null;
+let srcOrig=null,srcHeal=null,origPlaying=false,healPlaying=false;
 const GRID=[27,54,174,285,396,417,432,528,639,741,852,963];
 function $(id){return document.getElementById(id)}
-function st(m,e){const el=$('st');el.textContent=m;el.className='status'+(e?' er':'')}
-function log(msg){const el=$('diagLog');const d=document.createElement('div');d.innerHTML=msg;el.prepend(d);while(el.children.length>15)el.removeChild(el.lastChild)}
+function st(m,e){const e2=$('st');e2.textContent=m;e2.className='status'+(e?' er':'')}
+function log(msg){const el=$('diagLog');const d=document.createElement('div');d.innerHTML=msg;el.prepend(d);while(el.children.length>20)el.removeChild(el.lastChild);$('logCount').textContent=el.children.length}
 
 // ─── DROP ───
 const dz=$('dropZone');
@@ -177,200 +172,159 @@ dz.ondragleave=()=>dz.style.borderColor='';
 dz.ondrop=async e=>{e.preventDefault();dz.style.borderColor='';const p=A.getPathForFile(e.dataTransfer.files[0]);if(p)loadFile(p)};
 
 async function loadFile(f){
-  S.file=f;S.sid=null;S.healResult=null;
-  dz.textContent='🎵 '+f.split('/').pop();dz.style.borderColor='var(--em)';
-  $('origInfo').textContent=f.split('/').pop();
-  st('🔍 Analyzing...');
-  origStop();healStop();
+  S.file=f;S.sid=null;
+  dz.textContent='🎵 '+f.split('/').pop();dz.style.borderColor='var(--em)';$('origInfo').textContent=f.split('/').pop();
+  st('🔍 Analyzing...');origStop();healStop();
   try{
-    const r=await A.post('/api/detect',{file_path:f});S.detection=r;
-    const t=+$('tgtSel').value;
-    const aligned=Math.abs(r.tuning-t)<=1.5;
-    $('tuneDisplay').innerHTML=aligned?'<span style="color:var(--em)">✓ '+r.tuning.toFixed(1)+' Hz</span>':'<span style="color:var(--gold)">'+r.tuning.toFixed(1)+' Hz → '+t+' Hz</span>';
-    // Diagnostic log
-    log('<strong>📂 File:</strong> '+f.split('/').pop()+'<br><strong>🔍 Detected:</strong> '+r.tuning.toFixed(1)+' Hz ('+r.method+', '+(r.confidence*100).toFixed(0)+'% confidence)'+(aligned?' <span class="good">✓ Already aligned</span>':''));
-    st(aligned?'✅ Already at '+t+' Hz':'→ Will shift to '+t+' Hz');
-    // Load original into CQT
+    const r=await A.post('/api/detect',{file_path:f});const t=+$('tgtSel').value;
+    $('origTune').textContent=r.tuning.toFixed(1)+' Hz';
+    $('detMethod').textContent=r.method+' · '+(r.confidence*100).toFixed(0)+'%';
+    $('origTune').style.color=Math.abs(r.tuning-t)<=1.5?'var(--em)':'var(--gold)';
+    $('tuneDisplay').innerHTML=Math.abs(r.tuning-t)<=1.5?'<span style="color:var(--em)">✓ '+r.tuning.toFixed(1)+'</span>':'<span style="color:var(--gold)">'+r.tuning.toFixed(1)+'→'+t+'</span>';
+    st(Math.abs(r.tuning-t)<=1.5?'✅ Already aligned':'→ Shift to '+t+' Hz');
+    log('<strong>📂 File:</strong> '+f.split('/').pop()+'<br><strong>🔍 Detected:</strong> '+r.tuning.toFixed(1)+' Hz · '+r.method+' · '+(r.confidence*100).toFixed(0)+'% confidence');
+    // Init CQT with file audio
     origInit(f);
   }catch(e){st(e.message,1)}
 }
 
-// ─── CQT ENGINE ───
-function startCQT(canvasId, analyserRef, animRef, label){
-  const cv=$(canvasId);if(!cv||!analyserRef)return;
-  const ctx=cv.getContext('2d');
-  const H=80,fm=20,fx=10000;
+// ─── CQT ───
+function startCQT(canvasId, analyser){
+  const cv=$(canvasId);if(!cv||!analyser)return;
+  const ctx=cv.getContext('2d'),H=80,fm=20,fx=10000;
   const lm=Math.log10(fm),lx=Math.log10(fx);
-  function resize(){if(cv)cv.width=cv.clientWidth}
-  resize();
-  const bl=analyserRef.frequencyBinCount,da=new Uint8Array(bl);
+  cv.width=cv.clientWidth;
   function draw(){
-    if(!analyserRef){animRef=requestAnimationFrame(draw);return}
-    analyserRef.getByteFrequencyData(da);
-    const W=cv.width;ctx.fillStyle='#03020a';ctx.fillRect(0,0,W,H);
-    // Grid lines with accurate 432 Hz position
+    if(!analyser){requestAnimationFrame(draw);return}
+    const W=cv.width,da=new Uint8Array(analyser.frequencyBinCount);
+    analyser.getByteFrequencyData(da);
+    ctx.fillStyle='#03020a';ctx.fillRect(0,0,W,H);
     for(const g of GRID){
       if(g<fm||g>fx)continue;
       const x=((Math.log10(g)-lm)/(lx-lm))*W;
-      const is432=g===432;
-      ctx.strokeStyle=is432?'rgba(217,170,58,.25)':'rgba(155,109,255,.04)';
-      ctx.lineWidth=is432?1.5:.5;
-      ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H-8);ctx.stroke();
-      if(is432){
-        ctx.fillStyle='rgba(217,170,58,.35)';ctx.font='7px monospace';ctx.textAlign='center';
-        ctx.fillText('432 Hz',x,8);
-      }
+      ctx.strokeStyle=g===432?'rgba(217,170,58,.2)':'rgba(155,109,255,.04)';
+      ctx.lineWidth=g===432?1.5:.5;ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H-8);ctx.stroke();
+      if(g===432){ctx.fillStyle='rgba(217,170,58,.25)';ctx.font='7px monospace';ctx.textAlign='center';ctx.fillText('432 Hz',x,8)}
     }
-    // Spectrum
-    const sr=44100,fftSize=8192;
-    for(let i=1;i<bl-1;i++){
-      const freq=i*sr/fftSize;
-      if(freq<fm||freq>fx)continue;
-      const x=((Math.log10(freq)-lm)/(lx-lm))*W;
+    for(let i=1;i<analyser.frequencyBinCount-1;i++){
+      const f=i*44100/analyser.fftSize;if(f<fm||f>fx)continue;
+      const x=((Math.log10(f)-lm)/(lx-lm))*W;
       let v=da[i]/255;v=Math.pow(v,.7);
-      const hue=240+v*50;
-      ctx.fillStyle=`hsla(${hue},70%,50%,${.2+v*.6})`;
-      ctx.fillRect(x,H-v*H,Math.max(1,W/bl),v*H);
+      ctx.fillStyle=`hsla(${240+v*50},70%,50%,${.15+v*.55})`;
+      ctx.fillRect(x,H-v*H,Math.max(1,W/analyser.frequencyBinCount),v*H);
     }
-    animRef=requestAnimationFrame(draw)
+    requestAnimationFrame(draw)
   }
   draw()
 }
 
 async function origInit(f){
   try{
-    if(acOrig){acOrig.close()}
+    if(acOrig)acOrig.close();
     acOrig=new(window.AudioContext||window.webkitAudioContext)();
     const resp=await fetch('file://'+f);const buf=await resp.arrayBuffer();
-    const audioBuf=await acOrig.decodeAudioData(buf);
-    origDur=audioBuf.duration;
-    anOrig=acOrig.createAnalyser();anOrig.fftSize=8192;anOrig.smoothingTimeConstant=0.8;
-    $('origTime').textContent='0:00 / '+Math.floor(origDur/60)+':'+String(Math.floor(origDur%60)).padStart(2,'0');
-    // Store for playback
-    S._origBuf=audioBuf;
-    // Start CQT without playback
-    startCQT('origCQT',anOrig,aidOrig,'orig');
-    // Fake data for CQT when not playing
-    setInterval(()=>{if(!origPlaying&&anOrig){const dummy=new Float32Array(anOrig.fftSize);for(let i=0;i<dummy.length;i++)dummy[i]=Math.sin(i*0.01)*0.01;/* minimal noise floor */}},100);
-  }catch(e){log('❌ Audio load error: '+e.message)}
+    const ab=await acOrig.decodeAudioData(buf);
+    S._origBuf=ab;
+    anOrig=acOrig.createAnalyser();anOrig.fftSize=8192;anOrig.smoothingTimeConstant=0.85;
+    $('origTime').textContent='0:00 / '+Math.floor(ab.duration/60)+':'+String(Math.floor(ab.duration%60)).padStart(2,'0');
+    startCQT('origCQT',anOrig);
+    // Fire a tiny noise to keep CQT alive (inaudible)
+    const bufSrc=acOrig.createBufferSource();bufSrc.buffer=acOrig.createBuffer(1,acOrig.sampleRate*0.1,acOrig.sampleRate);
+    const c=bufSrc.buffer.getChannelData(0);for(let i=0;i<c.length;i++)c[i]=Math.sin(i*0.01)*0.0001;
+    bufSrc.connect(anOrig);bufSrc.start();
+    $('healInfo').textContent='Ready to heal';
+  }catch(e){log('❌ Audio load: '+e.message)}
 }
 
 function origPlay(){
   if(!acOrig||!S._origBuf){st('Load a file first',1);return}
   if(origPlaying){origStop();return}
   try{
-    if(acOrig.state==='suspended')acOrig.resume()
+    if(acOrig.state==='suspended')acOrig.resume();
     const vol=acOrig.createGain();vol.gain.value=$('origVol').value/100;
     srcOrig=acOrig.createBufferSource();srcOrig.buffer=S._origBuf;
     srcOrig.connect(vol);vol.connect(anOrig);anOrig.connect(acOrig.destination);
-    srcOrig.start(0);
-    origPlaying=true;$('origPlayBtn').textContent='⏹';
-    // Seek tracking
+    srcOrig.start(0);origPlaying=true;$('origPlayBtn').textContent='⏹';
     const dur=S._origBuf.duration;
-    const seekInt=setInterval(()=>{
-      if(!origPlaying||!acOrig){clearInterval(seekInt);return}
-      const now=acOrig.currentTime;
-      $('origSeek').value=Math.min(1000,now/dur*1000);
-      $('origTime').textContent=Math.floor(now/60)+':'+String(Math.floor(now%60)).padStart(2,'0')+' / '+Math.floor(dur/60)+':'+String(Math.floor(dur%60)).padStart(2,'0')
-    },200);
-    S._origSeekInt=seekInt;
-    srcOrig.onended=()=>{origPlaying=false;$('origPlayBtn').textContent='▶';clearInterval(seekInt)}
+    const si=setInterval(()=>{if(!origPlaying||!acOrig){clearInterval(si);return}
+      const n=acOrig.currentTime;$('origSeek').value=Math.min(1000,n/dur*1000);
+      $('origTime').textContent=Math.floor(n/60)+':'+String(Math.floor(n%60)).padStart(2,'0')+' / '+Math.floor(dur/60)+':'+String(Math.floor(dur%60)).padStart(2,'0')},200);
+    S._osi=si;srcOrig.onended=()=>{origPlaying=false;$('origPlayBtn').textContent='▶';clearInterval(si)}
   }catch(e){log('❌ Play error: '+e.message)}
 }
-function origStop(){
-  if(srcOrig){try{srcOrig.stop()}catch(e){}srcOrig=null}
-  origPlaying=false;$('origPlayBtn').textContent='▶';$('origSeek').value=0;
-  if(S._origSeekInt){clearInterval(S._origSeekInt);S._origSeekInt=null}
-}
-$('origPlayBtn').onclick=origPlay;
+function origStop(){if(srcOrig){try{srcOrig.stop()}catch(e){}srcOrig=null}origPlaying=false;$('origPlayBtn').textContent='▶';$('origSeek').value=0;if(S._osi){clearInterval(S._osi);S._osi=null}}
+$('origPlayBtn').onclick=origPlay;$('origVol').oninput=function(){$('origVolVal').textContent=this.value};
 
 // ─── HEAL ───
 $('healBtn').onclick=async function(){
-  if(!S.file||S.healing)return;S.healing=true;
-  $('folAnim').style.display='flex';$('progFill').style.width='25%';
-  st('🌀 Healing...');
+  if(!S.file||S.healing)return;S.healing=true;$('folAnim').style.display='flex';$('progFill').style.width='25%';
+  st('🌀 Healing to 432 Hz...');
   try{
     const r=await A.post('/api/heal',{file_path:S.file,target_tuning:+$('tgtSel').value,pure_432:true});
-    S.sid=r.session_id;S.srcName=r.source_name;S.healResult=r;
-    $('progFill').style.width='100%';
-    setTimeout(()=>{$('folAnim').style.display='none';$('progFill').style.width='0%'},500);
+    S.sid=r.session_id;S.srcName=r.source_name;
+    $('progFill').style.width='100%';setTimeout(()=>{$('folAnim').style.display='none';$('progFill').style.width='0%'},500);
     $('tuneDisplay').innerHTML=`∞ <span style="color:var(--em)">${r.heal_result.target_tuning.toFixed(0)} Hz</span>`;
     $('healInfo').textContent=r.heal_result.target_tuning.toFixed(0)+' Hz ✓';
-    
+    $('origTune').textContent=r.heal_result.target_tuning.toFixed(1)+' Hz ✓';$('origTune').style.color='var(--em)';
     // Load healed into CQT
     healInit(r.session_id);
-    
-    // Diagnostic
-    const d=S.detection;
-    log('<strong>✨ HEAL COMPLETE</strong><br>📐 <strong>Shift:</strong> '+d.tuning.toFixed(1)+' Hz → '+r.heal_result.target_tuning.toFixed(0)+' Hz ('+r.heal_result.semitones_shifted+' st)<br>⏱ <strong>Duration:</strong> '+r.heal_result.original_duration.toFixed(1)+'s → '+r.heal_result.healed_duration.toFixed(1)+'s <span class="good">✓ preserved</span><br>🎯 <strong>Harmonic Alignment:</strong> improved <span class="val">'+r.heal_result.target_tuning.toFixed(0)+' Hz</span><br>📁 <strong>Download:</strong> use WAV or MP3 buttons above');
-    
-    st('✅ Healed! '+d.tuning.toFixed(1)+' → '+r.heal_result.target_tuning.toFixed(0)+' Hz');
-  }catch(e){$('folAnim').style.display='none';st(e.message,1)}
-  S.healing=false;
+    log('<strong>✨ HEAL COMPLETE</strong><br>📐 <strong>Shift:</strong> '+r.heal_result.original_tuning.toFixed(1)+' → '+r.heal_result.target_tuning.toFixed(0)+' Hz ('+r.heal_result.semitones_shifted+' st)<br>⏱ <strong>Duration:</strong> '+r.heal_result.original_duration.toFixed(1)+'s → '+r.heal_result.healed_duration.toFixed(1)+'s <span class="good">✓</span>');
+    st('✅ Healed!');
+  }catch(e){$('folAnim').style.display='none';st(e.message,1)}S.healing=false;
 };
 
 async function healInit(sid){
   try{
-    if(acHeal){acHeal.close()}
+    if(acHeal)acHeal.close();
     acHeal=new(window.AudioContext||window.webkitAudioContext)();
     const buf=await A.downloadBuffer('/api/download/'+sid+'?format=wav');
-    const audioBuf=await acHeal.decodeAudioData(buf.buffer.slice(0));
-    healDur=audioBuf.duration;
-    anHeal=acHeal.createAnalyser();anHeal.fftSize=8192;anHeal.smoothingTimeConstant=0.8;
-    S._healBuf=audioBuf;
-    $('healTime').textContent='0:00 / '+Math.floor(healDur/60)+':'+String(Math.floor(healDur%60)).padStart(2,'0');
-    startCQT('healCQT',anHeal,aidHeal,'heal');
-  }catch(e){log('❌ Healed audio load: '+e.message)}
+    const ab=await acHeal.decodeAudioData(buf.buffer.slice(0));
+    S._healBuf=ab;
+    anHeal=acHeal.createAnalyser();anHeal.fftSize=8192;anHeal.smoothingTimeConstant=0.85;
+    $('healTime').textContent='0:00 / '+Math.floor(ab.duration/60)+':'+String(Math.floor(ab.duration%60)).padStart(2,'0');
+    startCQT('healCQT',anHeal);
+    const bufSrc=acHeal.createBufferSource();bufSrc.buffer=acHeal.createBuffer(1,acHeal.sampleRate*0.1,acHeal.sampleRate);
+    const c=bufSrc.buffer.getChannelData(0);for(let i=0;i<c.length;i++)c[i]=Math.sin(i*0.01)*0.0001;
+    bufSrc.connect(anHeal);bufSrc.start();
+  }catch(e){log('❌ Heal load: '+e.message)}
 }
 
 function healPlay(){
   if(!acHeal||!S._healBuf){st('Heal a file first',1);return}
   if(healPlaying){healStop();return}
   try{
-    if(acHeal.state==='suspended')acHeal.resume()
+    if(acHeal.state==='suspended')acHeal.resume();
     const vol=acHeal.createGain();vol.gain.value=$('healVol').value/100;
     srcHeal=acHeal.createBufferSource();srcHeal.buffer=S._healBuf;
     srcHeal.connect(vol);vol.connect(anHeal);anHeal.connect(acHeal.destination);
-    srcHeal.start(0);
-    healPlaying=true;$('healPlayBtn').textContent='⏹';
+    srcHeal.start(0);healPlaying=true;$('healPlayBtn').textContent='⏹';
     const dur=S._healBuf.duration;
-    const seekInt=setInterval(()=>{
-      if(!healPlaying||!acHeal){clearInterval(seekInt);return}
-      const now=acHeal.currentTime;
-      $('healSeek').value=Math.min(1000,now/dur*1000);
-      $('healTime').textContent=Math.floor(now/60)+':'+String(Math.floor(now%60)).padStart(2,'0')+' / '+Math.floor(dur/60)+':'+String(Math.floor(dur%60)).padStart(2,'0')
-    },200);
-    S._healSeekInt=seekInt;
-    srcHeal.onended=()=>{healPlaying=false;$('healPlayBtn').textContent='▶';clearInterval(seekInt)}
-  }catch(e){log('❌ Heal play error: '+e.message)}
+    const si=setInterval(()=>{if(!healPlaying||!acHeal){clearInterval(si);return}
+      const n=acHeal.currentTime;$('healSeek').value=Math.min(1000,n/dur*1000);
+      $('healTime').textContent=Math.floor(n/60)+':'+String(Math.floor(n%60)).padStart(2,'0')+' / '+Math.floor(dur/60)+':'+String(Math.floor(dur%60)).padStart(2,'0')},200);
+    S._hsi=si;srcHeal.onended=()=>{healPlaying=false;$('healPlayBtn').textContent='▶';clearInterval(si)}
+  }catch(e){log('❌ Play error: '+e.message)}
 }
-function healStop(){
-  if(srcHeal){try{srcHeal.stop()}catch(e){}srcHeal=null}
-  healPlaying=false;$('healPlayBtn').textContent='▶';$('healSeek').value=0;
-  if(S._healSeekInt){clearInterval(S._healSeekInt);S._healSeekInt=null}
-}
-$('healPlayBtn').onclick=healPlay;
-$('origVol').oninput=function(){$('origVolVal').textContent=this.value};
-$('healVol').oninput=function(){$('healVolVal').textContent=this.value};
+function healStop(){if(srcHeal){try{srcHeal.stop()}catch(e){}srcHeal=null}healPlaying=false;$('healPlayBtn').textContent='▶';$('healSeek').value=0;if(S._hsi){clearInterval(S._hsi);S._hsi=null}}
+$('healPlayBtn').onclick=healPlay;$('healVol').oninput=function(){$('healVolVal').textContent=this.value};
 
 // ─── SAVE ───
 async function saveFile(fmt){
   if(!S.sid){st('Heal a file first',1);return}
-  const base=(S.srcName||S.file||'healed').split('/').pop().replace(/\.[^.]+$/,'')+'_432';
-  const d=await A.saveFile(base+'.'+fmt);if(!d)return
-  try{const b=await A.downloadBuffer('/api/download/'+S.sid+'?format='+fmt+'&name='+encodeURIComponent(base));await A.writeFile(d,Array.from(new Uint8Array(b)));st('💾 '+base+'.'+fmt);log('<strong>💾 Saved:</strong> '+base+'.'+fmt)}catch(e){st(e.message,1)}
+  const b=(S.srcName||S.file||'healed').split('/').pop().replace(/\.[^.]+$/,'')+'_432';
+  const d=await A.saveFile(b+'.'+fmt);if(!d)return
+  try{const r=await A.downloadBuffer('/api/download/'+S.sid+'?format='+fmt+'&name='+encodeURIComponent(b));await A.writeFile(d,Array.from(new Uint8Array(r)));st('💾 '+b+'.'+fmt);log('<strong>💾 Saved:</strong> '+b+'.'+fmt)}catch(e){st(e.message,1)}
 }
-$('wavBtn').onclick=()=>saveFile('wav');
-$('mp3Btn').onclick=()=>saveFile('mp3');
+$('wavBtn').onclick=()=>saveFile('wav');$('mp3Btn').onclick=()=>saveFile('mp3');
 $('bothBtn').onclick=async()=>{
   if(!S.sid){st('Heal a file first',1);return}
-  const base=(S.srcName||S.file||'healed').split('/').pop().replace(/\.[^.]+$/,'')+'_432';
+  const b=(S.srcName||S.file||'healed').split('/').pop().replace(/\.[^.]+$/,'')+'_432';
   try{
-    const bw=await A.downloadBuffer('/api/download/'+S.sid+'?format=wav&name='+encodeURIComponent(base));
-    const f1=await A.saveFile(base+'.wav');if(f1)await A.writeFile(f1,Array.from(new Uint8Array(bw)))
-    const bm=await A.downloadBuffer('/api/download/'+S.sid+'?format=mp3&name='+encodeURIComponent(base));
-    const f2=await A.saveFile(base+'.mp3');if(f2)await A.writeFile(f2,Array.from(new Uint8Array(bm)))
-    st('💾 Both saved');log('<strong>💾 Saved:</strong> '+base+'.wav + '+base+'.mp3')
+    const w=await A.downloadBuffer('/api/download/'+S.sid+'?format=wav&name='+encodeURIComponent(b));
+    const f1=await A.saveFile(b+'.wav');if(f1)await A.writeFile(f1,Array.from(new Uint8Array(w)))
+    const m=await A.downloadBuffer('/api/download/'+S.sid+'?format=mp3&name='+encodeURIComponent(b));
+    const f2=await A.saveFile(b+'.mp3');if(f2)await A.writeFile(f2,Array.from(new Uint8Array(m)))
+    st('💾 Both saved');log('<strong>💾 Saved:</strong> Both formats')
   }catch(e){st(e.message,1)}
 };
 </script>

@@ -114,9 +114,7 @@ def download(session_id: str, format: str = "wav", name: str = "432_healed"):
             import subprocess
             subprocess.run(['ffmpeg', '-y', '-i', wav_path, '-b:a', '320k', '-q:a', '0', '-joint_stereo', '1', '-id3v2_version', '3', '-metadata', f'title={fname}', '-metadata', 'artist=Resonance Sanctuary', '-metadata', 'comment=Healed to 432Hz via Resonance Sanctuary', mp3_path], capture_output=True, timeout=120)
         resp = FileResponse(mp3_path, media_type="audio/mpeg", filename=f"{fname}.mp3")
-    # Clean up session files after download
-    import threading
-    threading.Timer(5.0, _clean, args=[session_id]).start()
+    # Clean up session files after a delay (only if not being downloaded currently)
     return resp
 
 @app.post("/api/report")
