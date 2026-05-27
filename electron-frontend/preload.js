@@ -9,5 +9,6 @@ contextBridge.exposeInMainWorld('api', {
   selectFolder: () => ipcRenderer.invoke('dialog:selectFolder'),
   writeFile: (path, data) => ipcRenderer.invoke('fs:writeFile', path, data),
   listAudio: (path) => ipcRenderer.invoke('fs:listAudio', path),
+  readFile: (path) => ipcRenderer.invoke('fs:readFile', path),
   getPathForFile: (file) => webUtils ? webUtils.getPathForFile(file) : (file?.path || null),
 });

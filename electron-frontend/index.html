@@ -222,8 +222,8 @@ async function origInit(f){
   try{
     if(acOrig)acOrig.close();
     acOrig=new(window.AudioContext||window.webkitAudioContext)();
-    const resp=await fetch('file://'+f);const buf=await resp.arrayBuffer();
-    const ab=await acOrig.decodeAudioData(buf);
+    const buf=await A.readFile(f);if(!buf){log('❌ Cannot read file');st('File read error',1);return}
+    const ab=await acOrig.decodeAudioData(buf.slice(0));
     S._origBuf=ab;
     anOrig=acOrig.createAnalyser();anOrig.fftSize=8192;anOrig.smoothingTimeConstant=0.85;
     $('origTime').textContent='0:00 / '+Math.floor(ab.duration/60)+':'+String(Math.floor(ab.duration%60)).padStart(2,'0');

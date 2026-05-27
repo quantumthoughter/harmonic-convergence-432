@@ -70,6 +70,10 @@ ipcMain.handle('fs:listAudio', async (event, folderPath) => {
     return fs.readdirSync(folderPath).filter(f => exts.has(path.extname(f).toLowerCase())).map(f => path.join(folderPath, f));
   } catch { return []; }
 });
+ipcMain.handle('fs:readFile', async (event, filePath) => {
+  try { return fs.readFileSync(filePath).buffer; }
+  catch { return null; }
+});
 
 async function apiGet(url) {
   return new Promise((resolve, reject) => {
