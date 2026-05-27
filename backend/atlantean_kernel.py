@@ -65,4 +65,4 @@ class AtlanteanKernel:
             status = 'healed'
         y_healed, _ = librosa.load(output_path, sr=self.sample_rate)
         hd = len(y_healed) / sr
-        return {'status': status, 'original_tuning': float(ot), 'target_tuning': float(target_tuning), 'confidence': float(d['confidence']), 'detection_method': d['method'], 'semitones_shifted': float(round(ss, 4)), 'duration_preserved': abs(hd - od) < 0.05, 'original_duration': od, 'healed_duration': hd, 'already_at_target': already}
+        return {'status': status, 'original_tuning': float(ot), 'target_tuning': float(target_tuning), 'confidence': float(d['confidence']), 'detection_method': d['method'], 'semitones_shifted': float(round(ss, 4)), 'duration_preserved': bool(abs(hd - od) < 0.05), 'original_duration': float(od), 'healed_duration': float(hd), 'already_at_target': bool(already)}

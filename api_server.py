@@ -1,7 +1,8 @@
 import sys, os, json, uuid
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import Response
+from urllib.parse import quote
 from pydantic import BaseModel
 from typing import Optional
 import numpy as np
@@ -41,6 +42,7 @@ class HealRequest(BaseModel):
 
 class DetectRequest(BaseModel): file_path: str
 class ReportRequest(BaseModel): input_path: str; output_path: str
+class BatchRequest(BaseModel): folder_path: str; output_dir: str; target_tuning: float = 432.0
 class SynthRequest(BaseModel): frequencies: dict = {}; duration_hours: float = 1.0; sample_rate: int = 48000
 class RenderSynthRequest(BaseModel): frequencies: dict = {}; pyt_esla: bool = False; carrier_1hz: bool = True; ambience_mix: float = 0.0; duration_hours: float = 1.0; sample_rate: int = 48000
 
@@ -111,21 +113,47 @@ def _clean(session_id):
         except: pass
 
 @app.get("/api/download/{session_id}")
-def download(session_id: str, format: str = "wav", name: str = "432_healed"):
+def download(session_id: str, format: str = "wav", name: str = "432_healed", cleanup: str = "1"):
     wav_path = os.path.join(WORK_DIR, f"{session_id}_final.wav")
     if not os.path.exists(wav_path):
         raise HTTPException(404, "Session not found")
-    fname = os.path.basename(name.replace('_432healed', '').replace('_432', '') + '_432')
+    fname = os.path.basename(name)
+    safe_name = quote(fname, safe='')
     if format == "wav":
-        resp = FileResponse(wav_path, media_type="audio/wav", filename=f"{fname}.wav")
+        data = open(wav_path, 'rb').read()
+        if cleanup == "1":
+            _clean(session_id)
+        return Response(content=data, media_type="audio/wav", headers={"Content-Disposition": f'attachment; filename="{safe_name}.wav"'})
     else:
-        mp3_path = wav_path.replace('.wav', '.mp3')
-        if not os.path.exists(mp3_path):
-            import subprocess
-            subprocess.run(['ffmpeg', '-y', '-i', wav_path, '-b:a', '320k', '-q:a', '0', '-joint_stereo', '1', '-id3v2_version', '3', '-metadata', f'title={fname}', '-metadata', 'artist=Resonance Sanctuary', '-metadata', 'comment=Healed to 432Hz via Resonance Sanctuary', mp3_path], capture_output=True, timeout=120)
-        resp = FileResponse(mp3_path, media_type="audio/mpeg", filename=f"{fname}.mp3")
-    # Clean up session files after a delay (only if not being downloaded currently)
-    return resp
+        import subprocess, tempfile
+        temp_mp3 = tempfile.NamedTemporaryFile(suffix='.mp3', delete=False)
+        mp3_path = temp_mp3.name
+        temp_mp3.close()
+        subprocess.run(['ffmpeg', '-y', '-i', wav_path, '-b:a', '320k', '-q:a', '0', '-joint_stereo', '1', '-id3v2_version', '3', '-metadata', f'title={fname}', '-metadata', 'artist=Harmonic Convergence', '-metadata', 'comment=Healed to 432Hz via Harmonic Convergence', mp3_path], capture_output=True, timeout=120)
+        data = open(mp3_path, 'rb').read()
+        os.remove(mp3_path)
+        if cleanup == "1":
+            _clean(session_id)
+        return Response(content=data, media_type="audio/mpeg", headers={"Content-Disposition": f'attachment; filename="{safe_name}.mp3"'})
+
+@app.post("/api/heal_batch")
+def heal_batch(req: BatchRequest):
+    import glob
+    AUDIO_EXTS = {'.mp3','.wav','.flac','.ogg','.m4a','.aac','.m4a'}
+    files = [f for f in glob.glob(os.path.join(req.folder_path, '*')) if os.path.splitext(f)[1].lower() in AUDIO_EXTS]
+    if not files:
+        raise HTTPException(400, "No audio files found in folder")
+    os.makedirs(req.output_dir, exist_ok=True)
+    results = []
+    for i, f in enumerate(files):
+        try:
+            sname = source_name(f)
+            out_path = os.path.join(req.output_dir, f"{sname}_∞432.wav")
+            heal_result = kernel.full_heal(f, out_path, target_tuning=req.target_tuning)
+            results.append({'file': os.path.basename(f), 'status': 'ok', 'output': os.path.basename(out_path), 'original_tuning': heal_result['original_tuning'], 'target_tuning': heal_result['target_tuning'], 'semitones_shifted': heal_result['semitones_shifted']})
+        except Exception as e:
+            results.append({'file': os.path.basename(f), 'status': 'error', 'error': str(e)})
+    return {'total': len(files), 'completed': sum(1 for r in results if r['status']=='ok'), 'failed': sum(1 for r in results if r['status']=='error'), 'results': results}
 
 @app.post("/api/report")
 def generate_report(req: ReportRequest):
