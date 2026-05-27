@@ -112,9 +112,15 @@ select,input[type="number"]{background:rgba(15,10,30,.8);color:var(--text);borde
         <div class="cqt-labels"><span>20</span><span>100</span><span>432</span><span>1k</span><span>5k</span><span>10k</span></div>
         <div class="track-ctrl">
           <button id="origPlayBtn">▶</button>
-          <input type="range" class="track-seek" id="origSeek" min="0" max="1000" value="0">
-          <span id="origTime" style="font-size:8px;color:var(--muted);min-width:50px;text-align:right">0:00 / 0:00</span>
+          <input type="range" class="track-seek" id="origSeek" min="0" max="1000" value="0" style="flex:1">
+          <span id="origTime" style="font-size:8px;color:var(--muted);min-width:55px;text-align:right">0:00</span>
         </div>
+        <div style="display:flex;align-items:center;gap:4px;padding:1px 6px 3px;border-top:1px solid rgba(155,109,255,.04)">
+          <span style="font-size:7px;color:var(--muted)">Vol</span>
+          <input type="range" id="origVol" min="0" max="100" value="70" style="flex:1;height:3px;max-width:60px">
+          <span id="origVolVal" style="font-size:7px;color:var(--muted)">70</span>
+        </div>
+      </div>
       </div>
       <!-- Healed Track -->
       <div class="track">
@@ -123,8 +129,13 @@ select,input[type="number"]{background:rgba(15,10,30,.8);color:var(--text);borde
         <div class="cqt-labels"><span>20</span><span>100</span><span>432</span><span>1k</span><span>5k</span><span>10k</span></div>
         <div class="track-ctrl">
           <button id="healPlayBtn">▶</button>
-          <input type="range" class="track-seek" id="healSeek" min="0" max="1000" value="0">
-          <span id="healTime" style="font-size:8px;color:var(--muted);min-width:50px;text-align:right">0:00 / 0:00</span>
+          <input type="range" class="track-seek" id="healSeek" min="0" max="1000" value="0" style="flex:1">
+          <span id="healTime" style="font-size:8px;color:var(--muted);min-width:55px;text-align:right">0:00</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:4px;padding:1px 6px 3px;border-top:1px solid rgba(155,109,255,.04)">
+          <span style="font-size:7px;color:var(--muted)">Vol</span>
+          <input type="range" id="healVol" min="0" max="100" value="70" style="flex:1;height:3px;max-width:60px">
+          <span id="healVolVal" style="font-size:7px;color:var(--muted)">70</span>
         </div>
       </div>
     </div>
@@ -188,29 +199,39 @@ async function loadFile(f){
 function startCQT(canvasId, analyserRef, animRef, label){
   const cv=$(canvasId);if(!cv||!analyserRef)return;
   const ctx=cv.getContext('2d');
-  const resize=()=>{if(cv){cv.width=cv.clientWidth;cv.height=80}};
-  resize();
-  const H=80,fm=20,fx=10000,bp=24;
-  const nb=Math.floor(bp*Math.log2(fx/fm))+1,cf=[];
-  for(let i=0;i<=nb;i++){const f=fm*Math.pow(2,i/bp);if(f<=fx)cf.push(f)}
+  const H=80,fm=20,fx=10000;
   const lm=Math.log10(fm),lx=Math.log10(fx);
-  const W=()=>cv.clientWidth;
+  function resize(){if(cv)cv.width=cv.clientWidth}
+  resize();
   const bl=analyserRef.frequencyBinCount,da=new Uint8Array(bl);
-  const fi=[];for(let i=0;i<cf.length;i++)fi.push(Math.min(Math.round(cf[i]*analyserRef.fftSize/44100),bl-1));
   function draw(){
     if(!analyserRef){animRef=requestAnimationFrame(draw);return}
     analyserRef.getByteFrequencyData(da);
-    ctx.fillStyle='#03020a';ctx.fillRect(0,0,W(),H);
+    const W=cv.width;ctx.fillStyle='#03020a';ctx.fillRect(0,0,W,H);
+    // Grid lines with accurate 432 Hz position
     for(const g of GRID){
-      if(g<fm||g>fx)continue;const x=((Math.log10(g)-lm)/(lx-lm))*W();
-      ctx.strokeStyle=g===432?'rgba(217,170,58,.2)':'rgba(155,109,255,.04)';
-      ctx.lineWidth=g===432?1.5:.5;ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H-8);ctx.stroke()
+      if(g<fm||g>fx)continue;
+      const x=((Math.log10(g)-lm)/(lx-lm))*W;
+      const is432=g===432;
+      ctx.strokeStyle=is432?'rgba(217,170,58,.25)':'rgba(155,109,255,.04)';
+      ctx.lineWidth=is432?1.5:.5;
+      ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H-8);ctx.stroke();
+      if(is432){
+        ctx.fillStyle='rgba(217,170,58,.35)';ctx.font='7px monospace';ctx.textAlign='center';
+        ctx.fillText('432 Hz',x,8);
+      }
     }
-    const bw=W()/cf.length;
-    for(let i=0;i<cf.length;i++){let v=da[fi[i]]/255;v=Math.pow(v,.7);ctx.fillStyle=`hsla(${240+v*50},70%,50%,${.2+v*.6})`;ctx.fillRect(i*bw,H-v*H,bw-1,v*H)}
-    // 432 label
-    const x432=((Math.log10(432)-lm)/(lx-lm))*W();
-    ctx.fillStyle='rgba(217,170,58,.3)';ctx.font='6px monospace';ctx.textAlign='center';ctx.fillText('432',x432,7);
+    // Spectrum
+    const sr=44100,fftSize=8192;
+    for(let i=1;i<bl-1;i++){
+      const freq=i*sr/fftSize;
+      if(freq<fm||freq>fx)continue;
+      const x=((Math.log10(freq)-lm)/(lx-lm))*W;
+      let v=da[i]/255;v=Math.pow(v,.7);
+      const hue=240+v*50;
+      ctx.fillStyle=`hsla(${hue},70%,50%,${.2+v*.6})`;
+      ctx.fillRect(x,H-v*H,Math.max(1,W/bl),v*H);
+    }
     animRef=requestAnimationFrame(draw)
   }
   draw()
@@ -239,8 +260,9 @@ function origPlay(){
   if(origPlaying){origStop();return}
   try{
     if(acOrig.state==='suspended')acOrig.resume()
+    const vol=acOrig.createGain();vol.gain.value=$('origVol').value/100;
     srcOrig=acOrig.createBufferSource();srcOrig.buffer=S._origBuf;
-    srcOrig.connect(anOrig);anOrig.connect(acOrig.destination);
+    srcOrig.connect(vol);vol.connect(anOrig);anOrig.connect(acOrig.destination);
     srcOrig.start(0);
     origPlaying=true;$('origPlayBtn').textContent='⏹';
     // Seek tracking
@@ -306,8 +328,9 @@ function healPlay(){
   if(healPlaying){healStop();return}
   try{
     if(acHeal.state==='suspended')acHeal.resume()
+    const vol=acHeal.createGain();vol.gain.value=$('healVol').value/100;
     srcHeal=acHeal.createBufferSource();srcHeal.buffer=S._healBuf;
-    srcHeal.connect(anHeal);anHeal.connect(acHeal.destination);
+    srcHeal.connect(vol);vol.connect(anHeal);anHeal.connect(acHeal.destination);
     srcHeal.start(0);
     healPlaying=true;$('healPlayBtn').textContent='⏹';
     const dur=S._healBuf.duration;
@@ -327,6 +350,8 @@ function healStop(){
   if(S._healSeekInt){clearInterval(S._healSeekInt);S._healSeekInt=null}
 }
 $('healPlayBtn').onclick=healPlay;
+$('origVol').oninput=function(){$('origVolVal').textContent=this.value};
+$('healVol').oninput=function(){$('healVolVal').textContent=this.value};
 
 // ─── SAVE ───
 async function saveFile(fmt){

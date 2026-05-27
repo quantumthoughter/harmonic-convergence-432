@@ -94,19 +94,30 @@ async def heal(request: HealRequest):
     os.remove(healed_path)
     return {"session_id": session_id, "output_path": final_wav, "source_name": sname, "heal_result": heal_result, "mix_shape": list(y.shape if request.pure_432 else mix.shape), "sample_rate": sr}
 
+def _clean(session_id):
+    import glob
+    for f in glob.glob(os.path.join(WORK_DIR, f"{session_id}_*")):
+        try: os.remove(f)
+        except: pass
+
 @app.get("/api/download/{session_id}")
 def download(session_id: str, format: str = "wav", name: str = "432_healed"):
     wav_path = os.path.join(WORK_DIR, f"{session_id}_final.wav")
     if not os.path.exists(wav_path):
         raise HTTPException(404, "Session not found")
-    fname = name.replace('_432healed', '').replace('_432', '') + '_432'
+    fname = os.path.basename(name.replace('_432healed', '').replace('_432', '') + '_432')
     if format == "wav":
-        return FileResponse(wav_path, media_type="audio/wav", filename=f"{fname}.wav")
-    mp3_path = wav_path.replace('.wav', '.mp3')
-    if not os.path.exists(mp3_path):
-        import subprocess
-        subprocess.run(['ffmpeg', '-y', '-i', wav_path, '-b:a', '320k', '-q:a', '0', '-joint_stereo', '1', '-id3v2_version', '3', '-metadata', f'title={fname}', '-metadata', 'artist=Resonance Sanctuary', '-metadata', 'comment=Healed to 432Hz via Resonance Sanctuary', mp3_path], capture_output=True, timeout=120)
-    return FileResponse(mp3_path, media_type="audio/mpeg", filename=f"{fname}.mp3")
+        resp = FileResponse(wav_path, media_type="audio/wav", filename=f"{fname}.wav")
+    else:
+        mp3_path = wav_path.replace('.wav', '.mp3')
+        if not os.path.exists(mp3_path):
+            import subprocess
+            subprocess.run(['ffmpeg', '-y', '-i', wav_path, '-b:a', '320k', '-q:a', '0', '-joint_stereo', '1', '-id3v2_version', '3', '-metadata', f'title={fname}', '-metadata', 'artist=Resonance Sanctuary', '-metadata', 'comment=Healed to 432Hz via Resonance Sanctuary', mp3_path], capture_output=True, timeout=120)
+        resp = FileResponse(mp3_path, media_type="audio/mpeg", filename=f"{fname}.mp3")
+    # Clean up session files after download
+    import threading
+    threading.Timer(5.0, _clean, args=[session_id]).start()
+    return resp
 
 @app.post("/api/report")
 def generate_report(req: ReportRequest):
