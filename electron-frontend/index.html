@@ -3,139 +3,150 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Harmonic Convergence · ∞ 432 Hz Healer</title>
+<title>Harmonic Convergence · ∞ 432 Hz</title>
 <style>
-:root{--bg:#0a0612;--ameth:#9b6dff;--em:#34d399;--gold:#d9aa3a;--text:#dde0f0;--muted:#8880b0;--panel:#12102a;--soft:#1e1a3a}
+:root{--bg:#0a0612;--ameth:#9b6dff;--em:#34d399;--gold:#d9aa3a;--text:#dde0f0;--muted:#8880b0;--panel:#12102a;--soft:#2a264a}
 *{margin:0;box-sizing:border-box}
-body{height:100vh;background:linear-gradient(145deg,#0a0612,#0e0820);color:var(--text);font-family:'Inter','Segoe UI',system-ui,sans-serif;overflow:hidden;display:flex;flex-direction:column;font-size:13px}
-.titlebar{-webkit-app-region:drag;height:30px;display:flex;align-items:center;padding:0 12px;gap:6px;flex-shrink:0;border-bottom:1px solid rgba(155,109,255,.04)}
+body{height:100vh;background:linear-gradient(145deg,#0a0612,#0e0820);color:var(--text);font-family:'Inter','Segoe UI',system-ui,sans-serif;overflow:hidden;display:flex;flex-direction:column;font-size:14px}
+.titlebar{-webkit-app-region:drag;height:32px;display:flex;align-items:center;padding:0 14px;gap:6px;flex-shrink:0;border-bottom:1px solid rgba(155,109,255,.04)}
 .titlebar .dot{width:10px;height:10px;border-radius:50%;background:conic-gradient(var(--ameth),var(--em),var(--ameth));box-shadow:0 0 6px rgba(155,109,255,.12);-webkit-app-region:no-drag;flex-shrink:0}
-.titlebar .sub{font-size:8px;color:var(--muted);margin-left:auto}
-.main{display:flex;flex:1;padding:6px;gap:8px;overflow:hidden}
-.left{width:300px;display:flex;flex-direction:column;gap:6px;overflow-y:auto;flex-shrink:0}
-.right{flex:1;display:flex;flex-direction:column;gap:6px;overflow:hidden}
+.titlebar .sub{font-size:9px;color:var(--muted);margin-left:auto}
+.main{display:flex;flex:1;padding:10px;gap:12px;overflow:hidden}
+.left{width:320px;display:flex;flex-direction:column;gap:8px;overflow-y:auto;flex-shrink:0}
+.right{flex:1;display:flex;flex-direction:column;gap:10px;overflow:hidden}
 
-.card{background:linear-gradient(160deg,rgba(18,16,42,.94),rgba(12,8,28,.96));border:1px solid rgba(155,109,255,.08);border-radius:12px;overflow:hidden;backdrop-filter:blur(4px)}
-.card-h{display:flex;align-items:center;justify-content:space-between;padding:8px 14px 6px;border-bottom:1px solid rgba(155,109,255,.05)}
-.card-h h2{font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:.08em;font-weight:700}
-.card-h span{font-size:9px;color:var(--muted)}
-.card-b{padding:8px 12px}
+.card{background:linear-gradient(160deg,rgba(18,16,42,.94),rgba(12,8,28,.96));border:1px solid rgba(155,109,255,.08);border-radius:16px;overflow:hidden;backdrop-filter:blur(4px)}
+.card-h{display:flex;align-items:center;justify-content:space-between;padding:10px 16px 8px;border-bottom:1px solid rgba(155,109,255,.05)}
+.card-h h2{font-size:12px;color:var(--gold);text-transform:uppercase;letter-spacing:.1em;font-weight:700}
+.card-h span{font-size:10px;color:var(--muted)}
+.card-b{padding:12px 16px}
 
-#dropZone{border:2px dashed rgba(155,109,255,.12);border-radius:12px;padding:14px;text-align:center;cursor:pointer;font-size:11px;color:var(--muted);background:rgba(155,109,255,.02);transition:all .3s}
+#dropZone{border:2px dashed rgba(155,109,255,.12);border-radius:14px;padding:20px;text-align:center;cursor:pointer;font-size:13px;color:var(--muted);background:rgba(155,109,255,.02);transition:all .3s}
 #dropZone:hover{border-color:var(--ameth);background:rgba(155,109,255,.04)}
-#dropZone.ok{border-color:var(--em)}
+#dropZone.ok{border-color:var(--em);color:var(--em)}
 
-button{cursor:pointer;border:none;border-radius:8px;font-weight:600;transition:all .2s;font-family:inherit}
-.heal-btn{position:relative;background:linear-gradient(135deg,#9b6dff,#6a3db8);color:#fff;box-shadow:0 3px 18px rgba(155,109,255,.2);font-size:14px;padding:14px 20px;width:100%;overflow:hidden}
-.heal-btn::before{content:'';position:absolute;inset:0;border-radius:8px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);transform:translateX(-100%);transition:transform .6s}
+button{cursor:pointer;border:none;border-radius:10px;font-weight:600;transition:all .2s;font-family:inherit}
+.heal-btn{position:relative;background:linear-gradient(135deg,#9b6dff,#6a3db8);color:#fff;box-shadow:0 3px 20px rgba(155,109,255,.2);font-size:15px;padding:16px 24px;width:100%;overflow:hidden;letter-spacing:.3px}
+.heal-btn::before{content:'';position:absolute;inset:0;border-radius:10px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent);transform:translateX(-100%);transition:transform .6s}
 .heal-btn:hover::before{transform:translateX(100%)}
-.heal-btn:hover{box-shadow:0 5px 30px rgba(155,109,255,.4);transform:translateY(-1px)}
-@keyframes glow-pulse{0%,100%{box-shadow:0 3px 18px rgba(155,109,255,.2)}50%{box-shadow:0 3px 30px rgba(155,109,255,.5)}}
+.heal-btn:hover{box-shadow:0 5px 35px rgba(155,109,255,.4);transform:translateY(-1px)}
+@keyframes glow-pulse{0%,100%{box-shadow:0 3px 20px rgba(155,109,255,.2)}50%{box-shadow:0 3px 35px rgba(155,109,255,.5)}}
 .heal-btn:not(:hover){animation:glow-pulse 3s ease-in-out infinite}
-
-.save-btn{background:rgba(155,109,255,.06);color:var(--text);border:1px solid rgba(155,109,255,.08);font-size:10px;padding:8px 12px;flex:1;text-align:center}
+.save-btn{background:rgba(155,109,255,.06);color:var(--text);border:1px solid rgba(155,109,255,.08);font-size:11px;padding:10px 16px;flex:1;text-align:center;border-radius:8px}
 .save-btn:hover{background:rgba(155,109,255,.12);border-color:var(--ameth)}
-.play-btn{background:rgba(155,109,255,.08);color:var(--text);font-size:11px;padding:4px 12px;border-radius:5px}
+.play-btn{background:rgba(155,109,255,.08);color:var(--text);font-size:12px;padding:6px 16px;border-radius:6px}
 .play-btn:hover{background:rgba(155,109,255,.15)}
-.batch-btn{background:rgba(155,109,255,.06);color:var(--text);border:1px solid rgba(155,109,255,.08);font-size:10px;padding:8px 12px;flex:1;text-align:center;margin-top:3px}
+.batch-btn{background:rgba(155,109,255,.06);color:var(--text);border:1px solid rgba(155,109,255,.08);font-size:11px;padding:10px 16px;flex:1;text-align:center;margin-top:4px;border-radius:8px}
 .batch-btn:hover{background:rgba(155,109,255,.12);border-color:var(--ameth)}
-.batch-prog{font-size:8px;color:var(--muted);text-align:center;padding:2px}
+.batch-prog{font-size:9px;color:var(--muted);text-align:center;padding:3px}
 
-.det-row{display:flex;gap:8px}
-.det-item{flex:1;background:rgba(8,4,18,.4);border-radius:8px;padding:8px 10px;border:1px solid rgba(155,109,255,.05)}
-.det-label{font-size:7px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
-.det-val{font-size:20px;font-weight:800;margin-top:1px;font-variant-numeric:tabular-nums}
-.det-sub{font-size:8px;color:var(--muted);margin-top:1px}
+.det-row{display:flex;gap:12px}
+.det-item{flex:1;background:rgba(8,4,18,.4);border-radius:10px;padding:10px 14px;border:1px solid rgba(155,109,255,.05)}
+.det-label{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.det-val{font-size:24px;font-weight:800;margin-top:2px;font-variant-numeric:tabular-nums}
+.det-sub{font-size:9px;color:var(--muted);margin-top:2px}
 
-.meta-row{display:flex;gap:5px;align-items:center;margin-bottom:3px}
-.meta-row label{font-size:8px;color:var(--muted);min-width:44px;flex-shrink:0}
-.meta-row input[type="text"],textarea{flex:1;background:rgba(8,4,18,.6);border:1px solid rgba(155,109,255,.1);border-radius:5px;color:var(--text);font-size:10px;padding:3px 6px;font-family:inherit;outline:none}
+.meta-row{display:flex;gap:6px;align-items:center;margin-bottom:4px}
+.meta-row label{font-size:9px;color:var(--muted);min-width:50px;flex-shrink:0}
+.meta-row input[type="text"],textarea{flex:1;background:rgba(8,4,18,.6);border:1px solid rgba(155,109,255,.1);border-radius:6px;color:var(--text);font-size:11px;padding:4px 8px;font-family:inherit;outline:none}
 .meta-row input[type="text"]:focus,textarea:focus{border-color:var(--ameth)}
-.meta-row input[type="text"]{height:22px}
-textarea{resize:vertical;min-height:26px;max-height:50px}
-.meta-row input[type="checkbox"]{accent-color:var(--ameth);width:12px;height:12px;cursor:pointer}
+.meta-row input[type="text"]{height:28px}
+textarea{resize:vertical;min-height:28px;max-height:60px}
+.meta-row input[type="checkbox"]{accent-color:var(--ameth);width:14px;height:14px;cursor:pointer}
 
-.diag{font-size:8px;color:var(--muted);line-height:1.5;background:rgba(8,4,18,.4);border-radius:6px;padding:5px 8px;max-height:100%;overflow-y:auto;flex:1}
+.diag{font-size:9px;color:var(--muted);line-height:1.6;background:rgba(8,4,18,.4);border-radius:8px;padding:6px 10px;max-height:100%;overflow-y:auto;flex:1}
 .diag strong{color:var(--gold)}
 .diag .good{color:var(--em)}
-.diag .time{color:rgba(136,128,176,.4);font-size:7px}
+.diag .time{color:rgba(136,128,176,.35);font-size:8px}
 
-.prog{height:3px;background:rgba(155,109,255,.04);border-radius:2px;overflow:hidden}
+.prog{height:4px;background:rgba(155,109,255,.04);border-radius:2px;overflow:hidden}
 .prog-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--ameth),var(--em));transition:width .4s}
-.status{font-size:12px;text-align:center;color:var(--em);font-weight:600;padding:3px 0}
+.status{font-size:14px;text-align:center;color:var(--em);font-weight:600;padding:4px 0}
 .status.er{color:#ff7a7a}
 
-.track{border-radius:10px;overflow:hidden;border:1px solid rgba(155,109,255,.06);display:flex;flex-direction:column}
-.track-h{font-size:9px;padding:4px 8px;display:flex;justify-content:space-between;font-weight:600}
+.track{border-radius:12px;overflow:hidden;border:1px solid rgba(155,109,255,.06);display:flex;flex-direction:column}
+.track-h{font-size:10px;padding:6px 10px;display:flex;justify-content:space-between;font-weight:600}
 .track-h.orig{color:var(--ameth);background:rgba(155,109,255,.04)}
 .track-h.heal{color:var(--em);background:rgba(52,211,153,.04)}
-.track canvas{width:100%;height:70px;display:block;background:#03020a}
-.track-ctrl{display:flex;align-items:center;gap:4px;padding:2px 6px}
-.track-ctrl input[type="range"]{flex:1;height:3px}
-.track-ctrl .time{font-size:8px;color:var(--muted);min-width:50px;text-align:right}
-.track-vol{display:flex;align-items:center;gap:3px;padding:1px 6px 3px}
-.track-vol input[type="range"]{flex:1;max-width:70px;height:2px}
-.track-vol label{font-size:7px;color:var(--muted)}
+.track canvas{width:100%;height:80px;display:block;background:#03020a}
+.track-ctrl{display:flex;align-items:center;gap:6px;padding:4px 10px}
+.track-ctrl input[type="range"]{flex:1;height:4px}
+.track-ctrl .time{font-size:9px;color:var(--muted);min-width:60px;text-align:right;font-variant-numeric:tabular-nums}
+.track-vol{display:flex;align-items:center;gap:4px;padding:2px 10px 5px}
+.track-vol input[type="range"]{flex:1;max-width:80px;height:3px}
+.track-vol label{font-size:8px;color:var(--muted)}
 
-input[type="range"]{-webkit-appearance:none;height:3px;background:rgba(155,109,255,.1);border-radius:2px;outline:none}
-input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#b896ff,#7a4ddf);box-shadow:0 0 6px rgba(155,109,255,.2);cursor:pointer}
-select{background:rgba(8,4,18,.6);color:var(--text);border:1px solid rgba(155,109,255,.1);border-radius:6px;padding:4px 8px;font-size:10px;outline:none}
+input[type="range"]{-webkit-appearance:none;height:4px;background:rgba(155,109,255,.1);border-radius:2px;outline:none}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#b896ff,#7a4ddf);box-shadow:0 0 8px rgba(155,109,255,.2);cursor:pointer}
+select{background:rgba(8,4,18,.6);color:var(--text);border:1px solid rgba(155,109,255,.1);border-radius:8px;padding:6px 10px;font-size:11px;outline:none}
+
+.vortex-panel{background:#03020a;border-radius:16px;border:1px solid rgba(155,109,255,.06);padding:16px 20px;flex-shrink:0;overflow-y:auto}
+.vortex-panel .vp-title{font-size:13px;font-weight:700;color:var(--gold);letter-spacing:.5px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.vortex-panel .vp-title span{font-size:10px;color:var(--muted);font-weight:400}
+.vr{display:flex;align-items:center;gap:10px;padding:5px 0}
+.vr label{font-size:10px;color:var(--muted);min-width:60px}
+.vr input[type="range"]{flex:1;height:5px}
+.vr .v-val{font-size:10px;color:var(--muted);min-width:28px;text-align:right;font-variant-numeric:tabular-nums}
+.vr .v-mode{display:flex;gap:3px}
+.vr .v-mode button{padding:4px 10px;font-size:10px;border-radius:5px;background:rgba(155,109,255,.06);color:var(--muted);border:1px solid transparent}
+.vr .v-mode button.active{background:rgba(155,109,255,.12);color:var(--ameth);border-color:rgba(155,109,255,.2)}
+.vr .v-mode button:hover{background:rgba(155,109,255,.1)}
+.vr .v-freqs{font-size:9px;color:var(--muted);letter-spacing:.5px;padding-top:3px}
+.vr .v-freqs span{color:var(--gold);font-weight:600}
+.vr .v-freqs .g{color:#ff9d6f}
+.vr .v-toggle{display:flex;gap:3px;flex:1}
+.vr .v-toggle button{padding:5px 12px;font-size:10px;border-radius:5px;background:rgba(155,109,255,.06);color:var(--muted);border:1px solid transparent;flex:1}
+.vr .v-toggle button.active{background:rgba(155,109,255,.12);color:var(--ameth);border-color:rgba(155,109,255,.2)}
+
+.pytesla-badge{background:linear-gradient(135deg,rgba(155,109,255,.08),rgba(52,211,153,.04));border:1px solid rgba(155,109,255,.12);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px;margin:4px 0}
+.pytesla-badge .py-icon{font-size:16px}
+.pytesla-badge .py-info{flex:1}
+.pytesla-badge .py-info .py-title{font-size:11px;font-weight:700;color:var(--ameth)}
+.pytesla-badge .py-info .py-sub{font-size:9px;color:var(--muted)}
+.pytesla-badge .py-beat{font-size:22px;font-weight:800;color:var(--gold);font-variant-numeric:tabular-nums}
 
 @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
 @keyframes breathe{0%,100%{transform:scale(1);opacity:.6}50%{transform:scale(1.03);opacity:1}}
-@keyframes fol-glow{0%,100%{filter:drop-shadow(0 0 6px rgba(155,109,255,.1)) drop-shadow(0 0 18px rgba(155,109,255,.03))}50%{filter:drop-shadow(0 0 12px rgba(155,109,255,.2)) drop-shadow(0 0 35px rgba(155,109,255,.08))}}
+@keyframes fol-glow{0%,100%{filter:drop-shadow(0 0 6px rgba(155,109,255,.1)) drop-shadow(0 0 18px rgba(155,109,255,.03))}50%{filter:drop-shadow(0 0 14px rgba(155,109,255,.25)) drop-shadow(0 0 40px rgba(155,109,255,.1))}}
+@keyframes sparkle{0%,100%{opacity:0;transform:scale(0)}50%{opacity:.8;transform:scale(1)}}
 @keyframes shimmer{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@keyframes burst{0%{opacity:0;transform:scale(0) rotate(0deg)}30%{opacity:1;transform:scale(1.3) rotate(180deg)}60%{opacity:.6;transform:scale(.9) rotate(270deg)}100%{opacity:0;transform:scale(1) rotate(360deg)}}
 
-.fol-hero{background:#03020a;border-radius:12px;border:1px solid rgba(155,109,255,.06);display:flex;align-items:center;justify-content:center;gap:20px;padding:12px 16px;position:relative;overflow:hidden;flex-shrink:0;min-height:80px}
-.fol-hero::before{content:'';position:absolute;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(155,109,255,.03),transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none}
-.fol-hero .fol-svg{width:58px;height:58px;animation:spin 20s linear infinite, fol-glow 5s ease-in-out infinite;flex-shrink:0;position:relative;z-index:1;transition:filter .3s}
-.fol-hero .fol-svg.dancing{animation:spin 4s linear infinite, fol-glow 1s ease-in-out infinite}
+.fol-hero{background:#03020a;border-radius:16px;border:1px solid rgba(155,109,255,.06);display:flex;align-items:center;justify-content:center;gap:28px;padding:18px 24px;position:relative;overflow:hidden;flex-shrink:0;min-height:100px}
+.fol-hero::before{content:'';position:absolute;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(155,109,255,.04),transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none}
+.fol-hero .fol-svg{width:64px;height:64px;flex-shrink:0;position:relative;z-index:1;filter:drop-shadow(0 0 8px rgba(155,109,255,.15));transition:all .2s}
+.fol-hero .fol-svg.idle{animation:spin 24s linear infinite, fol-glow 6s ease-in-out infinite}
+.fol-hero .fol-svg.dancing{animation:spin 3s linear infinite, fol-glow .8s ease-in-out infinite}
+.fol-hero .fol-svg.bursting{animation:burst 1.5s ease-out forwards}
+.fol-hero .sparkle{position:absolute;width:4px;height:4px;border-radius:50%;background:var(--gold);box-shadow:0 0 6px var(--gold);pointer-events:none;animation:sparkle 1.2s ease-out forwards;z-index:2}
 .fol-hero .brand-text{display:flex;flex-direction:column;align-items:center;position:relative;z-index:1}
-.fol-hero .brand-title{font-size:20px;font-weight:800;background:linear-gradient(270deg,var(--gold),var(--ameth),var(--em),var(--gold));background-size:300% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 6s ease-in-out infinite;letter-spacing:1.2px}
-.fol-hero .brand-sub{font-size:10px;color:var(--muted);letter-spacing:2px;margin-top:1px}
+.fol-hero .brand-title{font-size:22px;font-weight:800;background:linear-gradient(270deg,var(--gold),var(--ameth),var(--em),var(--gold));background-size:300% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 6s ease-in-out infinite;letter-spacing:1.5px}
+.fol-hero .brand-sub{font-size:11px;color:var(--muted);letter-spacing:3px;margin-top:2px}
 .fol-hero .brand-sub span{color:var(--em)}
 
-.vortex-panel{background:#03020a;border-radius:12px;border:1px solid rgba(155,109,255,.06);padding:10px 14px;flex-shrink:0;overflow:hidden}
-.vortex-panel .vp-title{font-size:11px;font-weight:700;color:var(--gold);letter-spacing:.3px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
-.vortex-panel .vp-title span{font-size:8px;color:var(--muted);font-weight:400}
-.vr{display:flex;align-items:center;gap:8px;padding:3px 0}
-.vr label{font-size:9px;color:var(--muted);min-width:52px}
-.vr input[type="range"]{flex:1;height:4px}
-.vr .v-val{font-size:9px;color:var(--muted);min-width:24px;text-align:right;font-variant-numeric:tabular-nums}
-.vr .v-mode{display:flex;gap:2px}
-.vr .v-mode button{padding:3px 8px;font-size:9px;border-radius:4px;background:rgba(155,109,255,.06);color:var(--muted);border:1px solid transparent}
-.vr .v-mode button.active{background:rgba(155,109,255,.12);color:var(--ameth);border-color:rgba(155,109,255,.2)}
-.vr .v-mode button:hover{background:rgba(155,109,255,.1)}
-.vr .v-freqs{font-size:8px;color:var(--muted);letter-spacing:.5px;padding-top:2px}
-.vr .v-freqs span{color:var(--gold);font-weight:600}
-.vr .v-freqs .g{color:#ff9d6f}
-.vr .v-toggle{display:flex;gap:2px;flex:1}
-.vr .v-toggle button{padding:3px 10px;font-size:9px;border-radius:4px;background:rgba(155,109,255,.06);color:var(--muted);border:1px solid transparent;flex:1}
-.vr .v-toggle button.active{background:rgba(155,109,255,.12);color:var(--ameth);border-color:rgba(155,109,255,.2)}
-
-::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:rgba(155,109,255,.1);border-radius:2px}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(155,109,255,.1);border-radius:2px}
 </style>
 </head>
 <body>
-<div class="titlebar"><div class="dot"></div><span class="sub">∞ 432 Hz</span></div>
+<div class="titlebar"><div class="dot"></div><span class="sub">∞ 432 Hz · Harmonic Convergence v2.2</span></div>
 <div class="main">
   <div class="left">
-    <div id="dropZone">Drop audio · heal to ∞ 432</div>
+    <div id="dropZone">Drop audio file here to heal to ∞ 432 Hz</div>
     <div class="card">
-      <div class="card-h"><h2>🎯 ∞ 432 Healer</h2><span id="tuneDisplay">—</span></div>
-      <div class="card-b" style="display:flex;flex-direction:column;gap:6px">
+      <div class="card-h"><h2>🎯 Healer</h2><span id="tuneDisplay">—</span></div>
+      <div class="card-b" style="display:flex;flex-direction:column;gap:8px">
         <div class="det-row">
-          <div class="det-item"><div class="det-label">Original</div><div class="det-val" id="origTune">—</div><div class="det-sub" id="detMethod">Awaiting file</div></div>
+          <div class="det-item"><div class="det-label">Original Tuning</div><div class="det-val" id="origTune">—</div><div class="det-sub" id="detMethod">Awaiting file</div></div>
           <div class="det-item" style="text-align:right"><div class="det-label">Target</div><div class="det-val" style="color:var(--em)" id="tuneTarget">∞ 432</div></div>
         </div>
-        <div style="display:flex;gap:5px;align-items:center">
-          <select id="tgtSel" style="flex:1;font-size:10px"><option value="432">∞ 432 Hz</option><option value="440">440 Hz</option><option value="444">444 Hz</option></select>
-          <select id="mp3Qual" style="width:70px;font-size:10px"><option value="320k">320k</option><option value="256k">256k</option><option value="192k">192k</option></select>
+        <div style="display:flex;gap:6px;align-items:center">
+          <select id="tgtSel" style="flex:1"><option value="432">∞ 432 Hz</option><option value="440">440 Hz</option><option value="444">444 Hz</option></select>
+          <select id="mp3Qual" style="width:80px"><option value="320k">320k</option><option value="256k">256k</option><option value="192k">192k</option></select>
         </div>
         <button class="heal-btn" id="healBtn">⟁ HEAL TO ∞ 432 Hz</button>
-        <div style="display:flex;gap:4px">
-          <button class="save-btn" id="wavBtn">WAV</button>
-          <button class="save-btn" id="mp3Btn">MP3</button>
+        <div style="display:flex;gap:5px">
+          <button class="save-btn" id="wavBtn">💾 WAV</button>
+          <button class="save-btn" id="mp3Btn">💾 MP3</button>
           <button class="save-btn" id="bothBtn">Both</button>
         </div>
         <button class="batch-btn" id="batchBtn">📂 Batch Heal Folder</button>
@@ -144,28 +155,28 @@ select{background:rgba(8,4,18,.6);color:var(--text);border:1px solid rgba(155,10
     </div>
     <div class="card">
       <div class="card-h"><h2>📝 Metadata</h2><span>⏎</span></div>
-      <div class="card-b" style="display:flex;flex-direction:column;gap:1px">
+      <div class="card-b" style="display:flex;flex-direction:column;gap:3px">
         <div class="meta-row"><label>Artist</label><input type="text" id="metaArtist" value="Quantum Thoughter"></div>
         <div class="meta-row"><label>Composer</label><input type="text" id="metaComposer" value="Quantum Thoughter"></div>
         <div class="meta-row"><label>Album</label><input type="text" id="metaAlbum" value="Harmonic Convergence"></div>
         <div class="meta-row"><label>Comment</label><input type="text" id="metaComment" value="432 Hz Tuning Correction via Harmonic Convergence"></div>
-        <div class="meta-row"><label></label><span style="font-size:8px;color:var(--muted)"><input type="checkbox" id="metaBpm" checked> BPM</span> <span style="font-size:8px;color:var(--muted);margin-left:6px"><input type="checkbox" id="metaInjectLyrics"> Embed Lyrics</span></div>
-        <div class="meta-row" id="lyricsRow" style="display:none;align-items:flex-start"><label style="margin-top:3px">Lyrics</label><textarea id="metaLyrics" placeholder="Paste lyrics here..."></textarea></div>
+        <div class="meta-row"><label></label><span style="font-size:9px;color:var(--muted)"><input type="checkbox" id="metaBpm" checked> BPM</span><span style="font-size:9px;color:var(--muted);margin-left:10px"><input type="checkbox" id="metaInjectLyrics"> Lyrics</span></div>
+        <div class="meta-row" id="lyricsRow" style="display:none;align-items:flex-start"><label style="margin-top:3px">Lyrics</label><textarea id="metaLyrics" placeholder="Embed lyrics in file..."></textarea></div>
       </div>
     </div>
     <div class="status" id="st">✨ Drop a file</div>
     <div class="prog"><div class="prog-fill" id="progFill"></div></div>
     <div class="card" style="flex:1;min-height:0;display:flex;flex-direction:column">
       <div class="card-h"><h2>📰 Local News</h2><span id="logCount">0</span></div>
-      <div class="card-b" style="padding:4px 8px;flex:1;display:flex;flex-direction:column;min-height:0">
+      <div class="card-b" style="padding:6px 10px;flex:1;display:flex;flex-direction:column;min-height:0">
         <div class="diag" id="diagLog"></div>
       </div>
     </div>
   </div>
 
   <div class="right">
-    <div class="fol-hero">
-      <svg class="fol-svg" id="folSvg" viewBox="0 0 100 100">
+    <div class="fol-hero" id="folHero">
+      <svg class="fol-svg idle" id="folSvg" viewBox="0 0 100 100">
         <circle cx="50" cy="50" r="24" stroke="var(--ameth)" fill="none" stroke-width=".35" opacity=".6"/>
         <circle cx="50" cy="26" r="24" stroke="var(--gold)" fill="none" stroke-width=".25" opacity=".35"/>
         <circle cx="50" cy="74" r="24" stroke="var(--gold)" fill="none" stroke-width=".25" opacity=".35"/>
@@ -182,7 +193,7 @@ select{background:rgba(8,4,18,.6);color:var(--text);border:1px solid rgba(155,10
       </div>
     </div>
 
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;flex-shrink:0">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;flex-shrink:0">
       <div class="track">
         <div class="track-h orig"><span>🔵 Original</span><span id="origInfo">—</span></div>
         <canvas id="origCQT"></canvas>
@@ -191,29 +202,64 @@ select{background:rgba(8,4,18,.6);color:var(--text);border:1px solid rgba(155,10
           <input type="range" id="origSeek" min="0" max="1000" value="0">
           <span class="time" id="origTime">0:00</span>
         </div>
-        <div class="track-vol"><label>Vol</label><input type="range" id="origVol" min="0" max="100" value="70"><span id="origVolVal" style="font-size:8px;color:var(--muted)">70</span></div>
+        <div class="track-vol"><label>Vol</label><input type="range" id="origVol" min="0" max="100" value="70"><span id="origVolVal" style="font-size:9px;color:var(--muted)">70</span></div>
       </div>
       <div class="track">
-        <div class="track-h heal"><span>🟢 Healed ∞ 432</span><span id="healInfo">—</span></div>
+        <div class="track-h heal"><span>🟢 Healed</span><span id="healInfo">—</span></div>
         <canvas id="healCQT"></canvas>
         <div class="track-ctrl">
           <button class="play-btn" id="healPlayBtn">▶</button>
           <input type="range" id="healSeek" min="0" max="1000" value="0">
           <span class="time" id="healTime">0:00</span>
         </div>
-        <div class="track-vol"><label>Vol</label><input type="range" id="healVol" min="0" max="100" value="70"><span id="healVolVal" style="font-size:8px;color:var(--muted)">70</span></div>
+        <div class="track-vol"><label>Vol</label><input type="range" id="healVol" min="0" max="100" value="70"><span id="healVolVal" style="font-size:9px;color:var(--muted)">70</span></div>
       </div>
     </div>
 
-    <div class="vortex-panel" id="vortexPanel" style="flex:1;min-height:0;display:flex;flex-direction:column">
-      <div class="vp-title">⟁ 432 Vortex Forge <span>Psychoacoustic Sub-Bass Carrier</span></div>
+    <div class="vortex-panel" style="flex:1;min-height:0;display:flex;flex-direction:column">
+      <div class="vp-title">⟁ 432 Vortex Forge <span>PyTesla · Psychoacoustic Layers · Carrier Waves</span></div>
+
+      <div class="pytesla-badge" id="pyteslaBadge" style="display:none">
+        <div class="py-icon">⚡</div>
+        <div class="py-info">
+          <div class="py-title" id="pyTitle">PyTesla Binaural Protocol</div>
+          <div class="py-sub" id="pySub">440 Hz (L) · 432 Hz (R)</div>
+        </div>
+        <div class="py-beat" id="pyBeat">8.00 Hz</div>
+      </div>
+
+      <div class="vr">
+        <label style="color:var(--ameth);font-weight:600">PyTesla</label>
+        <div class="v-toggle">
+          <button id="pyToggle" class="">⚡ Off</button>
+        </div>
+        <select id="pyPreset" style="flex:1;font-size:10px" disabled>
+          <option value="440~432">440~432 = 8 Hz (α/θ)</option>
+          <option value="424~432">424~432 = 8 Hz (α/θ)</option>
+          <option value="440~444">440~444 = 4 Hz (θ)</option>
+          <option value="432~444">432~444 = 12 Hz (β)</option>
+          <option value="423~432">423~432 = 9 Hz (α)</option>
+          <option value="396~404">396~404 = 8 Hz Engram</option>
+          <option value="396~399">396~399 = 3 Hz (δ)</option>
+        </select>
+      </div>
+
+      <div class="vr" id="pySwapRow" style="display:none">
+        <label>Swap L/R</label>
+        <div class="v-toggle">
+          <button id="pySwapToggle" class="">Off</button>
+        </div>
+        <label style="font-size:9px;color:var(--muted);margin-left:4px">Rate</label>
+        <input type="range" id="pySwapRate" min="0" max="100" value="20" style="max-width:80px" disabled>
+        <span class="v-val" id="pySwapRateVal" style="font-size:9px">10s</span>
+      </div>
+
+      <div style="border-top:1px solid rgba(155,109,255,.06);margin:6px 0 4px"></div>
+
       <div class="vr">
         <label>Sub-Bass</label>
         <input type="range" id="subBass" min="0" max="100" value="0">
         <span class="v-val" id="subBassVal">0</span>
-      </div>
-      <div class="vr">
-        <label>Mode</label>
         <div class="v-mode" id="vortexModes">
           <button data-mode="full" class="active">Full</button>
           <button data-mode="gamma">Γ33.5</button>
@@ -223,14 +269,31 @@ select{background:rgba(8,4,18,.6);color:var(--text);border:1px solid rgba(155,10
         </div>
       </div>
       <div class="vr"><div class="v-freqs" id="vortexFreqs"><span>432</span> · <span>216</span> · <span>108</span> · <span>72</span> · <span class="g">33.5</span> · <span>54</span> · <span>27</span> · <span>13.5</span> Hz</div></div>
-      <div class="vr" style="margin-top:3px">
+
+      <div class="vr">
+        <label>33.5 Hz γ</label>
+        <input type="range" id="carrier33" min="0" max="100" value="0">
+        <span class="v-val" id="carrier33Val">0</span>
+      </div>
+      <div class="vr">
+        <label>7.83 Hz 🜁</label>
+        <input type="range" id="carrier783" min="0" max="100" value="0">
+        <span class="v-val" id="carrier783Val">0</span>
+      </div>
+      <div class="vr">
+        <label>8 Hz 🧠</label>
+        <input type="range" id="carrier8" min="0" max="100" value="0">
+        <span class="v-val" id="carrier8Val">0</span>
+      </div>
+      <div class="vr">
         <label>Heart ∞ 1</label>
         <input type="range" id="heartCoherence" min="0" max="100" value="0">
         <span class="v-val" id="heartCoherenceVal">0</span>
       </div>
-      <div class="vr" style="margin-top:auto;padding-top:6px;border-top:1px solid rgba(155,109,255,.05)">
-        <div style="font-size:7px;color:var(--muted);line-height:1.4;width:100%;text-align:center">
-          Foundation: 432 ÷ 2 = <span>216</span> · ÷ 4 = <span>108</span> · ÷ 6 = <span>72</span> · ÷ 8 = <span>54</span> · ÷ 12 = <span>36</span> · ÷ 16 = <span>27</span> · ÷ 32 = <span>13.5</span>
+
+      <div style="margin-top:auto;padding-top:8px;border-top:1px solid rgba(155,109,255,.05)">
+        <div style="font-size:8px;color:var(--muted);line-height:1.5;text-align:center">
+          Foundation: 432 ÷ 2 = <span style="color:var(--gold)">216</span> · ÷ 4 = <span style="color:var(--gold)">108</span> · ÷ 6 = <span style="color:var(--gold)">72</span> · ÷ 8 = <span style="color:var(--gold)">54</span> · ÷ 12 = <span style="color:var(--gold)">36</span> · ÷ 16 = <span style="color:var(--gold)">27</span> · ÷ 32 = <span style="color:var(--gold)">13.5</span>
         </div>
       </div>
     </div>
@@ -242,18 +305,29 @@ const A=window.api;let S={file:null,sid:null,srcName:null,healing:false};
 let ac=null,an=null,aid=null,acOrig=null,acHeal=null,anOrig=null,anHeal=null;
 let srcOrig=null,srcHeal=null,origPlaying=false,healPlaying=false;
 let origGain=null,healGain=null;
-let _seeking=false, _folDancing=false;
+let _seeking=false;
 const GRID=[27,54,174,285,396,417,432,528,639,741,852,963];
-const VORTEX_FREQS={full:[432,216,108,72,54,33.5,27,13.5],gamma:[108,72,33.5],delta:[54,27,13.5],theta:[108,72,54],sub:[54,33.5,27]};
-const VORTEX_LABELS={full:'432 · 216 · 108 · 72 · <span class="g">33.5</span> · 54 · 27 · 13.5',gamma:'108 · 72 · <span class="g">33.5</span>',delta:'54 · 27 · 13.5',theta:'108 · 72 · 54',sub:'54 · <span class="g">33.5</span> · 27'};
+const VORTEX_LABELS={full:'<span>432</span> · <span>216</span> · <span>108</span> · <span>72</span> · <span class="g">33.5</span> · <span>54</span> · <span>27</span> · <span>13.5</span>',gamma:'<span>108</span> · <span>72</span> · <span class="g">33.5</span>',delta:'<span>54</span> · <span>27</span> · <span>13.5</span>',theta:'<span>108</span> · <span>72</span> · <span>54</span>',sub:'<span>54</span> · <span class="g">33.5</span> · <span>27</span>'};
 function $(id){return document.getElementById(id)}
 function st(m,e){const e2=$('st');e2.textContent=m;e2.className='status'+(e?' er':'')}
-function log(msg){const el=$('diagLog');const t=new Date();const ts=String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0')+':'+String(t.getSeconds()).padStart(2,'0');const d=document.createElement('div');d.innerHTML='<span class="time">['+ts+']</span> '+msg;el.prepend(d);while(el.children.length>30)el.removeChild(el.lastChild);$('logCount').textContent=el.children.length}
+function log(msg){const el=$('diagLog');const t=new Date();const ts=String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0')+':'+String(t.getSeconds()).padStart(2,'0');const d=document.createElement('div');d.innerHTML='<span class="time">['+ts+']</span> '+msg;el.prepend(d);while(el.children.length>40)el.removeChild(el.lastChild);$('logCount').textContent=el.children.length}
+
+function sparkleBurst(){
+  const hero=$('folHero');if(!hero)return
+  for(let i=0;i<12;i++){
+    const sp=document.createElement('div');sp.className='sparkle'
+    const angle=(i/12)*360;const dist=40+Math.random()*30
+    const rad=angle*Math.PI/180
+    const cx=hero.offsetWidth/2,cy=hero.offsetHeight/2
+    sp.style.left=(cx+Math.cos(rad)*dist)+'px';sp.style.top=(cy+Math.sin(rad)*dist)+'px'
+    sp.style.animationDelay=(Math.random()*0.3)+'s';sp.style.width=(2+Math.random()*4)+'px';sp.style.height=sp.style.width
+    hero.appendChild(sp);setTimeout(()=>sp.remove(),1500)
+  }
+}
 
 function folDance(energy){
-  const svg=$('folSvg');
-  if(!svg)return;
-  if(energy>0.02){_folDancing=true;const spd=Math.max(2,20-energy*50);svg.style.animationDuration=spd+'s, '+(1-energy*5)+'s';svg.classList.add('dancing')}else{_folDancing=false;svg.classList.remove('dancing');svg.style.animationDuration='20s, 5s'}
+  const svg=$('folSvg');if(!svg)return
+  if(energy>0.015){const spd=Math.max(2,24-energy*80);svg.style.animationDuration=spd+'s, '+(.8-energy*5)+'s';svg.className='fol-svg dancing'}else{svg.className='fol-svg idle';svg.style.animationDuration='24s, 6s'}
 }
 
 $('metaInjectLyrics').onchange=function(){$('lyricsRow').style.display=this.checked?'flex':'none'};
@@ -268,17 +342,17 @@ let _origTuning=null;
 async function loadFile(f){
   S.file=f;S.sid=null;
   dz.textContent='🎵 '+f.split('/').pop();dz.style.borderColor='var(--em)';$('origInfo').textContent=f.split('/').pop();
-  st('🔍 Analyzing...');origStop();healStop();
-  log('<strong>📂 File loaded:</strong> '+f.split('/').pop());
+  st('🔍 Analyzing');origStop();healStop();
+  log('<strong>📂 File:</strong> '+f.split('/').pop());
   try{
     const r=await A.post('/api/detect',{file_path:f});const t=+$('tgtSel').value;
     _origTuning=r.tuning;
     $('origTune').textContent=r.tuning.toFixed(1)+' Hz';
-    $('detMethod').textContent=r.method+' · '+(r.confidence*100).toFixed(0)+'%'+(r.bpm?' · ♪ '+r.bpm+' BPM':'');
+    $('detMethod').textContent=r.method+' · '+(r.confidence*100).toFixed(0)+'%'+(r.bpm?' · ♪ '+r.bpm:'');
     $('origTune').style.color=Math.abs(r.tuning-t)<=1.5?'var(--em)':'var(--gold)';
     $('tuneDisplay').innerHTML=Math.abs(r.tuning-t)<=1.5?'<span style="color:var(--em)">✓ '+r.tuning.toFixed(1)+'</span>':'<span style="color:var(--gold)">'+r.tuning.toFixed(1)+'→'+t+'</span>';
     st(Math.abs(r.tuning-t)<=1.5?'✅ Aligned':'→ '+t+' Hz');
-    log('🔍 <strong>Detected:</strong> '+r.tuning.toFixed(1)+' Hz · '+r.method+' · '+(r.confidence*100).toFixed(0)+'%'+(r.bpm?' · ♪ '+r.bpm+' BPM':''));
+    log('🔍 <strong>Detected:</strong> '+r.tuning.toFixed(1)+' Hz '+(r.bpm?'· ♪ '+r.bpm+' BPM':''));
     origInit(f);
   }catch(e){st(e.message,1);log('❌ <strong>Error:</strong> '+e.message)}
 }
@@ -298,9 +372,9 @@ function startCQT(canvasId, analyser){
     for(const g of GRID){
       if(g<fm||g>fx)continue;
       const x=((Math.log10(g)-lm)/(lx-lm))*W;
-      ctx.strokeStyle=g===432?'rgba(217,170,58,.2)':'rgba(155,109,255,.04)';
+      ctx.strokeStyle=g===432?'rgba(217,170,58,.25)':'rgba(155,109,255,.04)';
       ctx.lineWidth=g===432?1.5:.5;ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H-8);ctx.stroke();
-      if(g===432){ctx.fillStyle='rgba(217,170,58,.25)';ctx.font='6px monospace';ctx.textAlign='center';ctx.fillText('∞ 432',x,6)}
+      if(g===432){ctx.fillStyle='rgba(217,170,58,.3)';ctx.font='7px monospace';ctx.textAlign='center';ctx.fillText('∞ 432',x,7)}
     }
     for(let i=1;i<analyser.frequencyBinCount-1;i++){
       const f=i*44100/analyser.fftSize;if(f<fm||f>fx)continue;
@@ -318,65 +392,89 @@ async function origInit(f){
   try{
     if(acOrig)acOrig.close();
     acOrig=new(window.AudioContext||window.webkitAudioContext)();
-    const buf=await A.readFile(f);if(!buf){log('❌ Cannot read file');st('File read error',1);return}
+    const buf=await A.readFile(f);if(!buf){log('❌ Cannot read');st('File error',1);return}
     const ab=await acOrig.decodeAudioData(buf.slice(0));
     S._origBuf=ab;
     anOrig=acOrig.createAnalyser();anOrig.fftSize=8192;anOrig.smoothingTimeConstant=0.85;
     origGain=acOrig.createGain();origGain.gain.value=$('origVol').value/100;
     $('origTime').textContent='0:00 / '+Math.floor(ab.duration/60)+':'+String(Math.floor(ab.duration%60)).padStart(2,'0');
     startCQT('origCQT',anOrig);
-    const bufSrc=acOrig.createBufferSource();bufSrc.buffer=acOrig.createBuffer(1,acOrig.sampleRate*0.1,acOrig.sampleRate);
-    const c=bufSrc.buffer.getChannelData(0);for(let i=0;i<c.length;i++)c[i]=Math.sin(i*0.01)*0.0001;
-    bufSrc.connect(anOrig);bufSrc.start();
+    const bs=acOrig.createBufferSource();bs.buffer=acOrig.createBuffer(1,acOrig.sampleRate*0.1,acOrig.sampleRate);
+    const c=bs.buffer.getChannelData(0);for(let i=0;i<c.length;i++)c[i]=Math.sin(i*0.01)*0.0001;
+    bs.connect(anOrig);bs.start();
     $('healInfo').textContent='Ready';
-    log('✅ <strong>Original loaded:</strong> '+Math.floor(ab.duration/60)+':'+String(Math.floor(ab.duration%60)).padStart(2,'0'));
-  }catch(e){log('❌ Audio load: '+e.message)}
+    log('✅ <strong>Loaded</strong> '+Math.floor(ab.duration/60)+':'+String(Math.floor(ab.duration%60)).padStart(2,'0'));
+  }catch(e){log('❌ '+e.message)}
 }
 
 function origPlay(){
-  if(!acOrig||!S._origBuf){st('Load a file first',1);return}
+  if(!acOrig||!S._origBuf){st('Load file first',1);return}
   if(origPlaying){origStop();return}
   try{
     if(acOrig.state==='suspended')acOrig.resume();
     origGain.gain.value=$('origVol').value/100;
     srcOrig=acOrig.createBufferSource();srcOrig.buffer=S._origBuf;
     srcOrig.connect(origGain);origGain.connect(anOrig);anOrig.connect(acOrig.destination);
-    const offset=+$('origSeek').value/1000*S._origBuf.duration;
-    srcOrig.start(0,offset);origPlaying=true;$('origPlayBtn').textContent='⏹';
-    log('▶ <strong>Playing:</strong> Original');
+    srcOrig.start(0,+$('origSeek').value/1000*S._origBuf.duration);origPlaying=true;$('origPlayBtn').textContent='⏹';
     const dur=S._origBuf.duration;
-    S._osi=setInterval(()=>{if(!origPlaying||!acOrig||_seeking){return}
-      if(_folDancing)return;
+    S._osi=setInterval(()=>{if(!origPlaying||!acOrig||_seeking)return
       const n=acOrig.currentTime;$('origSeek').value=Math.min(1000,n/dur*1000);
-      $('origTime').textContent=Math.floor(n/60)+':'+String(Math.floor(n%60)).padStart(2,'0')+' / '+Math.floor(dur/60)+':'+String(Math.floor(dur%60)).padStart(2,'0')},200);
-    srcOrig.onended=()=>{origPlaying=false;$('origPlayBtn').textContent='▶';clearInterval(S._osi);$('origSeek').value=0;log('⏹ <strong>Stopped:</strong> Original')}
-  }catch(e){log('❌ Play error: '+e.message)}
+      $('origTime').textContent=Math.floor(n/60)+':'+String(Math.floor(n%60)).padStart(2,'0')+'/'+Math.floor(dur/60)+':'+String(Math.floor(dur%60)).padStart(2,'0')},200);
+    srcOrig.onended=()=>{origPlaying=false;$('origPlayBtn').textContent='▶';clearInterval(S._osi);$('origSeek').value=0}
+  }catch(e){log('❌ '+e.message)}
 }
 function origStop(){if(srcOrig){try{srcOrig.stop()}catch(e){}srcOrig=null}origPlaying=false;$('origPlayBtn').textContent='▶';$('origSeek').value=0;if(S._osi){clearInterval(S._osi);S._osi=null};folDance(0)}
 $('origPlayBtn').onclick=origPlay;
 $('origVol').oninput=function(){$('origVolVal').textContent=this.value;if(origGain)origGain.gain.value=this.value/100};
-$('origSeek').oninput=function(){const v=+this.value;if(origPlaying){_seeking=true;if(srcOrig){try{srcOrig.stop()}catch(e){}srcOrig=null}origPlaying=false;if(S._osi){clearInterval(S._osi);S._osi=null}$('origPlayBtn').textContent='▶';setTimeout(()=>{_seeking=false;$('origSeek').value=v;origPlay()},30)}else{const dur=S._origBuf?S._origBuf.duration:0;$('origTime').textContent=Math.floor(v/1000*dur/60)+':'+String(Math.floor(v/1000*dur%60)).padStart(2,'0')+(dur?' / '+Math.floor(dur/60)+':'+String(Math.floor(dur%60)).padStart(2,'0'):'')}};
+$('origSeek').oninput=function(){const v=+this.value;if(origPlaying){_seeking=true;if(srcOrig){try{srcOrig.stop()}catch(e){}srcOrig=null}origPlaying=false;if(S._osi){clearInterval(S._osi);S._osi=null}$('origPlayBtn').textContent='▶';setTimeout(()=>{_seeking=false;$('origSeek').value=v;origPlay()},30)}else{const d=S._origBuf?S._origBuf.duration:0;$('origTime').textContent=Math.floor(v/1000*d/60)+':'+String(Math.floor(v/1000*d%60)).padStart(2,'0')+(d?'/'+Math.floor(d/60)+':'+String(Math.floor(d%60)).padStart(2,'0'):'')}};
 
+// ─── PyTesla Toggle ───
+let _pyteslaEnabled=false;
+$('pyToggle').onclick=function(){
+  _pyteslaEnabled=!this.classList.contains('active')
+  this.classList.toggle('active');this.textContent=_pyteslaEnabled?'⚡ On':'⚡ Off'
+  $('pyPreset').disabled=!_pyteslaEnabled
+  $('pySwapToggle').disabled=!_pyteslaEnabled;$('pySwapRate').disabled=!_pyteslaEnabled
+  $('pyteslaBadge').style.display=_pyteslaEnabled?'flex':'none'
+  $('pySwapRow').style.display=_pyteslaEnabled?'flex':'none'
+  if(_pyteslaEnabled){const p=$('pyPreset').value;const ps=p.split('~');const b=Math.abs(ps[0]-ps[1]);$('pyTitle').textContent='⚡ PyTesla: '+ps[0]+' Hz L · '+ps[1]+' Hz R';$('pySub').textContent='Binaural beat = '+b.toFixed(2)+' Hz';$('pyBeat').textContent=b.toFixed(2)+' Hz'}else{$('pyteslaBadge').style.display='none'}
+};
+$('pyPreset').onchange=function(){
+  if(!_pyteslaEnabled)return;const p=this.value;const ps=p.split('~');const b=Math.abs(parseFloat(ps[0])-parseFloat(ps[1]));
+  $('pyTitle').textContent='⚡ PyTesla: '+ps[0]+' Hz L · '+ps[1]+' Hz R';$('pySub').textContent='Binaural beat = '+b.toFixed(2)+' Hz';$('pyBeat').textContent=b.toFixed(2)+' Hz';sparkleBurst()
+};
+let _pySwapOn=false;
+$('pySwapToggle').onclick=function(){_pySwapOn=!this.classList.contains('active');this.classList.toggle('active');this.textContent=_pySwapOn?'On':'Off'};
+$('pySwapRate').oninput=function(){const s=Math.max(2,Math.round(60/this.value*10))/10;$('pySwapRateVal').textContent=s+'s'};
+
+// ─── Heal ───
 $('healBtn').onclick=async function(){
   if(!S.file||S.healing)return;S.healing=true;$('progFill').style.width='25%';
-  st('🌀 Healing...');
-  log('⟁ <strong>Healing</strong> to ∞ 432 Hz ...');
+  st('🌀 '+(_pyteslaEnabled?'PyTesla':'Healing')+'...');
+  log('⟁ <strong>'+( _pyteslaEnabled?'PyTesla Binaural':'Healing')+'</strong> ...');
   try{
-    const r=await A.post('/api/heal',{
-      file_path:S.file,target_tuning:+$('tgtSel').value,pure_432:true,
-      sub_bass:+$('subBass').value/100,      sub_bass_mode:(document.querySelector('#vortexModes .active')||document.querySelector('#vortexModes button')||{}).dataset.mode||'full',
+    const body={file_path:S.file,target_tuning:+$('tgtSel').value,pure_432:true,
+      sub_bass:+$('subBass').value/100,sub_bass_mode:(document.querySelector('#vortexModes .active')||document.querySelector('#vortexModes button')||{}).dataset.mode||'full',
       heart_coherence:+$('heartCoherence').value/100,
-    });
+      carrier_33_5:+$('carrier33').value/100,carrier_7_83:+$('carrier783').value/100,carrier_8:+$('carrier8').value/100,
+      pytesla_enabled:_pyteslaEnabled,pytesla_preset:$('pyPreset').value,
+      pytesla_swap:_pySwapOn,pytesla_swap_interval:_pySwapOn?Math.max(2,Math.round(60/$('pySwapRate').value*10))/10:0}
+    const r=await A.post('/api/heal',body);
     S.sid=r.session_id;S.srcName=r.source_name;S._bpm=r.bpm;
     $('progFill').style.width='100%';setTimeout(()=>{$('progFill').style.width='0%'},500);
-    $('tuneDisplay').innerHTML=`∞ <span style="color:var(--em)">${r.heal_result.target_tuning.toFixed(0)} Hz</span>`;
-    $('healInfo').textContent=r.heal_result.target_tuning.toFixed(0)+' Hz ✓'+(r.bpm?' · ♪ '+r.bpm+' BPM':'');
-    $('origInfo').textContent=(r.heal_result.original_tuning.toFixed(1)+' Hz');
+    if(_pyteslaEnabled){
+      $('tuneDisplay').innerHTML='⚡ <span style="color:var(--ameth)">'+r.left_tuning.toFixed(0)+'L / '+r.right_tuning.toFixed(0)+'R</span> <span style="font-size:9px;color:var(--muted)">='+r.beat_hz.toFixed(2)+' Hz</span>';
+      $('healInfo').textContent=r.beat_hz.toFixed(2)+' Hz binaural ⚡';$('origInfo').textContent=r.left_tuning.toFixed(0)+'L '+r.right_tuning.toFixed(0)+'R';
+      log('⚡ <strong>PyTesla:</strong> '+r.left_tuning.toFixed(0)+'L · '+r.right_tuning.toFixed(0)+'R = '+r.beat_hz.toFixed(2)+' Hz binaural');
+    }else{
+      $('tuneDisplay').innerHTML='∞ <span style="color:var(--em)">'+r.heal_result.target_tuning.toFixed(0)+' Hz</span>';
+      $('healInfo').textContent=r.heal_result.target_tuning.toFixed(0)+' Hz ✓';
+      $('origInfo').textContent=(r.heal_result.original_tuning.toFixed(1)+' Hz');
+      log('✅ <strong>Healed</strong> '+r.heal_result.original_tuning.toFixed(1)+' → '+r.heal_result.target_tuning.toFixed(0)+' Hz ('+r.heal_result.semitones_shifted+' st)');
+    }
     if(r.bpm&&$('metaBpm').checked){$('metaComment').value='432 Hz Tuning Correction via Harmonic Convergence · ♪ '+r.bpm+' BPM'}
-    healInit(r.session_id);
-    log('✅ <strong>Heal complete</strong> · '+r.heal_result.original_tuning.toFixed(1)+' → '+r.heal_result.target_tuning.toFixed(0)+' Hz ('+r.heal_result.semitones_shifted+' st)'+(r.bpm?' · ♪ '+r.bpm+' BPM':''));
-    st('✅ Healed!');
-  }catch(e){st(e.message,1);log('❌ <strong>Heal error:</strong> '+e.message)}S.healing=false;
+    healInit(r.session_id);st('✅ Done!');sparkleBurst()
+  }catch(e){st(e.message,1);log('❌ <strong>Error:</strong> '+e.message)}S.healing=false;
 };
 
 async function healInit(sid){
@@ -385,99 +483,71 @@ async function healInit(sid){
     acHeal=new(window.AudioContext||window.webkitAudioContext)();
     const buf=await A.downloadBuffer('/api/download/'+sid+'?format=wav&cleanup=0');
     const ab=await acHeal.decodeAudioData(buf.buffer.slice(0));
-    S._healBuf=ab;
-    anHeal=acHeal.createAnalyser();anHeal.fftSize=8192;anHeal.smoothingTimeConstant=0.85;
+    S._healBuf=ab;anHeal=acHeal.createAnalyser();anHeal.fftSize=8192;anHeal.smoothingTimeConstant=0.85;
     healGain=acHeal.createGain();healGain.gain.value=$('healVol').value/100;
-    $('healTime').textContent='0:00 / '+Math.floor(ab.duration/60)+':'+String(Math.floor(ab.duration%60)).padStart(2,'0');
+    $('healTime').textContent='0:00/'+Math.floor(ab.duration/60)+':'+String(Math.floor(ab.duration%60)).padStart(2,'0');
     startCQT('healCQT',anHeal);
-    const bufSrc=acHeal.createBufferSource();bufSrc.buffer=acHeal.createBuffer(1,acHeal.sampleRate*0.1,acHeal.sampleRate);
-    const c=bufSrc.buffer.getChannelData(0);for(let i=0;i<c.length;i++)c[i]=Math.sin(i*0.01)*0.0001;
-    bufSrc.connect(anHeal);bufSrc.start();
-    log('🌀 <strong>Healed loaded</strong> for playback');
-  }catch(e){log('❌ Heal load: '+e.message)}
+    const bs=acHeal.createBufferSource();bs.buffer=acHeal.createBuffer(1,acHeal.sampleRate*0.1,acHeal.sampleRate);
+    const c=bs.buffer.getChannelData(0);for(let i=0;i<c.length;i++)c[i]=Math.sin(i*0.01)*0.0001;
+    bs.connect(anHeal);bs.start();
+  }catch(e){log('❌ '+e.message)}
 }
 
 function healPlay(){
-  if(!acHeal||!S._healBuf){st('Heal a file first',1);return}
+  if(!acHeal||!S._healBuf){st('Heal first',1);return}
   if(healPlaying){healStop();return}
   try{
     if(acHeal.state==='suspended')acHeal.resume();
     healGain.gain.value=$('healVol').value/100;
     srcHeal=acHeal.createBufferSource();srcHeal.buffer=S._healBuf;
     srcHeal.connect(healGain);healGain.connect(anHeal);anHeal.connect(acHeal.destination);
-    const offset=+$('healSeek').value/1000*S._healBuf.duration;
-    srcHeal.start(0,offset);healPlaying=true;$('healPlayBtn').textContent='⏹';
-    log('▶ <strong>Playing:</strong> Healed ∞ 432');
+    srcHeal.start(0,+$('healSeek').value/1000*S._healBuf.duration);healPlaying=true;$('healPlayBtn').textContent='⏹';
     const dur=S._healBuf.duration;
-    S._hsi=setInterval(()=>{if(!healPlaying||!acHeal||_seeking){return}
+    S._hsi=setInterval(()=>{if(!healPlaying||!acHeal||_seeking)return
       const n=acHeal.currentTime;$('healSeek').value=Math.min(1000,n/dur*1000);
-      $('healTime').textContent=Math.floor(n/60)+':'+String(Math.floor(n%60)).padStart(2,'0')+' / '+Math.floor(dur/60)+':'+String(Math.floor(dur%60)).padStart(2,'0')},200);
-    srcHeal.onended=()=>{healPlaying=false;$('healPlayBtn').textContent='▶';clearInterval(S._hsi);$('healSeek').value=0;log('⏹ <strong>Stopped:</strong> Healed')}
-  }catch(e){log('❌ Play error: '+e.message)}
+      $('healTime').textContent=Math.floor(n/60)+':'+String(Math.floor(n%60)).padStart(2,'0')+'/'+Math.floor(dur/60)+':'+String(Math.floor(dur%60)).padStart(2,'0')},200);
+    srcHeal.onended=()=>{healPlaying=false;$('healPlayBtn').textContent='▶';clearInterval(S._hsi);$('healSeek').value=0}
+  }catch(e){log('❌ '+e.message)}
 }
 function healStop(){if(srcHeal){try{srcHeal.stop()}catch(e){}srcHeal=null}healPlaying=false;$('healPlayBtn').textContent='▶';$('healSeek').value=0;if(S._hsi){clearInterval(S._hsi);S._hsi=null};folDance(0)}
 $('healPlayBtn').onclick=healPlay;
 $('healVol').oninput=function(){$('healVolVal').textContent=this.value;if(healGain)healGain.gain.value=this.value/100};
-$('healSeek').oninput=function(){const v=+this.value;if(healPlaying){_seeking=true;if(srcHeal){try{srcHeal.stop()}catch(e){}srcHeal=null}healPlaying=false;if(S._hsi){clearInterval(S._hsi);S._hsi=null}$('healPlayBtn').textContent='▶';setTimeout(()=>{_seeking=false;$('healSeek').value=v;healPlay()},30)}else{const dur=S._healBuf?S._healBuf.duration:0;$('healTime').textContent=Math.floor(v/1000*dur/60)+':'+String(Math.floor(v/1000*dur%60)).padStart(2,'0')+(dur?' / '+Math.floor(dur/60)+':'+String(Math.floor(dur%60)).padStart(2,'0'):'')}};
+$('healSeek').oninput=function(){const v=+this.value;if(healPlaying){_seeking=true;if(srcHeal){try{srcHeal.stop()}catch(e){}srcHeal=null}healPlaying=false;if(S._hsi){clearInterval(S._hsi);S._hsi=null}$('healPlayBtn').textContent='▶';setTimeout(()=>{_seeking=false;$('healSeek').value=v;healPlay()},30)}else{const d=S._healBuf?S._healBuf.duration:0;$('healTime').textContent=Math.floor(v/1000*d/60)+':'+String(Math.floor(v/1000*d%60)).padStart(2,'0')+(d?'/'+Math.floor(d/60)+':'+String(Math.floor(d%60)).padStart(2,'0'):'')}};
 
 async function saveFile(fmt){
-  if(!S.sid){st('Heal a file first',1);return}
+  if(!S.sid){st('Heal first',1);return}
   const b=(S.srcName||S.file||'healed').split('/').pop().replace(/\.[^.]+$/,'')+'_∞432';
   const d=await A.saveFile(b+'.'+fmt);if(!d)return
-  const a=encodeURIComponent($('metaArtist').value||'Quantum Thoughter')
-  const c=encodeURIComponent($('metaComposer').value||'Quantum Thoughter')
-  const al=encodeURIComponent($('metaAlbum').value||'Harmonic Convergence')
-  const cm=encodeURIComponent($('metaComment').value||'432 Hz Tuning Correction via Harmonic Convergence')
-  const bp=$('metaBpm').checked&&S._bpm?'&bpm='+S._bpm:''
-  const ly=$('metaInjectLyrics').checked&&$('metaLyrics').value.trim()?'&lyrics='+encodeURIComponent($('metaLyrics').value):''
-  try{
-    const r=await A.downloadBuffer('/api/download/'+S.sid+'?format='+fmt+'&name='+encodeURIComponent(b)+'&artist='+a+'&composer='+c+'&album='+al+'&comment='+cm+bp+ly);
-    await A.writeFile(d,Array.from(new Uint8Array(r)));
-    st('💾 '+b+'.'+fmt);log('💾 <strong>Saved:</strong> '+b+'.'+fmt)
-  }catch(e){st(e.message,1);log('❌ <strong>Save error:</strong> '+e.message)}
+  const a=encodeURIComponent($('metaArtist').value||'Quantum Thoughter'),c=encodeURIComponent($('metaComposer').value||'Quantum Thoughter'),al=encodeURIComponent($('metaAlbum').value||'Harmonic Convergence'),cm=encodeURIComponent($('metaComment').value||'432 Hz Tuning Correction'),bp=$('metaBpm').checked&&S._bpm?'&bpm='+S._bpm:'',ly=$('metaInjectLyrics').checked&&$('metaLyrics').value.trim()?'&lyrics='+encodeURIComponent($('metaLyrics').value):''
+  try{const r=await A.downloadBuffer('/api/download/'+S.sid+'?format='+fmt+'&name='+encodeURIComponent(b)+'&artist='+a+'&composer='+c+'&album='+al+'&comment='+cm+bp+ly);await A.writeFile(d,Array.from(new Uint8Array(r)));st('💾 '+b+'.'+fmt);log('💾 <strong>Saved:</strong> '+b+'.'+fmt)}catch(e){st(e.message,1);log('❌ '+e.message)}
 }
 $('wavBtn').onclick=()=>saveFile('wav');$('mp3Btn').onclick=()=>saveFile('mp3');
 $('bothBtn').onclick=async()=>{
-  if(!S.sid){st('Heal a file first',1);return}
-  const b=(S.srcName||S.file||'healed').split('/').pop().replace(/\.[^.]+$/,'')+'_∞432';
-  const a=encodeURIComponent($('metaArtist').value||'Quantum Thoughter')
-  const c=encodeURIComponent($('metaComposer').value||'Quantum Thoughter')
-  const al=encodeURIComponent($('metaAlbum').value||'Harmonic Convergence')
-  const cm=encodeURIComponent($('metaComment').value||'432 Hz Tuning Correction via Harmonic Convergence')
-  const bp=$('metaBpm').checked&&S._bpm?'&bpm='+S._bpm:''
-  const ly=$('metaInjectLyrics').checked&&$('metaLyrics').value.trim()?'&lyrics='+encodeURIComponent($('metaLyrics').value):''
+  if(!S.sid){st('Heal first',1);return}
+  const b=(S.srcName||S.file||'healed').split('/').pop().replace(/\.[^.]+$/,'')+'_∞432'
+  const a=encodeURIComponent($('metaArtist').value||'Quantum Thoughter'),c=encodeURIComponent($('metaComposer').value||'Quantum Thoughter'),al=encodeURIComponent($('metaAlbum').value||'Harmonic Convergence'),cm=encodeURIComponent($('metaComment').value||'432 Hz Tuning Correction'),bp=$('metaBpm').checked&&S._bpm?'&bpm='+S._bpm:'',ly=$('metaInjectLyrics').checked&&$('metaLyrics').value.trim()?'&lyrics='+encodeURIComponent($('metaLyrics').value):''
   try{
-    const w=await A.downloadBuffer('/api/download/'+S.sid+'?format=wav&name='+encodeURIComponent(b)+'&cleanup=0&artist='+a+'&composer='+c+'&album='+al+'&comment='+cm+bp+ly);
+    const w=await A.downloadBuffer('/api/download/'+S.sid+'?format=wav&name='+encodeURIComponent(b)+'&cleanup=0&artist='+a+'&composer='+c+'&album='+al+'&comment='+cm+bp+ly)
     const f1=await A.saveFile(b+'.wav');if(f1)await A.writeFile(f1,Array.from(new Uint8Array(w)))
-    const m=await A.downloadBuffer('/api/download/'+S.sid+'?format=mp3&name='+encodeURIComponent(b)+'&cleanup=1&artist='+a+'&composer='+c+'&album='+al+'&comment='+cm+bp+ly);
+    const m=await A.downloadBuffer('/api/download/'+S.sid+'?format=mp3&name='+encodeURIComponent(b)+'&cleanup=1&artist='+a+'&composer='+c+'&album='+al+'&comment='+cm+bp+ly)
     const f2=await A.saveFile(b+'.mp3');if(f2)await A.writeFile(f2,Array.from(new Uint8Array(m)))
     st('💾 Both');log('💾 <strong>Both saved</strong>')
-  }catch(e){st(e.message,1);log('❌ <strong>Save error:</strong> '+e.message)}
+  }catch(e){st(e.message,1);log('❌ '+e.message)}
 };
 
 $('batchBtn').onclick=async()=>{
-  const folder=await A.selectFolder();if(!folder)return
-  const out=await A.selectFolder();if(!out)return
-  $('batchProg').textContent='⏳ Scanning...';log('📂 <strong>Batch:</strong> Scanning folder...')
-  try{
-    const r=await A.post('/api/heal_batch',{folder_path:folder,output_dir:out,target_tuning:+$('tgtSel').value});
-    $('batchProg').textContent='✅ '+r.completed+'/'+r.total+' healed';
-    log('📂 <strong>Batch complete:</strong> '+r.completed+'/'+r.total+' healed · '+r.failed+' errors');
-    if(r.failed>0){for(const res of r.results){if(res.status==='error')log('❌ '+res.file+': '+res.error)}}
-  }catch(e){$('batchProg').textContent='❌ '+e.message;log('❌ <strong>Batch error:</strong> '+e.message)}
+  const folder=await A.selectFolder();if(!folder)return;const out=await A.selectFolder();if(!out)return
+  $('batchProg').textContent='⏳ Scanning...';log('📂 <strong>Batch:</strong> scanning...')
+  try{const r=await A.post('/api/heal_batch',{folder_path:folder,output_dir:out,target_tuning:+$('tgtSel').value});$('batchProg').textContent='✅ '+r.completed+'/'+r.total;log('📂 <strong>Batch:</strong> '+r.completed+'/'+r.total+' · '+r.failed+' errors');if(r.failed>0){for(const res of r.results){if(res.status==='error')log('❌ '+res.file+': '+res.error)}}}catch(e){$('batchProg').textContent='❌ '+e.message;log('❌ '+e.message)}
 };
 
 $('subBass').oninput=function(){$('subBassVal').textContent=this.value};
+$('carrier33').oninput=function(){$('carrier33Val').textContent=this.value};
+$('carrier783').oninput=function(){$('carrier783Val').textContent=this.value};
+$('carrier8').oninput=function(){$('carrier8Val').textContent=this.value};
 $('heartCoherence').oninput=function(){$('heartCoherenceVal').textContent=this.value};
 
-document.querySelectorAll('#vortexModes button').forEach(b=>{
-  b.onclick=function(){
-    document.querySelectorAll('#vortexModes button').forEach(b2=>b2.classList.remove('active'));
-    this.classList.add('active');
-    const mode=this.dataset.mode;
-    $('vortexFreqs').innerHTML=VORTEX_LABELS[mode]||VORTEX_LABELS.full;
-  }
-});
+document.querySelectorAll('#vortexModes button').forEach(b=>{b.onclick=function(){document.querySelectorAll('#vortexModes button').forEach(b2=>b2.classList.remove('active'));this.classList.add('active');$('vortexFreqs').innerHTML=VORTEX_LABELS[this.dataset.mode]||VORTEX_LABELS.full}});
 </script>
 </body>
 </html>
