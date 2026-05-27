@@ -94,6 +94,16 @@ async def heal(request: HealRequest):
     os.remove(healed_path)
     return {"session_id": session_id, "output_path": final_wav, "source_name": sname, "heal_result": heal_result, "mix_shape": list(y.shape if request.pure_432 else mix.shape), "sample_rate": sr}
 
+def _clean_old(age_hours=1):
+    """Remove session files older than age_hours."""
+    import time, glob
+    now = time.time()
+    for f in glob.glob(os.path.join(WORK_DIR, "*_final.*")):
+        try:
+            if now - os.path.getmtime(f) > age_hours * 3600:
+                os.remove(f)
+        except: pass
+
 def _clean(session_id):
     import glob
     for f in glob.glob(os.path.join(WORK_DIR, f"{session_id}_*")):
