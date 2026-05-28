@@ -1,4 +1,10 @@
-import sys, os, json, uuid, math
+import sys, os, json, uuid, math, subprocess
+os.environ['OPENBLAS_NUM_THREADS'] = '8'
+os.environ['MKL_NUM_THREADS'] = '8'
+os.environ['NUMBA_NUM_THREADS'] = '8'
+os.environ['OMP_NUM_THREADS'] = '8'
+os.environ['LIBROSA_CACHE_DIR'] = '/tmp/librosa_cache'
+os.makedirs('/tmp/librosa_cache', exist_ok=True)
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
@@ -62,7 +68,7 @@ class HealRequest(BaseModel):
 
 class DetectRequest(BaseModel): file_path: str
 class ReportRequest(BaseModel): input_path: str; output_path: str
-class BatchRequest(BaseModel): folder_path: str; output_dir: str; target_tuning: float = 432.0
+class BatchRequest(BaseModel): folder_path: str; output_dir: str; target_tuning: float = 432.0; format: str = "wav"
 class SynthRequest(BaseModel): frequencies: dict = {}; duration_hours: float = 1.0; sample_rate: int = 48000
 class RenderSynthRequest(BaseModel): frequencies: dict = {}; pyt_esla: bool = False; carrier_1hz: bool = True; ambience_mix: float = 0.0; duration_hours: float = 1.0; sample_rate: int = 48000
 
@@ -169,18 +175,22 @@ def write_metadata_wav(file_path, artist="Quantum Thoughter", composer="Quantum 
     list_data = bytearray(b'INFO')
     for ck_id, val in [('IART', artist), ('ICMP', composer), ('IPRD', album), ('ICMT', comment), ('INAM', sname)]:
         ck_val = val.encode('utf-8') + b'\x00' if isinstance(val, str) else val
-        list_data += ck_id.encode('ascii') + struct.pack('<I', len(ck_val)) + ck_val
+        list_data += ck_id.encode('ascii') + struct.pack('<I', (len(ck_val) + 1) & ~1) + ck_val
+        if len(ck_val) % 2: list_data += b'\x00'
     if bpm:
-        list_data += b'ITMP' + struct.pack('<I', len(str(bpm).encode('utf-8')) + 1) + str(bpm).encode('utf-8') + b'\x00'
+        bv = str(round(bpm, 1)).encode('utf-8') + b'\x00'
+        list_data += b'ITMP' + struct.pack('<I', len(bv)) + bv
     if lyrics:
-        list_data += b'ILYR' + struct.pack('<I', len(lyrics.encode('utf-8')) + 1) + lyrics.encode('utf-8') + b'\x00'
+        lv = lyrics.encode('utf-8') + b'\x00'
+        list_data += b'ILYR' + struct.pack('<I', len(lv)) + lv
     list_chunk = b'LIST' + struct.pack('<I', len(list_data)) + bytes(list_data)
-    new_data = bytes(data[:12]) + list_chunk + bytes(data[12:])
+    riff_size = len(data) - 8 + len(list_chunk)
+    data[4:8] = struct.pack('<I', riff_size)
+    new_data = bytes(data[:12]) + bytes(data[12:]) + list_chunk
     with open(file_path, 'wb') as f:
         f.write(new_data)
 
 def write_metadata_mp3(file_path, artist="Quantum Thoughter", composer="Quantum Thoughter", album="Harmonic Convergence", comment="432 Hz Tuning Correction via Harmonic Convergence", bpm=None, title=None, lyrics=None):
-    import subprocess
     meta = ['-metadata', f'artist={artist}', '-metadata', f'composer={composer}', '-metadata', f'album={album}', '-metadata', f'comment={comment}']
     if title: meta += ['-metadata', f'title={title}']
     if bpm: meta += ['-metadata', f'tbpm={bpm}']
@@ -189,9 +199,33 @@ def write_metadata_mp3(file_path, artist="Quantum Thoughter", composer="Quantum 
     subprocess.run(['ffmpeg', '-y', '-i', file_path] + meta + ['-codec', 'copy', tmp_path], capture_output=True, timeout=120)
     if os.path.exists(tmp_path): os.replace(tmp_path, file_path)
 
+def has_videotoolbox():
+    try:
+        r = subprocess.run(['ffmpeg', '-encoders'], capture_output=True, text=True, timeout=5)
+        return 'videotoolbox' in r.stdout
+    except: return False
+
+def detect_hardware():
+    info = {'cpu_count': os.cpu_count(), 'has_videotoolbox': has_videotoolbox()}
+    try:
+        r = subprocess.run(['sysctl', '-n', 'machdep.cpu.brand_string'], capture_output=True, text=True, timeout=2)
+        info['cpu'] = r.stdout.strip()
+    except: info['cpu'] = 'unknown'
+    try:
+        r = subprocess.run(['system_profiler', 'SPDisplaysDataType'], capture_output=True, text=True, timeout=10)
+        for line in r.stdout.split('\n'):
+            if 'Chipset Model' in line or 'Metal' in line:
+                info['metal'] = line.strip()
+    except: pass
+    return info
+
 @app.get("/api/status")
 def status():
     return {"status": "ready", "version": "2.2", "name": "Harmonic Convergence"}
+
+@app.get("/api/hardware")
+def hardware_info():
+    return detect_hardware()
 
 @app.get("/api/pytesla_presets")
 def pytesla_presets():
@@ -225,9 +259,10 @@ async def heal(request: HealRequest):
         heal_left_path = os.path.join(WORK_DIR, f"{session_id}_left.wav")
         heal_right_path = os.path.join(WORK_DIR, f"{session_id}_right.wav")
 
+        cached = kernel.detect_tuning(request.file_path)
         try:
-            left_result = kernel.full_heal(request.file_path, heal_left_path, target_tuning=left_tuning)
-            right_result = kernel.full_heal(request.file_path, heal_right_path, target_tuning=right_tuning)
+            left_result = kernel.full_heal(request.file_path, heal_left_path, target_tuning=left_tuning, cached_detect=cached)
+            right_result = kernel.full_heal(request.file_path, heal_right_path, target_tuning=right_tuning, cached_detect=cached)
         except Exception as e:
             raise HTTPException(500, f"PyTesla healing failed: {e}")
 
@@ -257,7 +292,8 @@ async def heal(request: HealRequest):
     else:
         healed_path = os.path.join(WORK_DIR, f"{session_id}_healed.wav")
         try:
-            heal_result = kernel.full_heal(request.file_path, healed_path, target_tuning=request.target_tuning, reanchor=request.reanchor, apply_eq=request.apply_eq)
+            cached = kernel.detect_tuning(request.file_path)
+            heal_result = kernel.full_heal(request.file_path, healed_path, target_tuning=request.target_tuning, cached_detect=cached)
         except Exception as e:
             raise HTTPException(500, f"Healing failed: {e}")
         y, sr_orig = librosa.load(healed_path, sr=None, mono=False)
@@ -343,7 +379,10 @@ def download(session_id: str, format: str = "wav", name: str = "432_healed", cle
         meta = ['-metadata', f'artist={artist}', '-metadata', f'composer={composer}', '-metadata', f'album={album}', '-metadata', f'comment={comment}', '-metadata', f'title={fname}']
         if bpm_val: meta += ['-metadata', f'tbpm={bpm_val}']
         if lyr: meta += ['-metadata', f'lyrics={lyr}']
-        subprocess.run(['ffmpeg', '-y', '-i', wav_path, '-b:a', '320k', '-q:a', '0', '-joint_stereo', '1', '-id3v2_version', '3'] + meta + [mp3_path], capture_output=True, timeout=120)
+        if has_videotoolbox():
+            subprocess.run(['ffmpeg', '-y', '-hwaccel', 'videotoolbox', '-i', wav_path, '-b:a', '320k', '-q:a', '0', '-joint_stereo', '1', '-id3v2_version', '3'] + meta + [mp3_path], capture_output=True, timeout=120)
+        else:
+            subprocess.run(['ffmpeg', '-y', '-i', wav_path, '-b:a', '320k', '-q:a', '0', '-joint_stereo', '1', '-id3v2_version', '3'] + meta + [mp3_path], capture_output=True, timeout=120)
         data = open(mp3_path, 'rb').read()
         os.remove(mp3_path)
         if cleanup == "1": _clean(session_id)
@@ -351,27 +390,104 @@ def download(session_id: str, format: str = "wav", name: str = "432_healed", cle
 
 @app.post("/api/heal_batch")
 def heal_batch(req: BatchRequest):
-    import glob
+    import glob, time, concurrent.futures
     AUDIO_EXTS = {'.mp3','.wav','.flac','.ogg','.m4a','.aac'}
-    files = [f for f in glob.glob(os.path.join(req.folder_path, '*')) if os.path.splitext(f)[1].lower() in AUDIO_EXTS]
+    files = sorted([f for f in glob.glob(os.path.join(req.folder_path, '*')) if os.path.splitext(f)[1].lower() in AUDIO_EXTS])
     if not files: raise HTTPException(400, "No audio files found in folder")
     os.makedirs(req.output_dir, exist_ok=True)
+    kernel.clear_cache()
+    start = time.time()
+    max_workers = min(6, os.cpu_count() or 4)
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as detect_ex:
+        detect_futs = {detect_ex.submit(kernel.detect_tuning, f, False): f for f in files}
+        detect_results = {}
+        for fut in concurrent.futures.as_completed(detect_futs):
+            f = detect_futs[fut]
+            try: detect_results[f] = fut.result()
+            except: detect_results[f] = None
     results = []
+    is_mp3 = req.format == 'mp3'
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as heal_ex:
+        heal_futs = {}
+        for f in files:
+            sname = source_name(f)
+            out_path = os.path.join(req.output_dir, f"{sname}_∞432.wav")
+            cached = detect_results.get(f)
+            heal_futs[heal_ex.submit(kernel.full_heal, f, out_path, req.target_tuning, False, False, cached)] = (f, sname, cached)
+        for fut in concurrent.futures.as_completed(heal_futs):
+            f, sname, cached = heal_futs[fut]
+            wav_path = os.path.join(req.output_dir, f"{sname}_∞432.wav")
+            try:
+                heal_result = fut.result()
+                bpm = detect_bpm(f)
+                verified_tuning = None
+                if os.path.exists(wav_path):
+                    try:
+                        v = kernel.detect_tuning(wav_path, fast=False)
+                        verified_tuning = v['tuning']
+                    except: pass
+                if is_mp3:
+                    mp3_path = wav_path.rsplit('.', 1)[0] + '.mp3'
+                    try:
+                        meta = ['-metadata', f'artist=Quantum Thoughter', '-metadata', f'title={sname}', '-metadata', f'comment=432 Hz Tuning Correction via Harmonic Convergence']
+                        if bpm: meta += ['-metadata', f'tbpm={bpm}']
+                        subprocess.run(['ffmpeg', '-y', '-i', wav_path, '-b:a', '320k', '-q:a', '0', '-joint_stereo', '1', '-id3v2_version', '3'] + meta + [mp3_path], capture_output=True, timeout=120)
+                        os.remove(wav_path)
+                    except: pass
+                    results.append({'file': os.path.basename(f), 'status': 'ok', 'output': os.path.basename(mp3_path), 'original_tuning': heal_result['original_tuning'], 'target_tuning': heal_result['target_tuning'], 'verified_tuning': verified_tuning, 'semitones_shifted': heal_result['semitones_shifted'], 'bpm': bpm})
+                else:
+                    try: write_metadata_wav(wav_path, title=sname, bpm=bpm)
+                    except: pass
+                    results.append({'file': os.path.basename(f), 'status': 'ok', 'output': os.path.basename(wav_path), 'original_tuning': heal_result['original_tuning'], 'target_tuning': heal_result['target_tuning'], 'verified_tuning': verified_tuning, 'semitones_shifted': heal_result['semitones_shifted'], 'bpm': bpm})
+            except Exception as e:
+                results.append({'file': os.path.basename(f), 'status': 'error', 'error': str(e)})
+    total_time = time.time() - start
+    verified_aligned = sum(1 for r in results if r.get('verified_tuning') and abs(r['verified_tuning'] - req.target_tuning) <= 1.0)
+    return {'total': len(files), 'completed': sum(1 for r in results if r['status']=='ok'), 'failed': sum(1 for r in results if r['status']=='error'), 'verified_aligned': verified_aligned, 'time_seconds': round(total_time, 1), 'files_per_second': round(len(files)/total_time, 2) if total_time > 0 else 0, 'results': results}
+
+@app.get("/api/batch_scan")
+def batch_scan(folder_path: str):
+    import glob
+    AUDIO_EXTS = {'.mp3','.wav','.flac','.ogg','.m4a','.aac'}
+    files = sorted([f for f in glob.glob(os.path.join(folder_path, '*')) if os.path.splitext(f)[1].lower() in AUDIO_EXTS])
+    tuning = kernel.fast_detect_folder(folder_path, precise=False)
+    file_list = []
     for f in files:
-        try:
-            sname = source_name(f); out_path = os.path.join(req.output_dir, f"{sname}_∞432.wav")
-            heal_result = kernel.full_heal(f, out_path, target_tuning=req.target_tuning)
-            bpm = detect_bpm(f); write_metadata_wav(out_path, title=sname, bpm=bpm)
-            results.append({'file': os.path.basename(f), 'status': 'ok', 'output': os.path.basename(out_path), 'original_tuning': heal_result['original_tuning'], 'target_tuning': heal_result['target_tuning'], 'semitones_shifted': heal_result['semitones_shifted'], 'bpm': bpm})
-        except Exception as e:
-            results.append({'file': os.path.basename(f), 'status': 'error', 'error': str(e)})
-    return {'total': len(files), 'completed': sum(1 for r in results if r['status']=='ok'), 'failed': sum(1 for r in results if r['status']=='error'), 'results': results}
+        d = tuning.get(f)
+        if d:
+            file_list.append({'file': os.path.basename(f), 'path': f, 'tuning': d['tuning'], 'confidence': d['confidence'], 'method': d['method']})
+        else:
+            file_list.append({'file': os.path.basename(f), 'path': f, 'tuning': None, 'confidence': 0, 'method': 'error'})
+    return {'total': len(file_list), 'files': file_list}
+
+
+
 
 @app.post("/api/report")
 def generate_report(req: ReportRequest):
     if not os.path.exists(req.input_path) or not os.path.exists(req.output_path): raise HTTPException(400, "File not found")
     input_tuning = kernel.detect_tuning(req.input_path)['tuning']
     return kernel.generate_report(req.input_path, req.output_path, input_tuning)
+
+@app.get("/api/verify")
+def verify_folder(folder_path: str, target: float = 432.0):
+    import glob, time
+    AUDIO_EXTS = {'.mp3','.wav','.flac','.ogg','.m4a','.aac'}
+    files = sorted([f for f in glob.glob(os.path.join(folder_path, '*')) if os.path.splitext(f)[1].lower() in AUDIO_EXTS])
+    if not files: raise HTTPException(400, "No audio files found")
+    start = time.time()
+    results = []
+    for f in files:
+        try:
+            d = kernel.detect_tuning(f, fast=False)
+            deviation = round(d['tuning'] - target, 3)
+            aligned = abs(deviation) <= 0.5
+            results.append({'file': os.path.basename(f), 'tuning': d['tuning'], 'deviation_hz': deviation, 'confidence': round(d['confidence'], 3), 'aligned': aligned, 'method': d['method']})
+        except Exception as e:
+            results.append({'file': os.path.basename(f), 'tuning': None, 'deviation_hz': None, 'confidence': 0, 'aligned': False, 'error': str(e)})
+    elapsed = round(time.time() - start, 1)
+    aligned_count = sum(1 for r in results if r.get('aligned'))
+    return {'total': len(results), 'aligned': aligned_count, 'misaligned': len(results) - aligned_count, 'target_hz': target, 'time_seconds': elapsed, 'results': results}
 
 if __name__ == "__main__":
     import uvicorn
