@@ -235,7 +235,7 @@ def pytesla_presets():
 def detect_tuning(req: DetectRequest):
     if not os.path.exists(req.file_path):
         raise HTTPException(400, "File not found")
-    result = kernel.detect_tuning(req.file_path)
+    result = kernel.detect_tuning(req.file_path, duration=None)
     result['bpm'] = detect_bpm(req.file_path)
     return result
 
@@ -259,7 +259,7 @@ async def heal(request: HealRequest):
         heal_left_path = os.path.join(WORK_DIR, f"{session_id}_left.wav")
         heal_right_path = os.path.join(WORK_DIR, f"{session_id}_right.wav")
 
-        cached = kernel.detect_tuning(request.file_path)
+        cached = kernel.detect_tuning(request.file_path, duration=8)
         try:
             left_result = kernel.full_heal(request.file_path, heal_left_path, target_tuning=left_tuning, cached_detect=cached)
             right_result = kernel.full_heal(request.file_path, heal_right_path, target_tuning=right_tuning, cached_detect=cached)
@@ -292,7 +292,7 @@ async def heal(request: HealRequest):
     else:
         healed_path = os.path.join(WORK_DIR, f"{session_id}_healed.wav")
         try:
-            cached = kernel.detect_tuning(request.file_path)
+            cached = kernel.detect_tuning(request.file_path, duration=8)
             heal_result = kernel.full_heal(request.file_path, healed_path, target_tuning=request.target_tuning, cached_detect=cached)
         except Exception as e:
             raise HTTPException(500, f"Healing failed: {e}")
@@ -390,42 +390,52 @@ def download(session_id: str, format: str = "wav", name: str = "432_healed", cle
 
 @app.post("/api/heal_batch")
 def heal_batch(req: BatchRequest):
-    import glob, time, concurrent.futures
+    import glob, time, concurrent.futures, shutil, traceback
     AUDIO_EXTS = {'.mp3','.wav','.flac','.ogg','.m4a','.aac'}
     files = sorted([f for f in glob.glob(os.path.join(req.folder_path, '*')) if os.path.splitext(f)[1].lower() in AUDIO_EXTS])
     if not files: raise HTTPException(400, "No audio files found in folder")
     os.makedirs(req.output_dir, exist_ok=True)
+    fallback_dir = os.path.join(req.output_dir, '_needs_review')
     kernel.clear_cache()
     start = time.time()
-    max_workers = min(6, os.cpu_count() or 4)
-    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as detect_ex:
-        detect_futs = {detect_ex.submit(kernel.detect_tuning, f, False): f for f in files}
-        detect_results = {}
-        for fut in concurrent.futures.as_completed(detect_futs):
-            f = detect_futs[fut]
-            try: detect_results[f] = fut.result()
-            except: detect_results[f] = None
     results = []
+    fallback_files = []
     is_mp3 = req.format == 'mp3'
-    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as heal_ex:
-        heal_futs = {}
-        for f in files:
-            sname = source_name(f)
-            out_path = os.path.join(req.output_dir, f"{sname}_∞432.wav")
-            cached = detect_results.get(f)
-            heal_futs[heal_ex.submit(kernel.full_heal, f, out_path, req.target_tuning, False, False, cached)] = (f, sname, cached)
-        for fut in concurrent.futures.as_completed(heal_futs):
-            f, sname, cached = heal_futs[fut]
-            wav_path = os.path.join(req.output_dir, f"{sname}_∞432.wav")
-            try:
-                heal_result = fut.result()
-                bpm = detect_bpm(f)
-                verified_tuning = None
-                if os.path.exists(wav_path):
-                    try:
-                        v = kernel.detect_tuning(wav_path, fast=False)
-                        verified_tuning = v['tuning']
-                    except: pass
+    processed = 0
+    for f in files:
+        sname = source_name(f)
+        wav_path = os.path.join(req.output_dir, f"{sname}_∞432.wav")
+        try:
+            t0 = time.time()
+            d = kernel.detect_tuning(f)
+            t1 = time.time()
+            ot = d['tuning']
+            orig_conf = d['confidence']
+            bpm = detect_bpm(f)
+            already = abs(ot - req.target_tuning) <= 0.05
+            if already:
+                shutil.copy2(f, wav_path)
+                ss = 0.0
+            else:
+                ss = 12 * np.log2(req.target_tuning / ot)
+                kernel.shift_pitch(f, wav_path, ss)
+            t2 = time.time()
+            verified = kernel.verify_tuning(wav_path, req.target_tuning)
+            t3 = time.time()
+            needs_review = (orig_conf < 0.05) or (not verified['pass'])
+            log_entry = f"[{sname}] detection={ot}Hz (conf={orig_conf:.3f}, {t1-t0:.1f}s) → shift={ss:.4f}st → verify={verified['tuning']}Hz ({verified['delta']:.2f}Hz delta, conf={verified['confidence']:.3f}, {t3-t2:.1f}s)"
+            if needs_review:
+                fb_path = os.path.join(fallback_dir, os.path.basename(f))
+                try: shutil.copy2(f, fb_path)
+                except: pass
+                reasons = []
+                if orig_conf < 0.05: reasons.append(f'low detection confidence ({orig_conf:.3f})')
+                if not verified['pass']: reasons.append(f'output at {verified["tuning"]} Hz ({verified["delta"]:.2f} Hz delta)')
+                reason = ' · '.join(reasons)
+                fallback_files.append({'file': os.path.basename(f), 'path': f, 'original_tuning': ot, 'confidence': orig_conf, 'reason': reason})
+                results.append({'file': os.path.basename(f), 'status': 'fallback', 'original_tuning': ot, 'target_tuning': req.target_tuning, 'verified_tuning': verified['tuning'], 'confidence': orig_conf, 'semitones_shifted': round(ss, 4), 'fallback_path': fb_path, 'bpm': bpm, 'fallback_reason': reason, 'log': log_entry})
+                if os.path.exists(wav_path): os.remove(wav_path)
+            else:
                 if is_mp3:
                     mp3_path = wav_path.rsplit('.', 1)[0] + '.mp3'
                     try:
@@ -434,16 +444,34 @@ def heal_batch(req: BatchRequest):
                         subprocess.run(['ffmpeg', '-y', '-i', wav_path, '-b:a', '320k', '-q:a', '0', '-joint_stereo', '1', '-id3v2_version', '3'] + meta + [mp3_path], capture_output=True, timeout=120)
                         os.remove(wav_path)
                     except: pass
-                    results.append({'file': os.path.basename(f), 'status': 'ok', 'output': os.path.basename(mp3_path), 'original_tuning': heal_result['original_tuning'], 'target_tuning': heal_result['target_tuning'], 'verified_tuning': verified_tuning, 'semitones_shifted': heal_result['semitones_shifted'], 'bpm': bpm})
+                    results.append({'file': os.path.basename(f), 'status': 'ok', 'output': os.path.basename(mp3_path), 'original_tuning': ot, 'target_tuning': req.target_tuning, 'verified_tuning': verified['tuning'], 'semitones_shifted': round(ss, 4), 'confidence': orig_conf, 'bpm': bpm, 'log': log_entry})
                 else:
                     try: write_metadata_wav(wav_path, title=sname, bpm=bpm)
                     except: pass
-                    results.append({'file': os.path.basename(f), 'status': 'ok', 'output': os.path.basename(wav_path), 'original_tuning': heal_result['original_tuning'], 'target_tuning': heal_result['target_tuning'], 'verified_tuning': verified_tuning, 'semitones_shifted': heal_result['semitones_shifted'], 'bpm': bpm})
-            except Exception as e:
-                results.append({'file': os.path.basename(f), 'status': 'error', 'error': str(e)})
+                    results.append({'file': os.path.basename(f), 'status': 'ok', 'output': os.path.basename(wav_path), 'original_tuning': ot, 'target_tuning': req.target_tuning, 'verified_tuning': verified['tuning'], 'semitones_shifted': round(ss, 4), 'confidence': orig_conf, 'bpm': bpm, 'log': log_entry})
+        except Exception as e:
+            tb = traceback.format_exc()[-200:]
+            results.append({'file': os.path.basename(f), 'status': 'error', 'error': str(e), 'log': f'[{sname}] ERROR: {e}'})
+        processed += 1
     total_time = time.time() - start
     verified_aligned = sum(1 for r in results if r.get('verified_tuning') and abs(r['verified_tuning'] - req.target_tuning) <= 1.0)
-    return {'total': len(files), 'completed': sum(1 for r in results if r['status']=='ok'), 'failed': sum(1 for r in results if r['status']=='error'), 'verified_aligned': verified_aligned, 'time_seconds': round(total_time, 1), 'files_per_second': round(len(files)/total_time, 2) if total_time > 0 else 0, 'results': results}
+    fallback_count = sum(1 for r in results if r['status'] == 'fallback')
+    if fallback_files:
+        log_path = os.path.join(req.output_dir, '_fallback_report.txt')
+        with open(log_path, 'w') as lf:
+            lf.write(f"Harmonic Convergence — Fallback Report\n")
+            lf.write(f"Batch: {req.folder_path} → {req.output_dir}\n")
+            lf.write(f"Target: {req.target_tuning} Hz | {req.format.upper()}\n")
+            lf.write(f"Total files: {len(files)} | Fallback: {len(fallback_files)}\n\n")
+            for fb in fallback_files:
+                lf.write(f"  FILE: {fb['file']}\n")
+                lf.write(f"  PATH: {fb['path']}\n")
+                lf.write(f"  TUNING: {fb['original_tuning']} Hz\n")
+                lf.write(f"  CONFIDENCE: {fb['confidence']:.4f}\n")
+                lf.write(f"  REASON: {fb['reason']}\n")
+                lf.write(f"  BACKED UP TO: {os.path.join(fallback_dir, fb['file'])}\n\n")
+            lf.write("— End of report —\n")
+    return {'total': len(files), 'completed': sum(1 for r in results if r['status']=='ok'), 'failed': sum(1 for r in results if r['status']=='error'), 'fallback': fallback_count, 'verified_aligned': verified_aligned, 'time_seconds': round(total_time, 1), 'files_per_second': round(len(files)/total_time, 2) if total_time > 0 else 0, 'fallback_report': log_path if fallback_files else None, 'results': results}
 
 @app.get("/api/batch_scan")
 def batch_scan(folder_path: str):
@@ -477,17 +505,20 @@ def verify_folder(folder_path: str, target: float = 432.0):
     if not files: raise HTTPException(400, "No audio files found")
     start = time.time()
     results = []
+    kernel.clear_cache()
     for f in files:
         try:
-            d = kernel.detect_tuning(f, fast=False)
+            d = kernel.detect_tuning(f)
             deviation = round(d['tuning'] - target, 3)
             aligned = abs(deviation) <= 0.5
-            results.append({'file': os.path.basename(f), 'tuning': d['tuning'], 'deviation_hz': deviation, 'confidence': round(d['confidence'], 3), 'aligned': aligned, 'method': d['method']})
+            raw = round(d.get('raw_tuning', d['tuning']), 3)
+            results.append({'file': os.path.basename(f), 'tuning': d['tuning'], 'raw_tuning': raw, 'deviation_hz': deviation, 'confidence': round(d['confidence'], 3), 'aligned': aligned, 'method': d['method']})
         except Exception as e:
             results.append({'file': os.path.basename(f), 'tuning': None, 'deviation_hz': None, 'confidence': 0, 'aligned': False, 'error': str(e)})
     elapsed = round(time.time() - start, 1)
     aligned_count = sum(1 for r in results if r.get('aligned'))
-    return {'total': len(results), 'aligned': aligned_count, 'misaligned': len(results) - aligned_count, 'target_hz': target, 'time_seconds': elapsed, 'results': results}
+    mis_count = sum(1 for r in results if not r.get('aligned'))
+    return {'total': len(results), 'aligned': aligned_count, 'misaligned': mis_count, 'target_hz': target, 'time_seconds': elapsed, 'results': results}
 
 if __name__ == "__main__":
     import uvicorn
