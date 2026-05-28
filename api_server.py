@@ -235,7 +235,7 @@ def pytesla_presets():
 def detect_tuning(req: DetectRequest):
     if not os.path.exists(req.file_path):
         raise HTTPException(400, "File not found")
-    result = kernel.detect_tuning(req.file_path, duration=None)
+    result = kernel.detect_tuning(req.file_path)
     result['bpm'] = detect_bpm(req.file_path)
     return result
 
@@ -259,10 +259,9 @@ async def heal(request: HealRequest):
         heal_left_path = os.path.join(WORK_DIR, f"{session_id}_left.wav")
         heal_right_path = os.path.join(WORK_DIR, f"{session_id}_right.wav")
 
-        cached = kernel.detect_tuning(request.file_path, duration=8)
         try:
-            left_result = kernel.full_heal(request.file_path, heal_left_path, target_tuning=left_tuning, cached_detect=cached)
-            right_result = kernel.full_heal(request.file_path, heal_right_path, target_tuning=right_tuning, cached_detect=cached)
+            left_result = kernel.full_heal(request.file_path, heal_left_path, target_tuning=left_tuning)
+            right_result = kernel.full_heal(request.file_path, heal_right_path, target_tuning=right_tuning)
         except Exception as e:
             raise HTTPException(500, f"PyTesla healing failed: {e}")
 
@@ -292,8 +291,7 @@ async def heal(request: HealRequest):
     else:
         healed_path = os.path.join(WORK_DIR, f"{session_id}_healed.wav")
         try:
-            cached = kernel.detect_tuning(request.file_path, duration=8)
-            heal_result = kernel.full_heal(request.file_path, healed_path, target_tuning=request.target_tuning, cached_detect=cached)
+            heal_result = kernel.full_heal(request.file_path, healed_path, target_tuning=request.target_tuning)
         except Exception as e:
             raise HTTPException(500, f"Healing failed: {e}")
         y, sr_orig = librosa.load(healed_path, sr=None, mono=False)
@@ -478,7 +476,7 @@ def batch_scan(folder_path: str):
     import glob
     AUDIO_EXTS = {'.mp3','.wav','.flac','.ogg','.m4a','.aac'}
     files = sorted([f for f in glob.glob(os.path.join(folder_path, '*')) if os.path.splitext(f)[1].lower() in AUDIO_EXTS])
-    tuning = kernel.fast_detect_folder(folder_path, precise=False)
+    tuning = kernel.fast_detect_folder(folder_path)
     file_list = []
     for f in files:
         d = tuning.get(f)

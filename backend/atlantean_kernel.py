@@ -1,5 +1,5 @@
 """
-Atlantean Kernel v3 — Full-file CQT, quality-first precision tuning.
+Atlantean Kernel v4 — 8×8 multi-segment CQT detection with probability voting.
 """
 import numpy as np
 import librosa
@@ -8,7 +8,9 @@ import subprocess, os, json
 from datetime import datetime
 
 class AtlanteanKernel:
-    MEANINGFUL_TARGETS = [420, 424, 427, 430, 432, 435, 438, 440, 442, 444, 445, 446, 448]
+    VOTE_BINS = [420, 424, 427, 430, 432, 435, 438, 440, 442, 444, 445, 446, 448]
+    SEGMENTS = 8
+    SEGMENT_DURATION = 8.0
 
     def __init__(self):
         self.target_tuning = 432.0
@@ -18,20 +20,23 @@ class AtlanteanKernel:
     def _round_meaningful(self, raw_tuning):
         if 430.0 <= raw_tuning <= 434.0:
             return 432.0
-        for target in self.MEANINGFUL_TARGETS:
+        for target in self.VOTE_BINS:
             if abs(raw_tuning - target) <= 0.5:
                 return float(target)
         return round(raw_tuning, 2)
 
-    def _full_load(self, file_path):
-        y, sr = librosa.load(file_path, sr=self.sample_rate, mono=True)
-        return y, sr
-
-    def detect_tuning_reference(self, file_path):
-        y, sr = self._full_load(file_path)
-        C = np.abs(librosa.cqt(y, sr=sr, bins_per_octave=72, n_bins=72*7, fmin=32.7))
+    def _cqt_segment(self, y, sr, offset_seconds):
+        start_sample = int(offset_seconds * sr)
+        end_sample = start_sample + int(self.SEGMENT_DURATION * sr)
+        if end_sample > len(y):
+            end_sample = len(y)
+            start_sample = max(0, end_sample - int(self.SEGMENT_DURATION * sr))
+        if start_sample < 0 or end_sample - start_sample < sr:
+            return None, 0.0
+        seg = y[start_sample:end_sample]
+        C = np.abs(librosa.cqt(seg, sr=sr, bins_per_octave=72, n_bins=72*7, fmin=32.7))
         freqs = librosa.cqt_frequencies(n_bins=72*7, fmin=32.7, bins_per_octave=72)
-        peaks_idx = np.argsort(C.max(axis=1))[-400:]
+        peaks_idx = np.argsort(C.max(axis=1))[-300:]
         peaks_freq = freqs[peaks_idx]; peaks_mag = C.max(axis=1)[peaks_idx]
         candidates = [x * 0.5 for x in range(840, 900)]
         scores = {}
@@ -47,18 +52,58 @@ class AtlanteanKernel:
         best = sorted_scores[0][0]
         second = sorted_scores[1][0]
         confidence = max(0, min(1, (sorted_scores[0][1] - sorted_scores[1][1]) * 20))
-        if confidence > 0.3:
-            best_val = sorted_scores[0][1]
-            second_val = sorted_scores[1][1]
-            total = best_val + second_val
-            if total > 0:
-                best = (best * best_val + second * second_val) / total
-        raw = round(best, 3)
-        if confidence > 0.05:
+        if confidence > 0.3 and (sorted_scores[0][1] + sorted_scores[1][1]) > 0:
+            best = (best * sorted_scores[0][1] + second * sorted_scores[1][1]) / (sorted_scores[0][1] + sorted_scores[1][1])
+        return round(best, 3), float(confidence)
+
+    def detect_tuning_reference(self, file_path):
+        y, sr = librosa.load(file_path, sr=self.sample_rate, mono=True)
+        total_dur = len(y) / sr
+        if total_dur <= self.SEGMENT_DURATION * 1.5:
+            seg_len = min(int(total_dur * sr), len(y))
+            y = y[:seg_len]
+            best, conf = self._cqt_segment(y, sr, 0)
+            if best is None:
+                return (432.0, 0.0, 'cqt_grid', 432.0)
+            raw = best
+            if conf > 0.05:
+                reported = self._round_meaningful(raw)
+            else:
+                reported = raw
+            return (reported, float(conf), 'cqt_grid', raw)
+        positions = []
+        for i in range(self.SEGMENTS):
+            frac = (i + 0.5) / self.SEGMENTS
+            offset = frac * total_dur
+            max_start = total_dur - self.SEGMENT_DURATION
+            if max_start <= 0:
+                offset = 0
+            else:
+                offset = min(offset, max_start)
+            positions.append(offset)
+        votes = {}
+        for offset in positions:
+            best, conf = self._cqt_segment(y, sr, offset)
+            if best is None:
+                continue
+            binned = self._round_meaningful(best)
+            if binned not in votes:
+                votes[binned] = 0.0
+            votes[binned] += conf
+        if not votes:
+            return (432.0, 0.0, 'cqt_grid', 432.0)
+        total_weight = sum(votes.values())
+        winner = max(votes, key=votes.get)
+        winner_weight = votes[winner]
+        final_confidence = winner_weight / total_weight if total_weight > 0 else 0.0
+        second_weight = sorted(votes.values(), reverse=True)[1] if len(votes) > 1 else 0.0
+        vote_confidence = max(0, min(1, (winner_weight - second_weight) / max(total_weight, 1e-10) * 2))
+        raw = float(winner)
+        if final_confidence > 0.05:
             reported = self._round_meaningful(raw)
         else:
             reported = raw
-        return (reported, float(confidence), 'cqt_grid', raw)
+        return (reported, float(final_confidence), 'cqt_grid', raw)
 
     def detect_tuning(self, file_path, fast=False):
         if file_path in self._detect_cache:
