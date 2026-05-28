@@ -1,1 +1,4 @@
 **/__pycache__/
+electron-frontend/node_modules/
+*.pyc
+__pycache__/
