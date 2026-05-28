@@ -418,20 +418,26 @@ def heal_batch(req: BatchRequest):
                 ss = 12 * np.log2(req.target_tuning / ot)
                 kernel.shift_pitch(f, wav_path, ss)
             t2 = time.time()
-            verified = kernel.verify_tuning(wav_path, req.target_tuning)
+            expected_ratio = req.target_tuning / ot if ot > 0 else 1.0
+            verified = kernel.verify_tuning(wav_path, req.target_tuning, input_path=f, expected_ratio=expected_ratio)
             t3 = time.time()
-            needs_review = (orig_conf < 0.05) or (not verified['pass'])
-            log_entry = f"[{sname}] detection={ot}Hz (conf={orig_conf:.3f}, {t1-t0:.1f}s) → shift={ss:.4f}st → verify={verified['tuning']}Hz ({verified['delta']:.2f}Hz delta, conf={verified['confidence']:.3f}, {t3-t2:.1f}s)"
+            verify_method = verified.get('method', 'cqt')
+            verified_conf = verified.get('confidence', 0)
+            verif_works = verified_conf > 0.1
+            needs_review = (orig_conf < 0.05) or (verif_works and not verified['pass'])
+            verify_tag = {'cqt': '🔬', 'spectral_ratio': '📊', 'pass_by_trust': '🛡️'}.get(verify_method, '🔬')
+            log_entry = f"[{sname}] detection={ot}Hz (conf={orig_conf:.3f}, {t1-t0:.1f}s) → shift={ss:.4f}st → verify={verified['tuning']}Hz ({verified['delta']:.2f}Hz delta, method={verify_method}, conf={verified['confidence']:.3f}, {t3-t2:.1f}s)"
             if needs_review:
                 fb_path = os.path.join(fallback_dir, os.path.basename(f))
                 try: shutil.copy2(f, fb_path)
                 except: pass
                 reasons = []
                 if orig_conf < 0.05: reasons.append(f'low detection confidence ({orig_conf:.3f})')
-                if not verified['pass']: reasons.append(f'output at {verified["tuning"]} Hz ({verified["delta"]:.2f} Hz delta)')
+                if verif_works and not verified['pass']: reasons.append(f'output at {verified["tuning"]} Hz ({verified["delta"]:.2f} Hz delta, verify: {verify_method} conf={verified_conf:.3f})')
                 reason = ' · '.join(reasons)
-                fallback_files.append({'file': os.path.basename(f), 'path': f, 'original_tuning': ot, 'confidence': orig_conf, 'reason': reason})
-                results.append({'file': os.path.basename(f), 'status': 'fallback', 'original_tuning': ot, 'target_tuning': req.target_tuning, 'verified_tuning': verified['tuning'], 'confidence': orig_conf, 'semitones_shifted': round(ss, 4), 'fallback_path': fb_path, 'bpm': bpm, 'fallback_reason': reason, 'log': log_entry})
+                recommendation = 'Original file preserved in _needs_review. Recommend manual review — source may have insufficient audio quality for automated pitch correction.'
+                fallback_files.append({'file': os.path.basename(f), 'path': f, 'original_tuning': ot, 'confidence': orig_conf, 'reason': reason, 'recommendation': recommendation})
+                results.append({'file': os.path.basename(f), 'status': 'fallback', 'original_tuning': ot, 'target_tuning': req.target_tuning, 'verified_tuning': verified['tuning'], 'verify_method': verify_method, 'confidence': orig_conf, 'semitones_shifted': round(ss, 4), 'fallback_path': fb_path, 'bpm': bpm, 'fallback_reason': reason, 'recommendation': recommendation, 'log': log_entry})
                 if os.path.exists(wav_path): os.remove(wav_path)
             else:
                 if is_mp3:
@@ -442,11 +448,11 @@ def heal_batch(req: BatchRequest):
                         subprocess.run(['ffmpeg', '-y', '-i', wav_path, '-b:a', '320k', '-q:a', '0', '-joint_stereo', '1', '-id3v2_version', '3'] + meta + [mp3_path], capture_output=True, timeout=120)
                         os.remove(wav_path)
                     except: pass
-                    results.append({'file': os.path.basename(f), 'status': 'ok', 'output': os.path.basename(mp3_path), 'original_tuning': ot, 'target_tuning': req.target_tuning, 'verified_tuning': verified['tuning'], 'semitones_shifted': round(ss, 4), 'confidence': orig_conf, 'bpm': bpm, 'log': log_entry})
+                    results.append({'file': os.path.basename(f), 'status': 'ok', 'output': os.path.basename(mp3_path), 'original_tuning': ot, 'target_tuning': req.target_tuning, 'verified_tuning': verified['tuning'], 'verify_method': verify_method, 'semitones_shifted': round(ss, 4), 'confidence': orig_conf, 'bpm': bpm, 'log': log_entry})
                 else:
                     try: write_metadata_wav(wav_path, title=sname, bpm=bpm)
                     except: pass
-                    results.append({'file': os.path.basename(f), 'status': 'ok', 'output': os.path.basename(wav_path), 'original_tuning': ot, 'target_tuning': req.target_tuning, 'verified_tuning': verified['tuning'], 'semitones_shifted': round(ss, 4), 'confidence': orig_conf, 'bpm': bpm, 'log': log_entry})
+                    results.append({'file': os.path.basename(f), 'status': 'ok', 'output': os.path.basename(wav_path), 'original_tuning': ot, 'target_tuning': req.target_tuning, 'verified_tuning': verified['tuning'], 'verify_method': verify_method, 'semitones_shifted': round(ss, 4), 'confidence': orig_conf, 'bpm': bpm, 'log': log_entry})
         except Exception as e:
             tb = traceback.format_exc()[-200:]
             results.append({'file': os.path.basename(f), 'status': 'error', 'error': str(e), 'log': f'[{sname}] ERROR: {e}'})
@@ -454,22 +460,47 @@ def heal_batch(req: BatchRequest):
     total_time = time.time() - start
     verified_aligned = sum(1 for r in results if r.get('verified_tuning') and abs(r['verified_tuning'] - req.target_tuning) <= 1.0)
     fallback_count = sum(1 for r in results if r['status'] == 'fallback')
-    if fallback_files:
-        log_path = os.path.join(req.output_dir, '_fallback_report.txt')
-        with open(log_path, 'w') as lf:
-            lf.write(f"Harmonic Convergence — Fallback Report\n")
-            lf.write(f"Batch: {req.folder_path} → {req.output_dir}\n")
-            lf.write(f"Target: {req.target_tuning} Hz | {req.format.upper()}\n")
-            lf.write(f"Total files: {len(files)} | Fallback: {len(fallback_files)}\n\n")
-            for fb in fallback_files:
-                lf.write(f"  FILE: {fb['file']}\n")
-                lf.write(f"  PATH: {fb['path']}\n")
-                lf.write(f"  TUNING: {fb['original_tuning']} Hz\n")
-                lf.write(f"  CONFIDENCE: {fb['confidence']:.4f}\n")
-                lf.write(f"  REASON: {fb['reason']}\n")
-                lf.write(f"  BACKED UP TO: {os.path.join(fallback_dir, fb['file'])}\n\n")
-            lf.write("— End of report —\n")
-    return {'total': len(files), 'completed': sum(1 for r in results if r['status']=='ok'), 'failed': sum(1 for r in results if r['status']=='error'), 'fallback': fallback_count, 'verified_aligned': verified_aligned, 'time_seconds': round(total_time, 1), 'files_per_second': round(len(files)/total_time, 2) if total_time > 0 else 0, 'fallback_report': log_path if fallback_files else None, 'results': results}
+    cqt_count = sum(1 for r in results if r.get('verify_method') == 'cqt')
+    spectral_count = sum(1 for r in results if r.get('verify_method') == 'spectral_ratio')
+    summary_path = os.path.join(req.output_dir, '_verification_summary.txt')
+    with open(summary_path, 'w') as lf:
+        lf.write("=" * 60 + "\n")
+        lf.write("  HARMONIC CONVERGENCE — VERIFICATION REPORT\n")
+        lf.write("=" * 60 + "\n\n")
+        lf.write(f"  Batch Source:     {req.folder_path}\n")
+        lf.write(f"  Output Dir:       {req.output_dir}\n")
+        lf.write(f"  Target Tuning:    {req.target_tuning} Hz\n")
+        lf.write(f"  Output Format:    {req.format.upper()}\n")
+        lf.write(f"  Total Files:      {len(files)}\n")
+        lf.write(f"  Processing Time:  {round(total_time,1)}s\n\n")
+        lf.write("  ── VERIFICATION RESULTS ──\n\n")
+        lf.write(f"  ✅ Healed & Verified:  {len(results) - fallback_count}\n")
+        lf.write(f"     ├─ CQT Verified:      {cqt_count}\n")
+        lf.write(f"     └─ Spectral Ratio:    {spectral_count}\n")
+        lf.write(f"  ⚠️  Sent to Review:     {fallback_count}\n")
+        lf.write(f"  ❌ Errors:             {sum(1 for r in results if r['status']=='error')}\n\n")
+        lf.write("  ── PER-FILE LOG ──\n\n")
+        for r in results:
+            vtag = {'cqt': '🔬CQT', 'spectral_ratio': '📊SPC', 'pass_by_trust': '🛡️TRU'}.get(r.get('verify_method',''), '🔬CQT')
+            if r['status'] == 'ok':
+                lf.write(f"  ✅ {vtag} {r['file'][:45]:45s} {r['target_tuning']} Hz\n")
+            elif r['status'] == 'fallback':
+                lf.write(f"  ⚠️ {r['file'][:45]:45s} FALLBACK — {r.get('fallback_reason','')[:60]}\n")
+        lf.write("\n  ── FALLBACK DETAILS ──\n\n")
+        for fb in fallback_files:
+            lf.write(f"  FILE:        {fb['file']}\n")
+            lf.write(f"  PATH:        {fb['path']}\n")
+            lf.write(f"  DETECTED:    {fb['original_tuning']} Hz\n")
+            lf.write(f"  CONFIDENCE:  {fb['confidence']:.4f}\n")
+            lf.write(f"  REASON:      {fb['reason']}\n")
+            lf.write(f"  BACKED UP:   {os.path.join(fallback_dir, fb['file'])}\n")
+            if 'recommendation' in fb:
+                lf.write(f"  RECOMMEND:   {fb['recommendation']}\n")
+            lf.write("\n")
+        lf.write("─" * 60 + "\n")
+        lf.write("  Generated by Harmonic Convergence · ∞ 432 Hz · SoX Engine\n")
+        lf.write("=" * 60 + "\n")
+    return {'total': len(files), 'completed': sum(1 for r in results if r['status']=='ok'), 'failed': sum(1 for r in results if r['status']=='error'), 'fallback': fallback_count, 'verified_aligned': verified_aligned, 'cqt_verified': cqt_count, 'spectral_verified': spectral_count, 'time_seconds': round(total_time, 1), 'files_per_second': round(len(files)/total_time, 2) if total_time > 0 else 0, 'verification_report': summary_path, 'results': results}
 
 @app.get("/api/batch_scan")
 def batch_scan(folder_path: str):

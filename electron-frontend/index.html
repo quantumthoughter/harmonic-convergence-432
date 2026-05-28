@@ -198,7 +198,7 @@ select{background:rgba(8,4,18,.6);color:var(--text);border:1px solid rgba(155,10
     <div class="status" id="st">✨ Drop a file</div>
     <div class="prog"><div class="prog-fill" id="progFill"></div></div>
     <div class="card" style="flex:1;min-height:0;display:flex;flex-direction:column">
-      <div class="card-h"><h2>📰 Local News</h2><span id="logCount">0</span></div>
+      <div class="card-h"><h2>📡 Live Log</h2><span id="logCount">0</span></div>
       <div class="card-b" style="padding:4px 8px;flex:1;display:flex;flex-direction:column;min-height:0">
         <div class="diag" id="diagLog"></div>
       </div>
@@ -604,16 +604,17 @@ $('batchHealBtn').onclick=async()=>{
   log('📂 <strong>Batch heal:</strong> '+_batchFiles.length+' files → '+fmt.toUpperCase()+' · suffix: "'+suffix+'" (parallel)')
   try{
     const r=await A.post('/api/heal_batch',{folder_path:_batchFolder,output_dir:_batchOut,target_tuning:+$('tgtSel').value,format:$('batchFmt').value})
-    let ok=r.completed||0,err=r.failed||0,fb=r.fallback||0
+    let ok=r.completed||0,err=r.failed||0,fb=r.fallback||0,cqt=r.cqt_verified||0,spc=r.spectral_verified||0
     for(const res of r.results||[]){
-      if(res.status==='ok'){log('✅ '+res.file+' · '+res.original_tuning+'→'+res.target_tuning+' Hz'+(res.bpm?' · ♪ '+res.bpm:''))}
+      const tag={'cqt':'🔬','spectral_ratio':'📊','pass_by_trust':'🛡️'}[res.verify_method]||'🔬'
+      if(res.status==='ok'){log(tag+' '+res.file+' · '+res.original_tuning+'→'+res.target_tuning+' Hz'+(res.bpm?' · ♪ '+res.bpm:''))}
       else if(res.status==='fallback'){log('⚠️ '+res.file+' · '+ (res.fallback_reason||'needs review') +' → _needs_review');fb++}
       else{log('❌ '+res.file+': '+(res.error||'error'));err++}
     }
     $('batchHealBtn').disabled=false;$('batchHealBtn').textContent='⟁ HEAL ALL '+_batchFiles.length+' FILES'
-    $('batchProg').textContent='✅ '+ok+' healed, '+fb+' fallback, '+err+' errors in '+(r.time_seconds||'?')+'s'
+    $('batchProg').textContent='✅ '+ok+' healed (🔬'+cqt+' CQT, 📊'+spc+' ratio), ⚠️ '+fb+' review, ❌'+err+' errors in '+(r.time_seconds||'?')+'s'
     $('batchStatus').textContent=ok+'/'+_batchFiles.length
-    log('📂 <strong>Batch complete:</strong> '+ok+' healed, '+fb+' fallback, '+err+' errors in '+(r.time_seconds||'?')+'s'+(r.fallback_report?' · report: '+r.fallback_report:''))
+    log('📂 <strong>Batch complete:</strong> '+ok+' healed (🔬'+cqt+' CQT-verified, 📊'+spc+' spectral-verified), ⚠️ '+fb+' fallback, ❌'+err+' errors in '+(r.time_seconds||'?')+'s'+(r.verification_report?' · report: '+r.verification_report:''))
     if(err===0&&fb===0)sparkleBurst()
   }catch(e){$('batchProg').textContent='❌ '+e.message;$('batchHealBtn').disabled=false;$('batchHealBtn').textContent='⟁ HEAL ALL '+_batchFiles.length+' FILES';log('❌ <strong>Batch error:</strong> '+e.message)}
 }
