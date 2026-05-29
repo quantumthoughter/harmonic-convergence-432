@@ -76,6 +76,7 @@ class HealRequest(BaseModel):
     binaural_noise_type: str = ''
     binaural_noise_vol: float = 0.0
     binaural_phase_lock: bool = False
+    normalize: bool = False
     carrier_33_5: float = 0.0
     carrier_7_83: float = 0.0
     carrier_8: float = 0.0
@@ -84,6 +85,21 @@ class DetectRequest(BaseModel): file_path: str
 class ReportRequest(BaseModel): input_path: str; output_path: str
 class BatchRequest(BaseModel): folder_path: str; output_dir: str; target_tuning: float = 432.0; format: str = "wav"; artist: str = "Quantum Thoughter"; composer: str = "Quantum Thoughter"; album: str = "Harmonic Convergence"; comment: str = "432 Hz Tuning Correction via Harmonic Convergence"
 class SynthRequest(BaseModel): frequencies: dict = {}; duration_hours: float = 1.0; sample_rate: int = 48000
+class BinauralExportRequest(BaseModel):
+    duration_seconds: float = 60.0
+    format: str = 'wav'
+    carrier: float = 432.0
+    left_hz: float = 432.0
+    right_hz: float = 440.0
+    volume: float = 0.3
+    delay_ms: float = 0.0
+    feedback: float = 0.3
+    reverb_room: float = 0.0
+    lfo_rate: float = 0.0
+    noise_type: str = ''
+    noise_vol: float = 0.0
+    phase_lock: bool = False
+
 class RenderSynthRequest(BaseModel): frequencies: dict = {}; pyt_esla: bool = False; carrier_1hz: bool = True; ambience_mix: float = 0.0; duration_hours: float = 1.0; sample_rate: int = 48000
 
 def source_name(file_path):
@@ -450,6 +466,13 @@ async def heal(request: HealRequest):
             n = min(mix.shape[-1], bi.shape[-1])
             mix[..., :n] += bi[..., :n]
 
+    if request.normalize:
+        peak = np.max(np.abs(mix))
+        if peak > 0:
+            mix = mix / peak * 0.95
+        rms = np.sqrt(np.mean(mix**2))
+        if rms > 0 and rms < 0.3:
+            mix = mix / rms * 0.4
     peak = np.max(np.abs(mix))
     if peak > 1.0: mix = mix / peak * 0.98
     sf.write(final_wav, mix.T, sr, subtype='PCM_16')
@@ -684,6 +707,22 @@ def generate_report(req: ReportRequest):
     if not os.path.exists(req.input_path) or not os.path.exists(req.output_path): raise HTTPException(400, "File not found")
     input_tuning = kernel.detect_tuning(req.input_path)['tuning']
     return kernel.generate_report(req.input_path, req.output_path, input_tuning)
+
+@app.post("/api/binaural_export")
+def binaural_export(req: BinauralExportRequest):
+    session_id = uuid.uuid4().hex[:12]
+    duration = req.duration_seconds
+    sr = 44100
+    stereo = generate_binaural_layer(duration, sr, req.carrier, req.left_hz, req.right_hz, req.volume,
+        req.delay_ms, req.feedback, req.reverb_room, req.lfo_rate, 0.3,
+        req.noise_type if req.noise_type else None, req.noise_vol, req.phase_lock)
+    if stereo is None:
+        stereo = np.zeros((2, int(sr * duration)), dtype=np.float64)
+    peak = np.max(np.abs(stereo))
+    if peak > 0: stereo = stereo / peak * 0.95
+    out_path = os.path.join(WORK_DIR, f"{session_id}_final.wav")
+    sf.write(out_path, stereo.T, sr, subtype='PCM_16')
+    return {"session_id": session_id, "output_path": out_path, "duration": duration, "sample_rate": sr}
 
 @app.get("/api/verify")
 def verify_folder(folder_path: str, target: float = 432.0):
