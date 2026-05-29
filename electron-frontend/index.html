@@ -175,6 +175,10 @@ select{background:rgba(8,4,18,.6);color:var(--text);border:1px solid rgba(155,10
           <button class="save-btn" id="mp3Btn">💾 MP3</button>
           <button class="save-btn" id="bothBtn">Both</button>
         </div>
+        <div style="display:flex;align-items:center;gap:4px;font-size:9px;color:var(--muted);padding-top:2px">
+          <input type="checkbox" id="normalizeToggle" style="width:12px;height:12px">
+          <span>🎚️ Normalize</span>
+        </div>
       </div>
     </div>
     <div class="card">
@@ -272,6 +276,7 @@ select{background:rgba(8,4,18,.6);color:var(--text);border:1px solid rgba(155,10
         <label style="color:var(--ameth);font-weight:600">PyTesla</label>
         <div class="v-toggle"><button id="pyToggle">⚡ Off</button></div>
         <select id="pyPreset" style="flex:1;font-size:12px" disabled>
+        <label style="font-size:9px;color:var(--muted);margin-left:4px"><input type="checkbox" id="bePyMonitor" style="width:12px;height:12px"> ▶</label>
           <option value="440~432">440~432 = 8 Hz (α/θ)</option>
           <option value="424~432">424~432 = 8 Hz (α/θ)</option>
           <option value="440~444">440~444 = 4 Hz (θ)</option>
@@ -338,7 +343,7 @@ select{background:rgba(8,4,18,.6);color:var(--text);border:1px solid rgba(155,10
       </div>
     </div>
 
-    <div class="card" style="flex-shrink:0;max-height:220px;overflow-y:auto">
+    <div class="card" style="flex-shrink:0;overflow-y:auto">
       <div class="card-h"><h2>🌀 Binaural Engine</h2><span>⚡</span>
         <div class="v-toggle" style="margin-left:auto"><button id="beToggle" style="padding:4px 12px;font-size:10px">Off</button></div>
       </div>
@@ -379,14 +384,6 @@ select{background:rgba(8,4,18,.6);color:var(--text);border:1px solid rgba(155,10
           <select id="beExportDur" style="width:50px;font-size:9px;padding:2px"><option value="10">10s</option><option value="60">1m</option><option value="300">5m</option><option value="600">10m</option><option value="1800">30m</option><option value="3600">1h</option></select>
           <select id="beExportFmt" style="width:50px;font-size:9px;padding:2px"><option value="wav">WAV</option><option value="mp3">MP3</option></select>
         </div>
-      </div>
-    </div>
-
-    <div class="card" style="flex-shrink:0">
-      <div class="card-h"><h2>🎚️ Master</h2></div>
-      <div class="card-b" style="display:flex;flex-direction:column;gap:3px">
-        <div class="meta-row"><label style="font-size:9px"><input type="checkbox" id="bePyMonitor"> Monitor</label><span style="font-size:8px;color:var(--muted)">PyTesla preview</span></div>
-        <div class="meta-row"><label style="font-size:9px"><input type="checkbox" id="normalizeToggle"> Normalize</label><span style="font-size:8px;color:var(--muted)">Peak-level dynamic</span></div>
       </div>
     </div>
   </div>
@@ -611,8 +608,8 @@ $('beDeletePreset').onclick=async()=>{
   try{await fetch('http://127.0.0.1:8765/api/binaural_presets?name='+encodeURIComponent(name),{method:'DELETE'});log('🗑 Preset deleted: '+name);_beLoadPresets()}catch(e){log('❌ '+e.message)}
 }
 
-// Binaural Preview — live Web Audio generation
-let _bePreviewSrc=null,_bePreviewPlaying=false
+// Binaural Preview — real-time OscillatorNode for live frequency updates
+let _beOscL=null,_beOscR=null,_beGainL=null,_beGainR=null,_beAc=null,_bePreviewPlaying=false
 function _beGetFreqs(){
   const c=parseFloat($('beCarrierHz').value)||432
   return {
@@ -621,24 +618,49 @@ function _beGetFreqs(){
     vol:($('beVolume').value||30)/100
   }
 }
+function _beUpdateOscillators(){
+  if(!_bePreviewPlaying)return
+  const f=_beGetFreqs()
+  if(_beOscL){try{_beOscL.frequency.setValueAtTime(f.left,_beAc.currentTime)}catch(e){}}
+  if(_beOscR){try{_beOscR.frequency.setValueAtTime(f.right,_beAc.currentTime)}catch(e){}}
+  const g=f.vol*0.3
+  if(_beGainL){try{_beGainL.gain.setValueAtTime(g,_beAc.currentTime)}catch(e){}}
+  if(_beGainR){try{_beGainR.gain.setValueAtTime(g,_beAc.currentTime)}catch(e){}}
+}
 $('bePreviewBtn').onclick=function(){
   if(_bePreviewPlaying){_beStopPreview();return}
   try{
-    let ac2=acHeal
-    if(!ac2||ac2.state==='closed'){ac2=new(window.AudioContext||window.webkitAudioContext)();acHeal=ac2}
-    if(ac2.state==='suspended')ac2.resume()
-    const f=_beGetFreqs(),sr=ac2.sampleRate,dur=10,n=sr*dur
-    const buf=ac2.createBuffer(2,n,sr)
-    const L=buf.getChannelData(0),R=buf.getChannelData(1)
-    for(let i=0;i<n;i++){L[i]=Math.sin(2*Math.PI*f.left*i/sr)*f.vol*0.3;R[i]=Math.sin(2*Math.PI*f.right*i/sr)*f.vol*0.3}
-    _bePreviewSrc=ac2.createBufferSource();_bePreviewSrc.buffer=buf
-    _bePreviewSrc.connect(ac2.destination);_bePreviewSrc.start()
-    _bePreviewSrc.onended=()=>{_bePreviewPlaying=false;$('bePreviewBtn').textContent='▶ Preview'}
+    _beAc=new(window.AudioContext||window.webkitAudioContext)()
+    if(_beAc.state==='suspended')_beAc.resume()
+    const f=_beGetFreqs(),merger=_beAc.createChannelMerger(2)
+    _beGainL=_beAc.createGain();_beGainL.gain.value=f.vol*0.3
+    _beGainR=_beAc.createGain();_beGainR.gain.value=f.vol*0.3
+    _beOscL=_beAc.createOscillator();_beOscL.type='sine';_beOscL.frequency.value=f.left
+    _beOscR=_beAc.createOscillator();_beOscR.type='sine';_beOscR.frequency.value=f.right
+    _beOscL.connect(_beGainL);_beGainL.connect(merger,0,0)
+    _beOscR.connect(_beGainR);_beGainR.connect(merger,0,1)
+    merger.connect(_beAc.destination)
+    _beOscL.start();_beOscR.start()
     _bePreviewPlaying=true;$('bePreviewBtn').textContent='⏹ Stop'
     log('🌀 Binaural preview: '+f.left.toFixed(1)+'Hz L · '+f.right.toFixed(1)+'Hz R')
   }catch(e){log('❌ '+e.message)}
 }
-function _beStopPreview(){if(_bePreviewSrc){try{_bePreviewSrc.stop()}catch(e){}_bePreviewSrc=null}_bePreviewPlaying=false;$('bePreviewBtn').textContent='▶ Preview'}
+function _beStopPreview(){
+  if(_beOscL){try{_beOscL.stop();_beOscL.disconnect()}catch(e){}};_beOscL=null
+  if(_beOscR){try{_beOscR.stop();_beOscR.disconnect()}catch(e){}};_beOscR=null
+  if(_beAc){try{_beAc.close()}catch(e){}};_beAc=null
+  _beGainL=null;_beGainR=null;_bePreviewPlaying=false;$('bePreviewBtn').textContent='▶ Preview'
+}
+// Update oscillators when freq sliders change
+function _beOnSliderChange(){
+  _beUpdateOscillators()
+  _beUpdatePyMonitor()
+  _beUpdateBeat()
+}
+$('beLeftHz').oninput=_beOnSliderChange;$('beRightHz').oninput=_beOnSliderChange
+$('beCarrierHz').oninput=_beOnSliderChange;$('beVolume').oninput=_beOnSliderChange
+$('beVolume').oninput=function(){$('beVolumeVal').textContent=this.value;_beOnSliderChange()}
+
 // Export binaural audio file
 $('beExportBtn').onclick=async()=>{
   const dur=parseInt($('beExportDur').value),fmt=$('beExportFmt').value
@@ -661,24 +683,37 @@ $('beExportBtn').onclick=async()=>{
     sparkleBurst()
   }catch(e){st(e.message,1);log('❌ '+e.message)}
 }
-// PyTesla Monitor — plays the current binaural config as a preview overlay
+// PyTesla Monitor — real-time binaural overlay
+let _bePyOscL=null,_bePyOscR=null,_bePyGainL=null,_bePyGainR=null,_bePyAc=null
+function _beUpdatePyMonitor(){
+  if(!$('bePyMonitor').checked)return
+  const f=_beGetFreqs()
+  if(_bePyOscL)try{_bePyOscL.frequency.setValueAtTime(f.left,_bePyAc.currentTime)}catch(e){}
+  if(_bePyOscR)try{_bePyOscR.frequency.setValueAtTime(f.right,_bePyAc.currentTime)}catch(e){}
+  const g=f.vol*0.2
+  if(_bePyGainL)try{_bePyGainL.gain.setValueAtTime(g,_bePyAc.currentTime)}catch(e){}
+}
 $('bePyMonitor').onchange=function(){
   if(this.checked){
-    _beStopPreview()
-    // Start a looping binaural preview
-    const f=_beGetFreqs()
-    let ac2=acHeal
-    if(!ac2||ac2.state==='closed'){ac2=new(window.AudioContext||window.webkitAudioContext)();acHeal=ac2}
-    if(ac2.state==='suspended')ac2.resume()
-    const sr=ac2.sampleRate,dur=2,n=sr*dur
-    const buf=ac2.createBuffer(2,n,sr)
-    const L=buf.getChannelData(0),R=buf.getChannelData(1)
-    for(let i=0;i<n;i++){L[i]=Math.sin(2*Math.PI*f.left*i/sr)*f.vol*0.2;R[i]=Math.sin(2*Math.PI*f.right*i/sr)*f.vol*0.2}
-    _bePreviewSrc=ac2.createBufferSource();_bePreviewSrc.buffer=buf;_bePreviewSrc.loop=true
-    _bePreviewSrc.connect(ac2.destination);_bePreviewSrc.start()
-    _bePreviewPlaying=true;log('🌀 PyTesla monitor: '+f.left.toFixed(1)+'~'+f.right.toFixed(1)+' Hz')
+    try{
+      _bePyAc=new(window.AudioContext||window.webkitAudioContext)()
+      if(_bePyAc.state==='suspended')_bePyAc.resume()
+      const f=_beGetFreqs(),merger=_bePyAc.createChannelMerger(2)
+      _bePyGainL=_bePyAc.createGain();_bePyGainL.gain.value=f.vol*0.2
+      _bePyGainR=_bePyAc.createGain();_bePyGainR.gain.value=f.vol*0.2
+      _bePyOscL=_bePyAc.createOscillator();_bePyOscL.type='sine';_bePyOscL.frequency.value=f.left
+      _bePyOscR=_bePyAc.createOscillator();_bePyOscR.type='sine';_bePyOscR.frequency.value=f.right
+      _bePyOscL.connect(_bePyGainL);_bePyGainL.connect(merger,0,0)
+      _bePyOscR.connect(_bePyGainR);_bePyGainR.connect(merger,0,1)
+      merger.connect(_bePyAc.destination)
+      _bePyOscL.start();_bePyOscR.start()
+      log('🌀 Monitor: '+f.left.toFixed(1)+'~'+f.right.toFixed(1)+' Hz')
+    }catch(e){log('❌ '+e.message)}
   }else{
-    _beStopPreview()
+    if(_bePyOscL){try{_bePyOscL.stop();_bePyOscL.disconnect()}catch(e){}};_bePyOscL=null
+    if(_bePyOscR){try{_bePyOscR.stop();_bePyOscR.disconnect()}catch(e){}};_bePyOscR=null
+    if(_bePyAc){try{_bePyAc.close()}catch(e){}};_bePyAc=null
+    _bePyGainL=null;_bePyGainR=null
   }
 }
 
