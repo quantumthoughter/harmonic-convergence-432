@@ -504,17 +504,17 @@ def heal_batch(req: BatchRequest):
 
 @app.get("/api/batch_scan")
 def batch_scan(folder_path: str):
-    import glob
+    import glob, os
     AUDIO_EXTS = {'.mp3','.wav','.flac','.ogg','.m4a','.aac'}
     files = sorted([f for f in glob.glob(os.path.join(folder_path, '*')) if os.path.splitext(f)[1].lower() in AUDIO_EXTS])
-    tuning = kernel.fast_detect_folder(folder_path)
     file_list = []
     for f in files:
-        d = tuning.get(f)
-        if d:
-            file_list.append({'file': os.path.basename(f), 'path': f, 'tuning': d['tuning'], 'confidence': d['confidence'], 'method': d['method']})
-        else:
-            file_list.append({'file': os.path.basename(f), 'path': f, 'tuning': None, 'confidence': 0, 'method': 'error'})
+        try:
+            size = os.path.getsize(f)
+            valid = size > 1024
+            file_list.append({'file': os.path.basename(f), 'path': f, 'tuning': None, 'confidence': 0, 'method': 'pending', 'size': size, 'valid': valid})
+        except:
+            file_list.append({'file': os.path.basename(f), 'path': f, 'tuning': None, 'confidence': 0, 'method': 'error', 'size': 0, 'valid': False})
     return {'total': len(file_list), 'files': file_list}
 
 

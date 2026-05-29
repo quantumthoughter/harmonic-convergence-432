@@ -333,6 +333,8 @@ select{background:rgba(8,4,18,.6);color:var(--text);border:1px solid rgba(155,10
 
 <script>
 const A=window.api;let S={file:null,sid:null,srcName:null,healing:false};
+function _s(id, val){const e=$(id);if(e&&val!==undefined)e.textContent=val;return e}
+function _sh(id, show){const e=$(id);if(e)e.style.display=show?'flex':'none'}
 let ac=null,an=null,aid=null,acOrig=null,acHeal=null,anOrig=null,anHeal=null;
 let srcOrig=null,srcHeal=null,origPlaying=false,healPlaying=false;
 let origGain=null,healGain=null;
@@ -570,37 +572,29 @@ let _batchFolder=null,_batchFiles=null,_batchOut=null
 $('batchScanBtn').onclick=async()=>{
   const folder=await A.selectFolder();if(!folder)return
   _batchFolder=folder;_batchFiles=null;_batchOut=null
-  $('batchInfo').textContent='⏳ Scanning folder...';$('batchStatus').textContent='Scanning'
+  _s('batchInfo','⏳ Scanning...');_s('batchStatus','Scanning')
   try{
     const scan=await A.get('/api/batch_scan?folder_path='+encodeURIComponent(folder));
     _batchFiles=scan.files
-    let html=''
-    for(const f of scan.files.slice(0,20)){
-      const t=f.tuning?f.tuning.toFixed(1)+' Hz':'—'
-      html+=f.file+' <span style="color:var(--muted)">('+t+')</span>\n'
-    }
-    if(scan.files.length>20)html+='… +'+(scan.files.length-20)+' more'
-    $('batchInfo').textContent=_batchFiles.length+' files detected · '+scan.files.filter(f=>f.tuning).length+' tuned'
-    $('batchInfo').title=html
-    $('batchStatus').textContent=_batchFiles.length+' files'
-    $('batchControls').style.display='flex'
-    $('batchHealBtn').style.display='block'
-    $('batchHealCount').textContent=_batchFiles.length
-    $('batchProg').textContent=''
+    _s('batchInfo',_batchFiles.length+' files')
+    _s('batchStatus',_batchFiles.length+' files')
+    _sh('batchControls',true)
+    const hb=$('batchHealBtn');if(hb)hb.style.display='block'
+    _s('batchHealCount',_batchFiles.length)
+    _s('batchProg','')
     log('📂 <strong>Batch scan:</strong> '+_batchFiles.length+' files in folder')
-  }catch(e){$('batchInfo').textContent='❌ Error: '+e.message;$('batchStatus').textContent='Error'}
+  }catch(e){_s('batchInfo','❌ '+e.message);_s('batchStatus','Error')}
 }
 $('batchOutBtn').onclick=async()=>{
   const out=await A.selectFolder();if(!out)return
-  _batchOut=out;$('batchOutDir').textContent=out.split('/').pop()||out
+  _batchOut=out;_s('batchOutDir',out.split('/').pop()||out)
 }
 $('batchHealBtn').onclick=async()=>{
-  if(!_batchFiles||_batchFiles.length===0){$('batchProg').textContent='❌ Scan a folder first';return}
-  if(!_batchOut){$('batchProg').textContent='❌ Choose output folder';return}
+  if(!_batchFiles||_batchFiles.length===0){_s('batchProg','❌ Scan a folder first');return}
+  if(!_batchOut){_s('batchProg','❌ Choose output folder');return}
   const fmt=$('batchFmt').value,suffix=$('batchSuffix').value||'_∞432'
-  $('batchHealBtn').disabled=true;$('batchHealBtn').textContent='⟁ Healing...'
-  $('batchProg').textContent='⏳ Starting parallel batch...'
-  $('batchStatus').textContent='Healing'
+  const hb=$('batchHealBtn');if(hb){hb.disabled=true;hb.textContent='⟁ Healing...'}
+  _s('batchProg','⏳ Starting parallel batch...');_s('batchStatus','Healing')
   log('📂 <strong>Batch heal:</strong> '+_batchFiles.length+' files → '+fmt.toUpperCase()+' · suffix: "'+suffix+'" (parallel)')
   try{
     const r=await A.post('/api/heal_batch',{folder_path:_batchFolder,output_dir:_batchOut,target_tuning:+$('tgtSel').value,format:$('batchFmt').value})
@@ -608,15 +602,15 @@ $('batchHealBtn').onclick=async()=>{
     for(const res of r.results||[]){
       const tag={'cqt':'🔬','spectral_ratio':'📊','pass_by_trust':'🛡️'}[res.verify_method]||'🔬'
       if(res.status==='ok'){log(tag+' '+res.file+' · '+res.original_tuning+'→'+res.target_tuning+' Hz'+(res.bpm?' · ♪ '+res.bpm:''))}
-      else if(res.status==='fallback'){log('⚠️ '+res.file+' · '+ (res.fallback_reason||'needs review') +' → _needs_review');fb++}
+      else if(res.status==='fallback'){log('⚠️ '+res.file+' · '+ (res.fallback_reason||'needs review')+' → _needs_review');fb++}
       else{log('❌ '+res.file+': '+(res.error||'error'));err++}
     }
-    $('batchHealBtn').disabled=false;$('batchHealBtn').textContent='⟁ HEAL ALL '+_batchFiles.length+' FILES'
-    $('batchProg').textContent='✅ '+ok+' healed (🔬'+cqt+' CQT, 📊'+spc+' ratio), ⚠️ '+fb+' review, ❌'+err+' errors in '+(r.time_seconds||'?')+'s'
-    $('batchStatus').textContent=ok+'/'+_batchFiles.length
+    if(hb){hb.disabled=false;hb.textContent='⟁ HEAL ALL '+_batchFiles.length+' FILES'}
+    _s('batchProg','✅ '+ok+' healed (🔬'+cqt+' CQT, 📊'+spc+' ratio), ⚠️ '+fb+' review, ❌'+err+' errors in '+(r.time_seconds||'?')+'s')
+    _s('batchStatus',ok+'/'+_batchFiles.length)
     log('📂 <strong>Batch complete:</strong> '+ok+' healed (🔬'+cqt+' CQT-verified, 📊'+spc+' spectral-verified), ⚠️ '+fb+' fallback, ❌'+err+' errors in '+(r.time_seconds||'?')+'s'+(r.verification_report?' · report: '+r.verification_report:''))
     if(err===0&&fb===0)sparkleBurst()
-  }catch(e){$('batchProg').textContent='❌ '+e.message;$('batchHealBtn').disabled=false;$('batchHealBtn').textContent='⟁ HEAL ALL '+_batchFiles.length+' FILES';log('❌ <strong>Batch error:</strong> '+e.message)}
+  }catch(e){_s('batchProg','❌ '+e.message);if(hb){hb.disabled=false;hb.textContent='⟁ HEAL ALL '+_batchFiles.length+' FILES'};log('❌ <strong>Batch error:</strong> '+e.message)}
 }
 $('subBass').oninput=function(){$('subBassVal').textContent=this.value;updatePySummary()}
 $('carrier33').oninput=function(){$('carrier33Val').textContent=this.value;updatePySummary()}
