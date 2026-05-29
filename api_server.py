@@ -62,6 +62,10 @@ class HealRequest(BaseModel):
     pytesla_preset: str = '440~432'
     pytesla_swap: bool = False
     pytesla_swap_interval: float = 0.0
+    binaural_enabled: bool = False
+    binaural_base: float = 432.0
+    binaural_beat: float = 8.0
+    binaural_vol: float = 0.3
     carrier_33_5: float = 0.0
     carrier_7_83: float = 0.0
     carrier_8: float = 0.0
@@ -122,6 +126,20 @@ def generate_heart_coherence(duration, sr, volume=0.0):
     tone = tone * breath * volume * 0.12
     stereo = np.zeros((2, n), dtype=np.float64)
     stereo[0] = tone; stereo[1] = tone
+    return stereo
+
+def generate_binaural_layer(duration, sr, base=432.0, beat=8.0, volume=0.0):
+    if volume <= 0 or beat <= 0: return None
+    n = int(sr * duration)
+    t = np.linspace(0, duration, n, endpoint=False)
+    env = np.ones(n)
+    atk = min(int(1.5 * sr), n); rel = min(int(3.0 * sr), n)
+    env[:atk] = np.linspace(0, 1, atk)
+    env[-rel:] = np.linspace(1, 0, rel)
+    tone_left = np.sin(2 * np.pi * base * t) * env * volume * 0.25
+    tone_right = np.sin(2 * np.pi * (base + beat) * t) * env * volume * 0.25
+    stereo = np.zeros((2, n), dtype=np.float64)
+    stereo[0] = tone_left; stereo[1] = tone_right
     return stereo
 
 def apply_pytesla_swap(mix, sr, interval, left_tuning, right_tuning):
@@ -333,6 +351,12 @@ async def heal(request: HealRequest):
     if hc is not None:
         n = min(mix.shape[-1], hc.shape[-1])
         mix[..., :n] += hc[..., :n]
+
+    if request.binaural_enabled and request.binaural_vol > 0:
+        bi = generate_binaural_layer(dur, sr, request.binaural_base, request.binaural_beat, request.binaural_vol)
+        if bi is not None:
+            n = min(mix.shape[-1], bi.shape[-1])
+            mix[..., :n] += bi[..., :n]
 
     peak = np.max(np.abs(mix))
     if peak > 1.0: mix = mix / peak * 0.98

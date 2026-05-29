@@ -115,10 +115,14 @@ select{background:rgba(8,4,18,.6);color:var(--text);border:1px solid rgba(155,10
 .pytesla-badge .py-info .py-sub{font-size:10px;color:var(--muted)}
 .pytesla-badge .py-beat{font-size:24px;font-weight:800;color:var(--gold);font-variant-numeric:tabular-nums}
 
-.binaural-presets{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin:4px 0}
-.binaural-presets button{padding:6px 8px;font-size:10px;border-radius:6px;background:rgba(155,109,255,.06);color:var(--muted);border:1px solid rgba(155,109,255,.08);text-align:center;transition:all .15s}
-.binaural-presets button:hover{background:rgba(155,109,255,.1);border-color:var(--ameth)}
-.binaural-presets button.active{background:rgba(155,109,255,.12);color:var(--gold);border-color:rgba(217,170,58,.2)}
+.binaural-engine{margin-top:6px;padding-top:6px;border-top:1px solid rgba(155,109,255,.06)}
+.binaural-engine .be-title{font-size:11px;font-weight:700;color:var(--ameth);letter-spacing:.3px;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.binaural-engine .be-beat{font-size:18px;font-weight:800;color:var(--gold);font-variant-numeric:tabular-nums;text-align:center;padding:2px 0}
+.binaural-engine .be-beat span{font-size:9px;color:var(--muted);font-weight:400}
+.binaural-presets-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;margin:4px 0}
+.binaural-presets-grid button{padding:4px 2px;font-size:8px;border-radius:4px;background:rgba(155,109,255,.06);color:var(--muted);border:1px solid transparent;text-align:center;transition:all .15s}
+.binaural-presets-grid button:hover{background:rgba(155,109,255,.1);border-color:var(--ameth)}
+.binaural-presets-grid button.active{background:rgba(155,109,255,.14);color:var(--gold);border-color:rgba(217,170,58,.2)}
 
 @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
 @keyframes fol-glow{0%,100%{filter:drop-shadow(0 0 8px rgba(155,109,255,.2)) drop-shadow(0 0 25px rgba(155,109,255,.06))}50%{filter:drop-shadow(0 0 16px rgba(155,109,255,.35)) drop-shadow(0 0 50px rgba(155,109,255,.12))}}
@@ -198,22 +202,6 @@ select{background:rgba(8,4,18,.6);color:var(--text);border:1px solid rgba(155,10
         <div class="meta-row"><label>Comment</label><input type="text" id="metaComment" value="432 Hz Tuning Correction via Harmonic Convergence"></div>
         <div class="meta-row"><label></label><span style="font-size:10px;color:var(--muted)"><input type="checkbox" id="metaBpm" checked> BPM</span><span style="font-size:10px;color:var(--muted);margin-left:10px"><input type="checkbox" id="metaInjectLyrics"> Lyrics</span></div>
         <div class="meta-row" id="lyricsRow" style="display:none;align-items:flex-start"><label style="margin-top:3px">Lyrics</label><textarea id="metaLyrics" placeholder="Embed lyrics in file..."></textarea></div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-h"><h2>🌀 Binaural Presets</h2><span>⚡</span></div>
-      <div class="card-b">
-        <div style="font-size:10px;color:var(--muted);margin-bottom:4px">Select a binaural pair to auto-configure PyTesla:</div>
-        <div class="binaural-presets" id="binauralPresets">
-          <button data-left="440" data-right="432">440~432<br><span style="font-size:8px;color:var(--muted)">8 Hz α/θ</span></button>
-          <button data-left="424" data-right="432">424~432<br><span style="font-size:8px;color:var(--muted)">8 Hz α/θ</span></button>
-          <button data-left="432" data-right="444">432~444<br><span style="font-size:8px;color:var(--muted)">12 Hz β</span></button>
-          <button data-left="423" data-right="432">423~432<br><span style="font-size:8px;color:var(--muted)">9 Hz α</span></button>
-          <button data-left="396" data-right="404">396~404<br><span style="font-size:8px;color:var(--muted)">8 Hz Engram</span></button>
-          <button data-left="396" data-right="399">396~399<br><span style="font-size:8px;color:var(--muted)">3 Hz δ</span></button>
-          <button data-left="440" data-right="444">440~444<br><span style="font-size:8px;color:var(--muted)">4 Hz θ</span></button>
-          <button data-left="432" data-right="528">432~528<br><span style="font-size:8px;color:var(--muted)">96 Hz ✦</span></button>
-        </div>
       </div>
     </div>
     <div class="status" id="st">✨ Drop a file to begin</div>
@@ -345,6 +333,35 @@ select{background:rgba(8,4,18,.6);color:var(--text);border:1px solid rgba(155,10
       </div>
       <div class="carrier-tag"><span class="ct-em">Coherence</span> Heart rate variability · 0.1 Hz breath · 1 Hz pure tone · emotional alignment</div>
 
+      <div class="binaural-engine">
+        <div class="be-title">🌀 Binaural Engine <span style="font-size:9px;color:var(--muted)">Stereo sine · L ear carrier · R ear carrier+beat</span></div>
+        <div class="vr">
+          <label>Carrier</label>
+          <input type="range" id="beCarrier" min="100" max="600" value="432">
+          <span class="v-val" id="beCarrierVal">432</span>
+          <label style="font-size:9px;color:var(--muted)">Hz</label>
+        </div>
+        <div class="be-beat" id="beBeatDisplay"><span>beat: </span>8.0 Hz (α)</div>
+        <div class="binaural-presets-grid" id="binauralBeatPresets">
+          <button data-beat="3">Δ 3</button>
+          <button data-beat="4">θ 4</button>
+          <button data-beat="6">θ 6</button>
+          <button data-beat="7.83">🜁 7.8</button>
+          <button data-beat="8" class="active">α 8</button>
+          <button data-beat="10">α 10</button>
+          <button data-beat="14">SMR 14</button>
+          <button data-beat="16">β 16</button>
+          <button data-beat="33.5">γ 33.5</button>
+          <button data-beat="40">γ 40</button>
+        </div>
+        <div class="vr">
+          <label>Volume</label>
+          <input type="range" id="beVolume" min="0" max="100" value="30">
+          <span class="v-val" id="beVolumeVal">30</span>
+          <label style="font-size:9px;color:var(--muted)">%</label>
+        </div>
+      </div>
+
       <div style="margin-top:auto;padding-top:8px;border-top:1px solid rgba(155,109,255,.04)">
         <div style="font-size:9px;color:var(--muted);line-height:1.5;text-align:center">Foundation: 432 ÷ 2 = <span style="color:var(--gold)">216</span> · ÷ 4 = <span style="color:var(--gold)">108</span> · ÷ 6 = <span style="color:var(--gold)">72</span> · ÷ 8 = <span style="color:var(--gold)">54</span> · ÷ 12 = <span style="color:var(--gold)">36</span> · ÷ 16 = <span style="color:var(--gold)">27</span> · ÷ 32 = <span style="color:var(--gold)">13.5</span></div>
       </div>
@@ -400,32 +417,6 @@ function updatePySummary(){
 }
 
 $('metaInjectLyrics').onchange=function(){$('lyricsRow').style.display=this.checked?'flex':'none'};
-
-// Binaural presets
-document.querySelectorAll('#binauralPresets button').forEach(b=>{
-  b.onclick=function(){
-    document.querySelectorAll('#binauralPresets button').forEach(b2=>b2.classList.remove('active'))
-    this.classList.add('active')
-    const l=this.dataset.left,r=this.dataset.right
-    const match=`${l}~${r}`
-    const sel=$('pyPreset')
-    for(let i=0;i<sel.options.length;i++){
-      if(sel.options[i].value===match){sel.selectedIndex=i;break}
-    }
-    // Enable PyTesla
-    const tb=$('pyToggle')
-    if(tb&&!tb.classList.contains('active')){tb.classList.add('active');tb.textContent='⚡ On'}
-    _pyteslaEnabled=true
-    $('pyPreset').disabled=false;$('pySwapToggle').disabled=false;$('pySwapRate').disabled=false
-    $('pyteslaBadge').style.display='flex';$('pySwapRow').style.display='flex'
-    const ps=match.split('~');const b=Math.abs(ps[0]-ps[1])
-    _s('pyTitle','⚡ PyTesla: '+ps[0]+' Hz L · '+ps[1]+' Hz R')
-    _s('pySub','Binaural beat = '+b.toFixed(2)+' Hz')
-    _s('pyBeat',b.toFixed(2)+' Hz')
-    sparkleBurst()
-    updatePySummary()
-  }
-})
 
 const dz=$('dropZone');
 dz.onclick=async()=>{const f=await A.openFile();if(f)loadFile(f)};
@@ -537,6 +528,24 @@ $('pyPreset').onchange=function(){if(!_pyteslaEnabled)return;const p=this.value;
 $('pySwapToggle').onclick=function(){_pySwapOn=!this.classList.contains('active');this.classList.toggle('active');this.textContent=_pySwapOn?'On':'Off';updatePySummary()}
 $('pySwapRate').oninput=function(){const s=Math.max(2,Math.round(60/this.value*10))/10;$('pySwapRateVal').textContent=s+'s';updatePySummary()}
 
+// ─── Binaural Engine ───
+let _beBeat=8.0
+$('beCarrier').oninput=function(){$('beCarrierVal').textContent=this.value;updateBeDisplay()}
+function updateBeDisplay(){
+  const label={'3':'Δ Deep Sleep','4':'θ Meditation','6':'θ Visualization','7.83':'🜁 Schumann','8':'α Flow','10':'α Learning','14':'SMR Focus','16':'β Alert','33.5':'Γ33.5 Insight','40':'γ 40'}[_beBeat]||_beBeat+' Hz'
+  $('beBeatDisplay').innerHTML='<span>beat: </span>'+_beBeat+' Hz ('+label+')'
+}
+document.querySelectorAll('#binauralBeatPresets button').forEach(b=>{
+  b.onclick=function(){
+    document.querySelectorAll('#binauralBeatPresets button').forEach(b2=>b2.classList.remove('active'))
+    this.classList.add('active')
+    _beBeat=parseFloat(this.dataset.beat)
+    updateBeDisplay()
+    sparkleBurst()
+  }
+})
+$('beVolume').oninput=function(){$('beVolumeVal').textContent=this.value}
+
 $('healBtn').onclick=async function(){
   if(!S.file||S.healing)return;S.healing=true;$('progFill').style.width='25%'
   st('🌀 '+(_pyteslaEnabled?'PyTesla':'Healing')+'...')
@@ -547,7 +556,8 @@ $('healBtn').onclick=async function(){
       heart_coherence:+$('heartCoherence').value/100,
       carrier_33_5:+$('carrier33').value/100,carrier_7_83:+$('carrier783').value/100,carrier_8:+$('carrier8').value/100,
       pytesla_enabled:_pyteslaEnabled,pytesla_preset:$('pyPreset').value,
-      pytesla_swap:_pySwapOn,pytesla_swap_interval:_pySwapOn?Math.max(2,Math.round(60/$('pySwapRate').value*10))/10:0})
+      pytesla_swap:_pySwapOn,pytesla_swap_interval:_pySwapOn?Math.max(2,Math.round(60/$('pySwapRate').value*10))/10:0,
+      binaural_enabled:true,binaural_base:+$('beCarrier').value,binaural_beat:_beBeat,binaural_vol:+$('beVolume').value/100})
     S.sid=r.session_id;S.srcName=r.source_name;S._bpm=r.bpm
     $('progFill').style.width='100%';setTimeout(()=>{$('progFill').style.width='0%'},500)
     if(_pyteslaEnabled){
