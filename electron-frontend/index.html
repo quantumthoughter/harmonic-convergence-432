@@ -632,10 +632,12 @@ $('healBtn').onclick=async function(){
 
 async function healInit(sid){
   try{
-    if(acHeal)acHeal.close()
+    if(acHeal){try{acHeal.close()}catch(e){}}
     acHeal=new(window.AudioContext||window.webkitAudioContext)()
+    if(acHeal.state==='suspended')await acHeal.resume()
     const buf=await A.downloadBuffer('/api/download/'+sid+'?format=wav&cleanup=0')
-    const ab=await acHeal.decodeAudioData(buf.buffer.slice(0))
+    const bytes=new Uint8Array(buf).buffer
+    const ab=await acHeal.decodeAudioData(bytes)
     S._healBuf=ab;anHeal=acHeal.createAnalyser();anHeal.fftSize=8192;anHeal.smoothingTimeConstant=0.85
     healGain=acHeal.createGain();healGain.gain.value=$('healVol').value/100
     $('healTime').textContent='0:00/'+Math.floor(ab.duration/60)+':'+String(Math.floor(ab.duration%60)).padStart(2,'0')
@@ -643,7 +645,7 @@ async function healInit(sid){
     const bs=acHeal.createBufferSource();bs.buffer=acHeal.createBuffer(1,acHeal.sampleRate*0.1,acHeal.sampleRate)
     const c=bs.buffer.getChannelData(0);for(let i=0;i<c.length;i++)c[i]=Math.sin(i*0.01)*0.0001
     bs.connect(anHeal);bs.start()
-  }catch(e){log('❌ '+e.message)}
+  }catch(e){log('❌ Heal load: '+e.message)}
 }
 
 function healPlay(){
