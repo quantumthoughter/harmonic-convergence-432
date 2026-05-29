@@ -7,142 +7,147 @@
 <style>
 :root{--bg:#0a0612;--ameth:#9b6dff;--em:#34d399;--gold:#d9aa3a;--sun:#ffb347;--text:#dde0f0;--muted:#8880b0;--panel:#12102a}
 *{margin:0;box-sizing:border-box}
-body{height:100vh;background:linear-gradient(145deg,#0a0612,#0e0820);color:var(--text);font-family:'Inter','Segoe UI',system-ui,sans-serif;overflow:hidden;display:flex;flex-direction:column;font-size:14px}
-.titlebar{-webkit-app-region:drag;height:30px;display:flex;align-items:center;padding:0 12px;gap:4px;flex-shrink:0;border-bottom:1px solid rgba(155,109,255,.04)}
-.titlebar .dot{width:9px;height:9px;border-radius:50%;background:conic-gradient(var(--ameth),var(--em),var(--ameth));box-shadow:0 0 5px rgba(155,109,255,.1);-webkit-app-region:no-drag;flex-shrink:0}
-.titlebar .sub{font-size:8px;color:var(--muted);margin-left:auto}
-.main{display:flex;flex:1;padding:8px;gap:10px;overflow:hidden}
-.left{width:300px;display:flex;flex-direction:column;gap:6px;overflow-y:auto;flex-shrink:0}
-.right{flex:1;display:flex;flex-direction:column;gap:8px;overflow:hidden}
+body{height:100vh;background:linear-gradient(145deg,#0a0612,#0e0820);color:var(--text);font-family:'Inter','Segoe UI',system-ui,sans-serif;overflow:hidden;display:flex;flex-direction:column;font-size:15px}
+.titlebar{-webkit-app-region:drag;height:34px;display:flex;align-items:center;padding:0 14px;gap:6px;flex-shrink:0;border-bottom:1px solid rgba(155,109,255,.04)}
+.titlebar .dot{width:11px;height:11px;border-radius:50%;background:conic-gradient(var(--ameth),var(--em),var(--ameth));box-shadow:0 0 6px rgba(155,109,255,.12);-webkit-app-region:no-drag;flex-shrink:0}
+.titlebar .sub{font-size:10px;color:var(--muted);margin-left:auto}
+.main{display:flex;flex:1;padding:10px;gap:12px;overflow:hidden}
+.left{width:320px;display:flex;flex-direction:column;gap:8px;overflow-y:auto;flex-shrink:0}
+.right{flex:1;display:flex;flex-direction:column;gap:10px;overflow:hidden}
 
-.card{background:linear-gradient(160deg,rgba(18,16,42,.94),rgba(12,8,28,.96));border:1px solid rgba(155,109,255,.08);border-radius:14px;overflow:hidden;backdrop-filter:blur(4px)}
-.card-h{display:flex;align-items:center;justify-content:space-between;padding:8px 14px 6px;border-bottom:1px solid rgba(155,109,255,.05)}
-.card-h h2{font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:.08em;font-weight:700}
-.card-h span{font-size:9px;color:var(--muted)}
-.card-b{padding:10px 14px}
+.card{background:linear-gradient(160deg,rgba(18,16,42,.94),rgba(12,8,28,.96));border:1px solid rgba(155,109,255,.08);border-radius:16px;overflow:hidden;backdrop-filter:blur(4px)}
+.card-h{display:flex;align-items:center;justify-content:space-between;padding:10px 16px 8px;border-bottom:1px solid rgba(155,109,255,.05)}
+.card-h h2{font-size:13px;color:var(--gold);text-transform:uppercase;letter-spacing:.1em;font-weight:700}
+.card-h span{font-size:11px;color:var(--muted)}
+.card-b{padding:12px 16px}
 
-#dropZone{border:2px dashed rgba(155,109,255,.12);border-radius:12px;padding:14px;text-align:center;cursor:pointer;font-size:11px;color:var(--muted);background:rgba(155,109,255,.02);transition:all .3s}
+#dropZone{border:2px dashed rgba(155,109,255,.12);border-radius:14px;padding:18px;text-align:center;cursor:pointer;font-size:13px;color:var(--muted);background:rgba(155,109,255,.02);transition:all .3s}
 #dropZone:hover{border-color:var(--ameth);background:rgba(155,109,255,.04)}
 #dropZone.ok{border-color:var(--em)}
 
-button{cursor:pointer;border:none;border-radius:8px;font-weight:600;transition:all .2s;font-family:inherit}
-.heal-btn{position:relative;background:linear-gradient(135deg,#9b6dff,#6a3db8);color:#fff;box-shadow:0 3px 18px rgba(155,109,255,.2);font-size:14px;padding:14px 20px;width:100%;overflow:hidden;letter-spacing:.3px}
-.heal-btn::before{content:'';position:absolute;inset:0;border-radius:8px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);transform:translateX(-100%);transition:transform .6s}
+button{cursor:pointer;border:none;border-radius:10px;font-weight:600;transition:all .2s;font-family:inherit}
+.heal-btn{position:relative;background:linear-gradient(135deg,#9b6dff,#6a3db8);color:#fff;box-shadow:0 3px 20px rgba(155,109,255,.2);font-size:16px;padding:16px 24px;width:100%;overflow:hidden;letter-spacing:.4px}
+.heal-btn::before{content:'';position:absolute;inset:0;border-radius:10px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);transform:translateX(-100%);transition:transform .6s}
 .heal-btn:hover::before{transform:translateX(100%)}
-.heal-btn:hover{box-shadow:0 5px 30px rgba(155,109,255,.4);transform:translateY(-1px)}
-@keyframes gp{0%,100%{box-shadow:0 3px 18px rgba(155,109,255,.2)}50%{box-shadow:0 3px 30px rgba(155,109,255,.5)}}
+.heal-btn:hover{box-shadow:0 5px 35px rgba(155,109,255,.4);transform:translateY(-1px)}
+@keyframes gp{0%,100%{box-shadow:0 3px 20px rgba(155,109,255,.2)}50%{box-shadow:0 3px 35px rgba(155,109,255,.5)}}
 .heal-btn:not(:hover){animation:gp 3s ease-in-out infinite}
-.save-btn{background:rgba(155,109,255,.06);color:var(--text);border:1px solid rgba(155,109,255,.08);font-size:10px;padding:8px 12px;flex:1;text-align:center;border-radius:7px}
+.save-btn{background:rgba(155,109,255,.06);color:var(--text);border:1px solid rgba(155,109,255,.08);font-size:12px;padding:10px 16px;flex:1;text-align:center;border-radius:8px}
 .save-btn:hover{background:rgba(155,109,255,.12);border-color:var(--ameth)}
-.play-btn{background:rgba(155,109,255,.08);color:var(--text);font-size:11px;padding:5px 14px;border-radius:5px}
+.play-btn{background:rgba(155,109,255,.08);color:var(--text);font-size:13px;padding:6px 16px;border-radius:6px}
 .play-btn:hover{background:rgba(155,109,255,.15)}
-.batch-btn{background:rgba(155,109,255,.06);color:var(--text);border:1px solid rgba(155,109,255,.08);font-size:10px;padding:8px 12px;flex:1;text-align:center;margin-top:3px;border-radius:7px}
+.batch-btn{background:rgba(155,109,255,.06);color:var(--text);border:1px solid rgba(155,109,255,.08);font-size:12px;padding:10px 16px;flex:1;text-align:center;margin-top:4px;border-radius:8px}
 .batch-btn:hover{background:rgba(155,109,255,.12);border-color:var(--ameth)}
-.batch-prog{font-size:8px;color:var(--muted);text-align:center;padding:2px}
+.batch-prog{font-size:10px;color:var(--muted);text-align:center;padding:3px}
 
-.det-row{display:flex;gap:8px}
-.det-item{flex:1;background:rgba(8,4,18,.4);border-radius:8px;padding:8px 10px;border:1px solid rgba(155,109,255,.05)}
-.det-label{font-size:7px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
-.det-val{font-size:20px;font-weight:800;margin-top:1px;font-variant-numeric:tabular-nums}
-.det-sub{font-size:8px;color:var(--muted);margin-top:1px}
-.det-file{font-size:10px;color:var(--gold);font-weight:600;padding:4px 0 2px;word-break:break-all}
+.det-row{display:flex;gap:10px}
+.det-item{flex:1;background:rgba(8,4,18,.4);border-radius:10px;padding:10px 14px;border:1px solid rgba(155,109,255,.05)}
+.det-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.det-val{font-size:24px;font-weight:800;margin-top:2px;font-variant-numeric:tabular-nums}
+.det-sub{font-size:10px;color:var(--muted);margin-top:2px}
+.det-file{font-size:12px;color:var(--gold);font-weight:600;padding:5px 0 3px;word-break:break-all}
 
-.py-summary{background:linear-gradient(135deg,rgba(155,109,255,.06),rgba(52,211,153,.03));border:1px solid rgba(155,109,255,.1);border-radius:8px;padding:6px 10px;margin-top:4px;font-size:8px;line-height:1.5;display:none}
+.py-summary{background:linear-gradient(135deg,rgba(155,109,255,.06),rgba(52,211,153,.03));border:1px solid rgba(155,109,255,.1);border-radius:10px;padding:8px 12px;margin-top:5px;font-size:10px;line-height:1.6;display:none}
 .py-summary .ps-line{display:flex;justify-content:space-between}
 .py-summary .ps-l{color:var(--muted)}.py-summary .ps-r{color:var(--gold);font-weight:600}
 .py-summary .ps-r.am{color:var(--ameth)}.py-summary .ps-r.em{color:var(--em)}
 
-.meta-row{display:flex;gap:4px;align-items:center;margin-bottom:3px}
-.meta-row label{font-size:8px;color:var(--muted);min-width:40px;flex-shrink:0}
-.meta-row input[type="text"],textarea{flex:1;background:rgba(8,4,18,.6);border:1px solid rgba(155,109,255,.1);border-radius:5px;color:var(--text);font-size:10px;padding:3px 6px;font-family:inherit;outline:none}
+.meta-row{display:flex;gap:5px;align-items:center;margin-bottom:4px}
+.meta-row label{font-size:10px;color:var(--muted);min-width:48px;flex-shrink:0}
+.meta-row input[type="text"],textarea{flex:1;background:rgba(8,4,18,.6);border:1px solid rgba(155,109,255,.1);border-radius:6px;color:var(--text);font-size:12px;padding:5px 8px;font-family:inherit;outline:none}
 .meta-row input[type="text"]:focus,textarea:focus{border-color:var(--ameth)}
-.meta-row input[type="text"]{height:22px}
-textarea{resize:vertical;min-height:24px;max-height:48px}
-.meta-row input[type="checkbox"]{accent-color:var(--ameth);width:11px;height:11px;cursor:pointer}
+.meta-row input[type="text"]{height:28px}
+textarea{resize:vertical;min-height:28px;max-height:56px}
+.meta-row input[type="checkbox"]{accent-color:var(--ameth);width:13px;height:13px;cursor:pointer}
 
-.diag{font-size:8px;color:var(--muted);line-height:1.5;background:rgba(8,4,18,.4);border-radius:6px;padding:4px 8px;max-height:100%;overflow-y:auto;flex:1}
+.diag{font-size:10px;color:var(--muted);line-height:1.6;background:rgba(8,4,18,.4);border-radius:8px;padding:6px 10px;max-height:100%;overflow-y:auto;flex:1}
 .diag strong{color:var(--gold)}
 .diag .good{color:var(--em)}
-.diag .time{color:rgba(136,128,176,.3);font-size:7px}
+.diag .time{color:rgba(136,128,176,.3);font-size:8px}
 
-.prog{height:3px;background:rgba(155,109,255,.04);border-radius:2px;overflow:hidden}
+.prog{height:4px;background:rgba(155,109,255,.04);border-radius:2px;overflow:hidden}
 .prog-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--ameth),var(--em));transition:width .4s}
-.status{font-size:12px;text-align:center;color:var(--em);font-weight:600;padding:3px 0}
+.status{font-size:14px;text-align:center;color:var(--em);font-weight:600;padding:4px 0}
 .status.er{color:#ff7a7a}
 
-.track{border-radius:10px;overflow:hidden;border:1px solid rgba(155,109,255,.06);display:flex;flex-direction:column}
-.track-h{font-size:9px;padding:4px 8px;display:flex;justify-content:space-between;font-weight:600}
+.track{border-radius:12px;overflow:hidden;border:1px solid rgba(155,109,255,.06);display:flex;flex-direction:column}
+.track-h{font-size:11px;padding:6px 10px;display:flex;justify-content:space-between;font-weight:600}
 .track-h.orig{color:var(--ameth);background:rgba(155,109,255,.04)}
 .track-h.heal{color:var(--em);background:rgba(52,211,153,.04)}
-.track canvas{width:100%;height:70px;display:block;background:#03020a;image-rendering:auto}
-.track-ctrl{display:flex;align-items:center;gap:4px;padding:2px 8px}
-.track-ctrl input[type="range"]{flex:1;height:3px}
-.track-ctrl .time{font-size:8px;color:var(--muted);min-width:48px;text-align:right;font-variant-numeric:tabular-nums}
-.track-vol{display:flex;align-items:center;gap:3px;padding:1px 8px 3px}
-.track-vol input[type="range"]{flex:1;max-width:60px;height:2px}
-.track-vol label{font-size:7px;color:var(--muted)}
+.track canvas{width:100%;height:80px;display:block;background:#03020a;image-rendering:auto}
+.track-ctrl{display:flex;align-items:center;gap:6px;padding:4px 10px}
+.track-ctrl input[type="range"]{flex:1;height:5px}
+.track-ctrl .time{font-size:10px;color:var(--muted);min-width:55px;text-align:right;font-variant-numeric:tabular-nums}
+.track-vol{display:flex;align-items:center;gap:4px;padding:2px 10px 5px}
+.track-vol input[type="range"]{flex:1;max-width:70px;height:3px}
+.track-vol label{font-size:9px;color:var(--muted)}
 
-input[type="range"]{-webkit-appearance:none;height:3px;background:rgba(155,109,255,.1);border-radius:2px;outline:none}
-input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#b896ff,#7a4ddf);box-shadow:0 0 6px rgba(155,109,255,.2);cursor:pointer}
-select{background:rgba(8,4,18,.6);color:var(--text);border:1px solid rgba(155,109,255,.1);border-radius:6px;padding:4px 8px;font-size:10px;outline:none}
+input[type="range"]{-webkit-appearance:none;height:5px;background:rgba(155,109,255,.1);border-radius:3px;outline:none}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#b896ff,#7a4ddf);box-shadow:0 0 8px rgba(155,109,255,.25);cursor:pointer}
+select{background:rgba(8,4,18,.6);color:var(--text);border:1px solid rgba(155,109,255,.1);border-radius:8px;padding:6px 10px;font-size:12px;outline:none}
 
-.vortex-panel{background:#03020a;border-radius:14px;border:1px solid rgba(155,109,255,.06);padding:14px 18px;flex-shrink:0;overflow-y:auto}
-.vortex-panel .vp-title{font-size:12px;font-weight:700;color:var(--gold);letter-spacing:.4px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
-.vortex-panel .vp-title span{font-size:9px;color:var(--muted);font-weight:400}
-.vr{display:flex;align-items:center;gap:8px;padding:4px 0}
-.vr label{font-size:9px;color:var(--muted);min-width:55px;flex-shrink:0}
-.vr input[type="range"]{flex:1;height:4px}
-.vr .v-val{font-size:9px;color:var(--muted);min-width:24px;text-align:right;font-variant-numeric:tabular-nums}
-.vr .v-mode{display:flex;gap:2px}
-.vr .v-mode button{padding:3px 8px;font-size:9px;border-radius:4px;background:rgba(155,109,255,.06);color:var(--muted);border:1px solid transparent}
+.vortex-panel{background:#03020a;border-radius:16px;border:1px solid rgba(155,109,255,.06);padding:16px 20px;flex-shrink:0;overflow-y:auto}
+.vortex-panel .vp-title{font-size:14px;font-weight:700;color:var(--gold);letter-spacing:.5px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.vortex-panel .vp-title span{font-size:11px;color:var(--muted);font-weight:400}
+.vr{display:flex;align-items:center;gap:10px;padding:5px 0}
+.vr label{font-size:11px;color:var(--muted);min-width:60px;flex-shrink:0}
+.vr input[type="range"]{flex:1;height:6px}
+.vr .v-val{font-size:11px;color:var(--muted);min-width:28px;text-align:right;font-variant-numeric:tabular-nums}
+.vr .v-mode{display:flex;gap:3px}
+.vr .v-mode button{padding:5px 12px;font-size:11px;border-radius:5px;background:rgba(155,109,255,.06);color:var(--muted);border:1px solid transparent}
 .vr .v-mode button.active{background:rgba(155,109,255,.12);color:var(--ameth);border-color:rgba(155,109,255,.2)}
 .vr .v-mode button:hover{background:rgba(155,109,255,.1)}
-.vr .v-freqs{font-size:8px;color:var(--muted);letter-spacing:.4px;padding-top:2px}
+.vr .v-freqs{font-size:10px;color:var(--muted);letter-spacing:.5px;padding-top:3px}
 .vr .v-freqs span{color:var(--gold);font-weight:600}
 .vr .v-freqs .g{color:#ff9d6f}
-.vr .v-toggle{display:flex;gap:2px;flex:1}
-.vr .v-toggle button{padding:4px 10px;font-size:9px;border-radius:4px;background:rgba(155,109,255,.06);color:var(--muted);border:1px solid transparent;flex:1}
+.vr .v-toggle{display:flex;gap:3px;flex:1}
+.vr .v-toggle button{padding:5px 12px;font-size:11px;border-radius:5px;background:rgba(155,109,255,.06);color:var(--muted);border:1px solid transparent;flex:1}
 .vr .v-toggle button.active{background:rgba(155,109,255,.12);color:var(--ameth);border-color:rgba(155,109,255,.2)}
 
-.carrier-tag{font-size:7px;color:var(--muted);line-height:1.3;padding-left:55px;margin-top:-2px;margin-bottom:2px}
-.carrier-tag span{display:inline-block;background:rgba(155,109,255,.06);padding:1px 5px;border-radius:3px;margin-right:3px;font-weight:600}
+.carrier-tag{font-size:9px;color:var(--muted);line-height:1.4;padding-left:60px;margin-top:-2px;margin-bottom:3px}
+.carrier-tag span{display:inline-block;background:rgba(155,109,255,.06);padding:2px 6px;border-radius:3px;margin-right:4px;font-weight:600}
 .carrier-tag .ct-g{color:var(--gold)}.carrier-tag .ct-am{color:var(--ameth)}.carrier-tag .ct-em{color:var(--em)}.carrier-tag .ct-su{color:var(--sun)}
 
-.pytesla-badge{background:linear-gradient(135deg,rgba(155,109,255,.08),rgba(52,211,153,.03));border:1px solid rgba(155,109,255,.12);border-radius:8px;padding:8px 12px;display:flex;align-items:center;gap:8px;margin:3px 0}
-.pytesla-badge .py-icon{font-size:14px}
+.pytesla-badge{background:linear-gradient(135deg,rgba(155,109,255,.08),rgba(52,211,153,.03));border:1px solid rgba(155,109,255,.12);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px;margin:4px 0}
+.pytesla-badge .py-icon{font-size:16px}
 .pytesla-badge .py-info{flex:1}
-.pytesla-badge .py-info .py-title{font-size:10px;font-weight:700;color:var(--ameth)}
-.pytesla-badge .py-info .py-sub{font-size:8px;color:var(--muted)}
-.pytesla-badge .py-beat{font-size:20px;font-weight:800;color:var(--gold);font-variant-numeric:tabular-nums}
+.pytesla-badge .py-info .py-title{font-size:12px;font-weight:700;color:var(--ameth)}
+.pytesla-badge .py-info .py-sub{font-size:10px;color:var(--muted)}
+.pytesla-badge .py-beat{font-size:24px;font-weight:800;color:var(--gold);font-variant-numeric:tabular-nums}
+
+.binaural-presets{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin:4px 0}
+.binaural-presets button{padding:6px 8px;font-size:10px;border-radius:6px;background:rgba(155,109,255,.06);color:var(--muted);border:1px solid rgba(155,109,255,.08);text-align:center;transition:all .15s}
+.binaural-presets button:hover{background:rgba(155,109,255,.1);border-color:var(--ameth)}
+.binaural-presets button.active{background:rgba(155,109,255,.12);color:var(--gold);border-color:rgba(217,170,58,.2)}
 
 @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
 @keyframes fol-glow{0%,100%{filter:drop-shadow(0 0 8px rgba(155,109,255,.2)) drop-shadow(0 0 25px rgba(155,109,255,.06))}50%{filter:drop-shadow(0 0 16px rgba(155,109,255,.35)) drop-shadow(0 0 50px rgba(155,109,255,.12))}}
 @keyframes sparkle{0%,100%{opacity:0;transform:scale(0) rotate(0deg)}40%{opacity:1;transform:scale(1.2) rotate(180deg)}70%{opacity:.5;transform:scale(.8) rotate(270deg)}100%{opacity:0;transform:scale(1) rotate(360deg)}}
 @keyframes shimmer{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
 
-.fol-hero{background:linear-gradient(160deg,#050210,#0a0618);border-radius:14px;border:1px solid rgba(155,109,255,.08);display:flex;align-items:center;justify-content:center;gap:24px;padding:16px 20px;position:relative;overflow:hidden;flex-shrink:0;min-height:90px}
-.fol-hero::before{content:'';position:absolute;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(155,109,255,.05),transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none}
-.fol-hero .fol-svg{width:58px;height:58px;flex-shrink:0;position:relative;z-index:1;transition:all .3s}
+.fol-hero{background:linear-gradient(160deg,#050210,#0a0618);border-radius:16px;border:1px solid rgba(155,109,255,.08);display:flex;align-items:center;justify-content:center;gap:28px;padding:18px 24px;position:relative;overflow:hidden;flex-shrink:0;min-height:100px}
+.fol-hero::before{content:'';position:absolute;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(155,109,255,.05),transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none}
+.fol-hero .fol-svg{width:64px;height:64px;flex-shrink:0;position:relative;z-index:1;transition:all .3s}
 .fol-hero .fol-svg.idle{animation:spin 24s linear infinite, fol-glow 6s ease-in-out infinite}
 .fol-hero .fol-svg.dancing{animation:spin 2.5s linear infinite, fol-glow .6s ease-in-out infinite}
 .fol-hero .fol-svg circle,.fol-hero .fol-svg text{transition:all .3s}
-.fol-hero .sparkle{position:absolute;width:5px;height:5px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px var(--gold),0 0 20px rgba(217,170,58,.4);pointer-events:none;animation:sparkle 1s ease-out forwards;z-index:2}
+.fol-hero .sparkle{position:absolute;width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 12px var(--gold),0 0 24px rgba(217,170,58,.4);pointer-events:none;animation:sparkle 1s ease-out forwards;z-index:2}
 .fol-hero .brand-text{display:flex;flex-direction:column;align-items:center;position:relative;z-index:1}
-.fol-hero .brand-title{font-size:20px;font-weight:800;background:linear-gradient(270deg,var(--gold),var(--ameth),var(--em),var(--gold));background-size:300% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 6s ease-in-out infinite;letter-spacing:1.2px}
-.fol-hero .brand-sub{font-size:10px;color:var(--muted);letter-spacing:2px;margin-top:1px}
+.fol-hero .brand-title{font-size:22px;font-weight:800;background:linear-gradient(270deg,var(--gold),var(--ameth),var(--em),var(--gold));background-size:300% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 6s ease-in-out infinite;letter-spacing:1.5px}
+.fol-hero .brand-sub{font-size:11px;color:var(--muted);letter-spacing:2px;margin-top:2px}
 .fol-hero .brand-sub span{color:var(--em)}
 
-::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:rgba(155,109,255,.1);border-radius:2px}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(155,109,255,.1);border-radius:2px}
 </style>
 </head>
 <body>
-<div class="titlebar"><div class="dot"></div><span class="sub">∞ 432 Hz · Harmonic Convergence v2.3</span></div>
+<div class="titlebar"><div class="dot"></div><span class="sub">∞ 432 Hz · Harmonic Convergence v2.4</span></div>
 <div class="main">
   <div class="left">
-    <div id="dropZone">Drop audio file</div>
+    <div id="dropZone">Drop audio file to heal to ∞ 432 Hz</div>
     <div class="card">
       <div class="card-h"><h2>🎯 Healer</h2><span id="tuneDisplay">—</span></div>
-      <div class="card-b" style="display:flex;flex-direction:column;gap:6px">
+      <div class="card-b" style="display:flex;flex-direction:column;gap:8px">
         <div class="det-file" id="detFile">—</div>
         <div class="det-row">
           <div class="det-item"><div class="det-label">Original Tuning</div><div class="det-val" id="origTune">—</div><div class="det-sub" id="detMethod">Awaiting file</div></div>
@@ -156,50 +161,66 @@ select{background:rgba(8,4,18,.6);color:var(--text);border:1px solid rgba(155,10
           <div class="ps-line"><span class="ps-l">Carriers</span><span class="ps-r" id="psCarriers">—</span></div>
           <div class="ps-line"><span class="ps-l">Heart ∞ 1 Hz</span><span class="ps-r" id="psHeart">Off</span></div>
         </div>
-        <div style="display:flex;gap:5px;align-items:center">
-          <select id="tgtSel" style="flex:1;font-size:10px"><option value="432">∞ 432 Hz</option><option value="440">440 Hz</option><option value="444">444 Hz</option></select>
-          <select id="mp3Qual" style="width:70px;font-size:10px"><option value="320k">320k</option><option value="256k">256k</option><option value="192k">192k</option></select>
+        <div style="display:flex;gap:6px;align-items:center">
+          <select id="tgtSel" style="flex:1;font-size:12px"><option value="432">∞ 432 Hz</option><option value="440">440 Hz</option><option value="444">444 Hz</option></select>
+          <select id="mp3Qual" style="width:80px;font-size:12px"><option value="320k">320k</option><option value="256k">256k</option><option value="192k">192k</option></select>
         </div>
-        <button class="heal-btn" id="healBtn">⟁ HEAL</button>
-        <div style="display:flex;gap:4px">
-          <button class="save-btn" id="wavBtn">WAV</button>
-          <button class="save-btn" id="mp3Btn">MP3</button>
+        <button class="heal-btn" id="healBtn">⟁ HEAL TO ∞ 432 Hz</button>
+        <div style="display:flex;gap:5px">
+          <button class="save-btn" id="wavBtn">💾 WAV</button>
+          <button class="save-btn" id="mp3Btn">💾 MP3</button>
           <button class="save-btn" id="bothBtn">Both</button>
         </div>
       </div>
     </div>
     <div class="card">
       <div class="card-h"><h2>📂 Batch Processor</h2><span id="batchStatus">Idle</span></div>
-      <div class="card-b" style="display:flex;flex-direction:column;gap:4px">
+      <div class="card-b" style="display:flex;flex-direction:column;gap:5px">
         <button class="batch-btn" id="batchScanBtn">📂 Select Folder & Scan</button>
-        <div class="batch-prog" id="batchInfo" style="font-size:8px;line-height:1.4;max-height:40px;overflow-y:auto;text-align:left">No folder selected</div>
-        <div id="batchControls" style="display:none;flex-direction:column;gap:4px;border-top:1px solid rgba(155,109,255,.05);padding-top:4px">
-          <div class="meta-row"><label>Output</label><span id="batchOutDir" style="font-size:9px;color:var(--muted);flex:1">Not set</span><button class="save-btn" id="batchOutBtn" style="padding:3px 8px;font-size:8px;flex:none">Choose</button></div>
+        <div class="batch-prog" id="batchInfo" style="font-size:10px;line-height:1.5;max-height:50px;overflow-y:auto;text-align:left">No folder selected</div>
+        <div id="batchControls" style="display:none;flex-direction:column;gap:5px;border-top:1px solid rgba(155,109,255,.05);padding-top:5px">
+          <div class="meta-row"><label>Output</label><span id="batchOutDir" style="font-size:11px;color:var(--muted);flex:1">Not set</span><button class="save-btn" id="batchOutBtn" style="padding:4px 10px;font-size:10px;flex:none">Choose</button></div>
           <div class="meta-row"><label>Format</label>
-            <select id="batchFmt" style="flex:1;font-size:10px"><option value="mp3">MP3 (320k)</option><option value="wav">WAV</option></select>
+            <select id="batchFmt" style="flex:1;font-size:12px"><option value="mp3">MP3 (320k)</option><option value="wav">WAV</option></select>
           </div>
-          <div class="meta-row"><label>Suffix</label><input type="text" id="batchSuffix" value="_∞432" style="flex:1;font-size:10px;height:22px"></div>
-          <button class="heal-btn" id="batchHealBtn" style="font-size:12px;padding:10px;display:none">⟁ HEAL ALL <span id="batchHealCount">0</span> FILES</button>
+          <div class="meta-row"><label>Suffix</label><input type="text" id="batchSuffix" value="_∞432" style="flex:1;font-size:12px;height:26px"></div>
+          <button class="heal-btn" id="batchHealBtn" style="font-size:14px;padding:12px;display:none">⟁ HEAL ALL <span id="batchHealCount">0</span> FILES</button>
           <div class="batch-prog" id="batchProg"></div>
         </div>
       </div>
     </div>
     <div class="card">
       <div class="card-h"><h2>📝 Metadata</h2></div>
-      <div class="card-b" style="display:flex;flex-direction:column;gap:2px">
+      <div class="card-b" style="display:flex;flex-direction:column;gap:3px">
         <div class="meta-row"><label>Artist</label><input type="text" id="metaArtist" value="Quantum Thoughter"></div>
         <div class="meta-row"><label>Composer</label><input type="text" id="metaComposer" value="Quantum Thoughter"></div>
         <div class="meta-row"><label>Album</label><input type="text" id="metaAlbum" value="Harmonic Convergence"></div>
-        <div class="meta-row"><label>Comment</label><input type="text" id="metaComment" value="432 Hz Tuning Correction"></div>
-        <div class="meta-row"><label></label><span style="font-size:8px;color:var(--muted)"><input type="checkbox" id="metaBpm" checked> BPM</span><span style="font-size:8px;color:var(--muted);margin-left:8px"><input type="checkbox" id="metaInjectLyrics"> Lyrics</span></div>
-        <div class="meta-row" id="lyricsRow" style="display:none;align-items:flex-start"><label style="margin-top:2px">Lyrics</label><textarea id="metaLyrics" placeholder="Lyrics..."></textarea></div>
+        <div class="meta-row"><label>Comment</label><input type="text" id="metaComment" value="432 Hz Tuning Correction via Harmonic Convergence"></div>
+        <div class="meta-row"><label></label><span style="font-size:10px;color:var(--muted)"><input type="checkbox" id="metaBpm" checked> BPM</span><span style="font-size:10px;color:var(--muted);margin-left:10px"><input type="checkbox" id="metaInjectLyrics"> Lyrics</span></div>
+        <div class="meta-row" id="lyricsRow" style="display:none;align-items:flex-start"><label style="margin-top:3px">Lyrics</label><textarea id="metaLyrics" placeholder="Embed lyrics in file..."></textarea></div>
       </div>
     </div>
-    <div class="status" id="st">✨ Drop a file</div>
+    <div class="card">
+      <div class="card-h"><h2>🌀 Binaural Presets</h2><span>⚡</span></div>
+      <div class="card-b">
+        <div style="font-size:10px;color:var(--muted);margin-bottom:4px">Select a binaural pair to auto-configure PyTesla:</div>
+        <div class="binaural-presets" id="binauralPresets">
+          <button data-left="440" data-right="432">440~432<br><span style="font-size:8px;color:var(--muted)">8 Hz α/θ</span></button>
+          <button data-left="424" data-right="432">424~432<br><span style="font-size:8px;color:var(--muted)">8 Hz α/θ</span></button>
+          <button data-left="432" data-right="444">432~444<br><span style="font-size:8px;color:var(--muted)">12 Hz β</span></button>
+          <button data-left="423" data-right="432">423~432<br><span style="font-size:8px;color:var(--muted)">9 Hz α</span></button>
+          <button data-left="396" data-right="404">396~404<br><span style="font-size:8px;color:var(--muted)">8 Hz Engram</span></button>
+          <button data-left="396" data-right="399">396~399<br><span style="font-size:8px;color:var(--muted)">3 Hz δ</span></button>
+          <button data-left="440" data-right="444">440~444<br><span style="font-size:8px;color:var(--muted)">4 Hz θ</span></button>
+          <button data-left="432" data-right="528">432~528<br><span style="font-size:8px;color:var(--muted)">96 Hz ✦</span></button>
+        </div>
+      </div>
+    </div>
+    <div class="status" id="st">✨ Drop a file to begin</div>
     <div class="prog"><div class="prog-fill" id="progFill"></div></div>
     <div class="card" style="flex:1;min-height:0;display:flex;flex-direction:column">
       <div class="card-h"><h2>📡 Live Log</h2><span id="logCount">0</span></div>
-      <div class="card-b" style="padding:4px 8px;flex:1;display:flex;flex-direction:column;min-height:0">
+      <div class="card-b" style="padding:6px 10px;flex:1;display:flex;flex-direction:column;min-height:0">
         <div class="diag" id="diagLog"></div>
       </div>
     </div>
@@ -224,7 +245,7 @@ select{background:rgba(8,4,18,.6);color:var(--text);border:1px solid rgba(155,10
       </div>
     </div>
 
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;flex-shrink:0">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;flex-shrink:0">
       <div class="track">
         <div class="track-h orig"><span>🔵 Original</span><span id="origInfo">—</span></div>
         <canvas id="origCQT"></canvas>
@@ -233,17 +254,17 @@ select{background:rgba(8,4,18,.6);color:var(--text);border:1px solid rgba(155,10
           <input type="range" id="origSeek" min="0" max="1000" value="0">
           <span class="time" id="origTime">0:00</span>
         </div>
-        <div class="track-vol"><label>Vol</label><input type="range" id="origVol" min="0" max="100" value="70"><span id="origVolVal" style="font-size:8px;color:var(--muted)">70</span></div>
+        <div class="track-vol"><label>Vol</label><input type="range" id="origVol" min="0" max="100" value="70"><span id="origVolVal" style="font-size:10px;color:var(--muted)">70</span></div>
       </div>
       <div class="track">
-        <div class="track-h heal"><span>🟢 Healed</span><span id="healInfo">—</span></div>
+        <div class="track-h heal"><span>🟢 Healed ∞ 432</span><span id="healInfo">—</span></div>
         <canvas id="healCQT"></canvas>
         <div class="track-ctrl">
           <button class="play-btn" id="healPlayBtn">▶</button>
           <input type="range" id="healSeek" min="0" max="1000" value="0">
           <span class="time" id="healTime">0:00</span>
         </div>
-        <div class="track-vol"><label>Vol</label><input type="range" id="healVol" min="0" max="100" value="70"><span id="healVolVal" style="font-size:8px;color:var(--muted)">70</span></div>
+        <div class="track-vol"><label>Vol</label><input type="range" id="healVol" min="0" max="100" value="70"><span id="healVolVal" style="font-size:10px;color:var(--muted)">70</span></div>
       </div>
     </div>
 
@@ -262,7 +283,7 @@ select{background:rgba(8,4,18,.6);color:var(--text);border:1px solid rgba(155,10
       <div class="vr">
         <label style="color:var(--ameth);font-weight:600">PyTesla</label>
         <div class="v-toggle"><button id="pyToggle">⚡ Off</button></div>
-        <select id="pyPreset" style="flex:1;font-size:10px" disabled>
+        <select id="pyPreset" style="flex:1;font-size:12px" disabled>
           <option value="440~432">440~432 = 8 Hz (α/θ)</option>
           <option value="424~432">424~432 = 8 Hz (α/θ)</option>
           <option value="440~444">440~444 = 4 Hz (θ)</option>
@@ -275,12 +296,12 @@ select{background:rgba(8,4,18,.6);color:var(--text);border:1px solid rgba(155,10
       <div class="vr" id="pySwapRow" style="display:none">
         <label>Swap L/R</label>
         <div class="v-toggle"><button id="pySwapToggle">Off</button></div>
-        <label style="font-size:8px;color:var(--muted);margin-left:4px">Rate</label>
-        <input type="range" id="pySwapRate" min="0" max="100" value="20" style="max-width:70px" disabled>
-        <span class="v-val" id="pySwapRateVal" style="font-size:8px">10s</span>
+        <label style="font-size:10px;color:var(--muted);margin-left:6px">Rate</label>
+        <input type="range" id="pySwapRate" min="0" max="100" value="20" style="max-width:80px" disabled>
+        <span class="v-val" id="pySwapRateVal" style="font-size:10px">10s</span>
       </div>
 
-      <div style="border-top:1px solid rgba(155,109,255,.05);margin:4px 0 3px"></div>
+      <div style="border-top:1px solid rgba(155,109,255,.05);margin:5px 0 4px"></div>
 
       <div class="vr">
         <label>Sub-Bass</label>
@@ -324,8 +345,8 @@ select{background:rgba(8,4,18,.6);color:var(--text);border:1px solid rgba(155,10
       </div>
       <div class="carrier-tag"><span class="ct-em">Coherence</span> Heart rate variability · 0.1 Hz breath · 1 Hz pure tone · emotional alignment</div>
 
-      <div style="margin-top:auto;padding-top:6px;border-top:1px solid rgba(155,109,255,.04)">
-        <div style="font-size:7px;color:var(--muted);line-height:1.4;text-align:center">Foundation: 432 ÷ 2 = <span style="color:var(--gold)">216</span> · ÷ 4 = <span style="color:var(--gold)">108</span> · ÷ 6 = <span style="color:var(--gold)">72</span> · ÷ 8 = <span style="color:var(--gold)">54</span> · ÷ 12 = <span style="color:var(--gold)">36</span> · ÷ 16 = <span style="color:var(--gold)">27</span> · ÷ 32 = <span style="color:var(--gold)">13.5</span></div>
+      <div style="margin-top:auto;padding-top:8px;border-top:1px solid rgba(155,109,255,.04)">
+        <div style="font-size:9px;color:var(--muted);line-height:1.5;text-align:center">Foundation: 432 ÷ 2 = <span style="color:var(--gold)">216</span> · ÷ 4 = <span style="color:var(--gold)">108</span> · ÷ 6 = <span style="color:var(--gold)">72</span> · ÷ 8 = <span style="color:var(--gold)">54</span> · ÷ 12 = <span style="color:var(--gold)">36</span> · ÷ 16 = <span style="color:var(--gold)">27</span> · ÷ 32 = <span style="color:var(--gold)">13.5</span></div>
       </div>
     </div>
   </div>
@@ -369,16 +390,42 @@ function updatePySummary(){
   e.style.display='block'
   const p=$('pyPreset').value;const ps=p.split('~');const b=Math.abs(parseFloat(ps[0])-parseFloat(ps[1]))
   const labels={'440~432':'8 Hz (α/θ)','424~432':'8 Hz (α/θ)','440~444':'4 Hz (θ)','432~444':'12 Hz (β)','423~432':'9 Hz (α)','396~404':'8 Hz Engram','396~399':'3 Hz (δ)'}
-  $('psMode').textContent=ps[0]+' L · '+ps[1]+' R'
-  $('psBeat').textContent=b.toFixed(2)+' Hz '+labels[p]
-  $('psSwap').textContent=_pySwapOn?$('pySwapRateVal').textContent+' interval':'Off'
-  $('psBass').textContent=($('#vortexModes .active')||document.querySelector('#vortexModes button')||{}).textContent||'Full'
+  _s('psMode',ps[0]+' L · '+ps[1]+' R')
+  _s('psBeat',b.toFixed(2)+' Hz '+labels[p])
+  _s('psSwap',_pySwapOn?$('pySwapRateVal').textContent+' interval':'Off')
+  _s('psBass',($('#vortexModes .active')||document.querySelector('#vortexModes button')||{}).textContent||'Full')
   const c=[];if(+$('carrier33').value>0)c.push('33.5Hz');if(+$('carrier783').value>0)c.push('7.83Hz');if(+$('carrier8').value>0)c.push('8Hz')
-  $('psCarriers').textContent=c.length?c.join(' · '):'—'
-  $('psHeart').textContent=+$('heartCoherence').value>0?$('heartCoherenceVal').textContent+'%':'Off'
+  _s('psCarriers',c.length?c.join(' · '):'—')
+  _s('psHeart',+$('heartCoherence').value>0?$('heartCoherenceVal').textContent+'%':'Off')
 }
 
 $('metaInjectLyrics').onchange=function(){$('lyricsRow').style.display=this.checked?'flex':'none'};
+
+// Binaural presets
+document.querySelectorAll('#binauralPresets button').forEach(b=>{
+  b.onclick=function(){
+    document.querySelectorAll('#binauralPresets button').forEach(b2=>b2.classList.remove('active'))
+    this.classList.add('active')
+    const l=this.dataset.left,r=this.dataset.right
+    const match=`${l}~${r}`
+    const sel=$('pyPreset')
+    for(let i=0;i<sel.options.length;i++){
+      if(sel.options[i].value===match){sel.selectedIndex=i;break}
+    }
+    // Enable PyTesla
+    const tb=$('pyToggle')
+    if(tb&&!tb.classList.contains('active')){tb.classList.add('active');tb.textContent='⚡ On'}
+    _pyteslaEnabled=true
+    $('pyPreset').disabled=false;$('pySwapToggle').disabled=false;$('pySwapRate').disabled=false
+    $('pyteslaBadge').style.display='flex';$('pySwapRow').style.display='flex'
+    const ps=match.split('~');const b=Math.abs(ps[0]-ps[1])
+    _s('pyTitle','⚡ PyTesla: '+ps[0]+' Hz L · '+ps[1]+' Hz R')
+    _s('pySub','Binaural beat = '+b.toFixed(2)+' Hz')
+    _s('pyBeat',b.toFixed(2)+' Hz')
+    sparkleBurst()
+    updatePySummary()
+  }
+})
 
 const dz=$('dropZone');
 dz.onclick=async()=>{const f=await A.openFile();if(f)loadFile(f)};
@@ -422,7 +469,7 @@ function startCQT(canvasId, analyser){
       const x=((Math.log10(g)-lm)/(lx-lm))*W
       ctx.strokeStyle=g===432?'rgba(217,170,58,.3)':'rgba(155,109,255,.04)'
       ctx.lineWidth=g===432?1.5:.5;ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H-8);ctx.stroke()
-      if(g===432){ctx.fillStyle='rgba(217,170,58,.35)';ctx.font='6px monospace';ctx.textAlign='center';ctx.fillText('∞ 432',x,6)}
+      if(g===432){ctx.fillStyle='rgba(217,170,58,.35)';ctx.font='7px monospace';ctx.textAlign='center';ctx.fillText('∞ 432',x,7)}
     }
     for(let i=1;i<analyser.frequencyBinCount-1;i++){
       const f=i*44100/analyser.fftSize;if(f<fm||f>fx)continue
@@ -464,7 +511,7 @@ function origPlay(){
     srcOrig.connect(origGain);origGain.connect(anOrig);anOrig.connect(acOrig.destination)
     srcOrig.start(0,+$('origSeek').value/1000*S._origBuf.duration);origPlaying=true;$('origPlayBtn').textContent='⏹'
     const dur=S._origBuf.duration
-    S._osi=setInterval(()=>{if(!origPlaying||!acOrig||_seeking)return
+    S._osi=setInterval(()=>{if(!origPlaying||!acOrig)return
       const n=acOrig.currentTime;$('origSeek').value=Math.min(1000,n/dur*1000)
       $('origTime').textContent=Math.floor(n/60)+':'+String(Math.floor(n%60)).padStart(2,'0')+'/'+Math.floor(dur/60)+':'+String(Math.floor(dur%60)).padStart(2,'0')},200)
     srcOrig.onended=()=>{origPlaying=false;$('origPlayBtn').textContent='▶';clearInterval(S._osi);$('origSeek').value=0}
@@ -473,7 +520,9 @@ function origPlay(){
 function origStop(){if(srcOrig){try{srcOrig.stop()}catch(e){}srcOrig=null}origPlaying=false;$('origPlayBtn').textContent='▶';$('origSeek').value=0;if(S._osi){clearInterval(S._osi);S._osi=null};folDance(0)}
 $('origPlayBtn').onclick=origPlay
 $('origVol').oninput=function(){$('origVolVal').textContent=this.value;if(origGain)origGain.gain.value=this.value/100}
-$('origSeek').oninput=function(){const v=+this.value;if(origPlaying){_seeking=true;if(srcOrig){try{srcOrig.stop()}catch(e){}srcOrig=null}origPlaying=false;if(S._osi){clearInterval(S._osi);S._osi=null}$('origPlayBtn').textContent='▶';setTimeout(()=>{_seeking=false;$('origSeek').value=v;origPlay()},30)}else{const d=S._origBuf?S._origBuf.duration:0;$('origTime').textContent=Math.floor(v/1000*d/60)+':'+String(Math.floor(v/1000*d%60)).padStart(2,'0')+(d?'/'+Math.floor(d/60)+':'+String(Math.floor(d%60)).padStart(2,'0'):'')}}
+$('origSeek').onmousedown=function(){_seeking=true}
+$('origSeek').onmouseup=function(){_seeking=false;if(origPlaying){const v=+this.value;if(srcOrig){try{srcOrig.stop()}catch(e){}srcOrig=null}origPlaying=false;if(S._osi){clearInterval(S._osi);S._osi=null}$('origPlayBtn').textContent='▶';$('origSeek').value=v;origPlay()}}
+$('origSeek').oninput=function(){const v=+this.value;if(!origPlaying){const d=S._origBuf?S._origBuf.duration:0;$('origTime').textContent=Math.floor(v/1000*d/60)+':'+String(Math.floor(v/1000*d%60)).padStart(2,'0')+(d?'/'+Math.floor(d/60)+':'+String(Math.floor(d%60)).padStart(2,'0'):'')}}
 
 let _pyteslaEnabled=false,_pySwapOn=false
 $('pyToggle').onclick=function(){
@@ -502,7 +551,7 @@ $('healBtn').onclick=async function(){
     S.sid=r.session_id;S.srcName=r.source_name;S._bpm=r.bpm
     $('progFill').style.width='100%';setTimeout(()=>{$('progFill').style.width='0%'},500)
     if(_pyteslaEnabled){
-      $('tuneDisplay').innerHTML='⚡ <span style="color:var(--ameth)">'+r.left_tuning.toFixed(0)+'L/'+r.right_tuning.toFixed(0)+'R</span> <span style="font-size:9px;color:var(--muted)">='+r.beat_hz.toFixed(2)+' Hz</span>'
+      $('tuneDisplay').innerHTML='⚡ <span style="color:var(--ameth)">'+r.left_tuning.toFixed(0)+'L/'+r.right_tuning.toFixed(0)+'R</span> <span style="font-size:11px;color:var(--muted)">='+r.beat_hz.toFixed(2)+' Hz</span>'
       $('healInfo').textContent=r.beat_hz.toFixed(2)+' Hz binaural ⚡';$('origInfo').textContent=r.left_tuning.toFixed(0)+'L '+r.right_tuning.toFixed(0)+'R'
       log('⚡ <strong>PyTesla:</strong> '+r.left_tuning.toFixed(0)+'L · '+r.right_tuning.toFixed(0)+'R = '+r.beat_hz.toFixed(2)+' Hz binaural')
     }else{
@@ -542,7 +591,7 @@ function healPlay(){
     srcHeal.connect(healGain);healGain.connect(anHeal);anHeal.connect(acHeal.destination)
     srcHeal.start(0,+$('healSeek').value/1000*S._healBuf.duration);healPlaying=true;$('healPlayBtn').textContent='⏹'
     const dur=S._healBuf.duration
-    S._hsi=setInterval(()=>{if(!healPlaying||!acHeal||_seeking)return
+    S._hsi=setInterval(()=>{if(!healPlaying||!acHeal)return
       const n=acHeal.currentTime;$('healSeek').value=Math.min(1000,n/dur*1000)
       $('healTime').textContent=Math.floor(n/60)+':'+String(Math.floor(n%60)).padStart(2,'0')+'/'+Math.floor(dur/60)+':'+String(Math.floor(dur%60)).padStart(2,'0')},200)
     srcHeal.onended=()=>{healPlaying=false;$('healPlayBtn').textContent='▶';clearInterval(S._hsi);$('healSeek').value=0}
@@ -551,7 +600,9 @@ function healPlay(){
 function healStop(){if(srcHeal){try{srcHeal.stop()}catch(e){}srcHeal=null}healPlaying=false;$('healPlayBtn').textContent='▶';$('healSeek').value=0;if(S._hsi){clearInterval(S._hsi);S._hsi=null};folDance(0)}
 $('healPlayBtn').onclick=healPlay
 $('healVol').oninput=function(){$('healVolVal').textContent=this.value;if(healGain)healGain.gain.value=this.value/100}
-$('healSeek').oninput=function(){const v=+this.value;if(healPlaying){_seeking=true;if(srcHeal){try{srcHeal.stop()}catch(e){}srcHeal=null}healPlaying=false;if(S._hsi){clearInterval(S._hsi);S._hsi=null}$('healPlayBtn').textContent='▶';setTimeout(()=>{_seeking=false;$('healSeek').value=v;healPlay()},30)}else{const d=S._healBuf?S._healBuf.duration:0;$('healTime').textContent=Math.floor(v/1000*d/60)+':'+String(Math.floor(v/1000*d%60)).padStart(2,'0')+(d?'/'+Math.floor(d/60)+':'+String(Math.floor(d%60)).padStart(2,'0'):'')}}
+$('healSeek').onmousedown=function(){_seeking=true}
+$('healSeek').onmouseup=function(){_seeking=false;if(healPlaying){const v=+this.value;if(srcHeal){try{srcHeal.stop()}catch(e){}srcHeal=null}healPlaying=false;if(S._hsi){clearInterval(S._hsi);S._hsi=null}$('healPlayBtn').textContent='▶';$('healSeek').value=v;healPlay()}}
+$('healSeek').oninput=function(){const v=+this.value;if(!healPlaying){const d=S._healBuf?S._healBuf.duration:0;$('healTime').textContent=Math.floor(v/1000*d/60)+':'+String(Math.floor(v/1000*d%60)).padStart(2,'0')+(d?'/'+Math.floor(d/60)+':'+String(Math.floor(d%60)).padStart(2,'0'):'')}}
 
 async function saveFile(fmt){
   if(!S.sid){st('Heal first',1);return}
@@ -596,8 +647,9 @@ $('batchHealBtn').onclick=async()=>{
   const hb=$('batchHealBtn');if(hb){hb.disabled=true;hb.textContent='⟁ Healing...'}
   _s('batchProg','⏳ Starting parallel batch...');_s('batchStatus','Healing')
   log('📂 <strong>Batch heal:</strong> '+_batchFiles.length+' files → '+fmt.toUpperCase()+' · suffix: "'+suffix+'" (parallel)')
+  const a=encodeURIComponent($('metaArtist').value||'Quantum Thoughter'),c=encodeURIComponent($('metaComposer').value||'Quantum Thoughter'),al=encodeURIComponent($('metaAlbum').value||'Harmonic Convergence'),cm=encodeURIComponent($('metaComment').value||'432 Hz Tuning Correction via Harmonic Convergence')
   try{
-    const r=await A.post('/api/heal_batch',{folder_path:_batchFolder,output_dir:_batchOut,target_tuning:+$('tgtSel').value,format:$('batchFmt').value})
+    const r=await A.post('/api/heal_batch',{folder_path:_batchFolder,output_dir:_batchOut,target_tuning:+$('tgtSel').value,format:$('batchFmt').value,artist:a,composer:c,album:al,comment:cm})
     let ok=r.completed||0,err=r.failed||0,fb=r.fallback||0,cqt=r.cqt_verified||0,spc=r.spectral_verified||0
     for(const res of r.results||[]){
       const tag={'cqt':'🔬','spectral_ratio':'📊','pass_by_trust':'🛡️'}[res.verify_method]||'🔬'

@@ -68,7 +68,7 @@ class HealRequest(BaseModel):
 
 class DetectRequest(BaseModel): file_path: str
 class ReportRequest(BaseModel): input_path: str; output_path: str
-class BatchRequest(BaseModel): folder_path: str; output_dir: str; target_tuning: float = 432.0; format: str = "wav"
+class BatchRequest(BaseModel): folder_path: str; output_dir: str; target_tuning: float = 432.0; format: str = "wav"; artist: str = "Quantum Thoughter"; composer: str = "Quantum Thoughter"; album: str = "Harmonic Convergence"; comment: str = "432 Hz Tuning Correction via Harmonic Convergence"
 class SynthRequest(BaseModel): frequencies: dict = {}; duration_hours: float = 1.0; sample_rate: int = 48000
 class RenderSynthRequest(BaseModel): frequencies: dict = {}; pyt_esla: bool = False; carrier_1hz: bool = True; ambience_mix: float = 0.0; duration_hours: float = 1.0; sample_rate: int = 48000
 
@@ -443,14 +443,15 @@ def heal_batch(req: BatchRequest):
                 if is_mp3:
                     mp3_path = wav_path.rsplit('.', 1)[0] + '.mp3'
                     try:
-                        meta = ['-metadata', f'artist=Quantum Thoughter', '-metadata', f'title={sname}', '-metadata', f'comment=432 Hz Tuning Correction via Harmonic Convergence']
+                        artist_str = req.artist if not req.artist.startswith('http') else 'Quantum Thoughter'
+                        meta = ['-metadata', f'artist={artist_str}', '-metadata', f'composer={req.composer}', '-metadata', f'album={req.album}', '-metadata', f'title={sname}', '-metadata', f'comment={req.comment}']
                         if bpm: meta += ['-metadata', f'tbpm={bpm}']
                         subprocess.run(['ffmpeg', '-y', '-i', wav_path, '-b:a', '320k', '-q:a', '0', '-joint_stereo', '1', '-id3v2_version', '3'] + meta + [mp3_path], capture_output=True, timeout=120)
                         os.remove(wav_path)
                     except: pass
                     results.append({'file': os.path.basename(f), 'status': 'ok', 'output': os.path.basename(mp3_path), 'original_tuning': ot, 'target_tuning': req.target_tuning, 'verified_tuning': verified['tuning'], 'verify_method': verify_method, 'semitones_shifted': round(ss, 4), 'confidence': orig_conf, 'bpm': bpm, 'log': log_entry})
                 else:
-                    try: write_metadata_wav(wav_path, title=sname, bpm=bpm)
+                    try: write_metadata_wav(wav_path, artist=req.artist, composer=req.composer, album=req.album, comment=req.comment, title=sname, bpm=bpm)
                     except: pass
                     results.append({'file': os.path.basename(f), 'status': 'ok', 'output': os.path.basename(wav_path), 'original_tuning': ot, 'target_tuning': req.target_tuning, 'verified_tuning': verified['tuning'], 'verify_method': verify_method, 'semitones_shifted': round(ss, 4), 'confidence': orig_conf, 'bpm': bpm, 'log': log_entry})
         except Exception as e:

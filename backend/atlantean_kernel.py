@@ -106,7 +106,7 @@ class AtlanteanKernel:
         return (reported, float(final_confidence), 'cqt_grid', raw)
 
     def detect_tuning(self, file_path, fast=False):
-        if file_path in self._detect_cache:
+        if file_path in self._detect_cache and not fast:
             return self._detect_cache[file_path]
         if fast:
             y, sr = librosa.load(file_path, sr=self.sample_rate, duration=5, mono=True)
