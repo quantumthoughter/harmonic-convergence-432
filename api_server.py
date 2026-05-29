@@ -66,6 +66,16 @@ class HealRequest(BaseModel):
     binaural_base: float = 432.0
     binaural_beat: float = 8.0
     binaural_vol: float = 0.3
+    binaural_left: float = 0.0
+    binaural_right: float = 0.0
+    binaural_delay_ms: float = 0.0
+    binaural_feedback: float = 0.3
+    binaural_reverb_room: float = 0.0
+    binaural_lfo_rate: float = 0.0
+    binaural_lfo_depth: float = 0.3
+    binaural_noise_type: str = ''
+    binaural_noise_vol: float = 0.0
+    binaural_phase_lock: bool = False
     carrier_33_5: float = 0.0
     carrier_7_83: float = 0.0
     carrier_8: float = 0.0
@@ -128,18 +138,94 @@ def generate_heart_coherence(duration, sr, volume=0.0):
     stereo[0] = tone; stereo[1] = tone
     return stereo
 
-def generate_binaural_layer(duration, sr, base=432.0, beat=8.0, volume=0.0):
-    if volume <= 0 or beat <= 0: return None
+def generate_noise(duration, sr, noise_type='white', volume=0.0):
+    if volume <= 0: return None
+    n = int(sr * duration)
+    if noise_type == 'white':
+        noise = np.random.uniform(-1, 1, n)
+    elif noise_type == 'pink':
+        b = [0.0]*7
+        white = np.random.uniform(-1, 1, n)
+        pink = np.zeros(n)
+        for i in range(n):
+            for k in range(7): b[k] = np.random.uniform(-1, 1) if i % (2**k) == 0 else b[k]
+            pink[i] = sum(b)/7
+        noise = pink
+    elif noise_type == 'brown':
+        noise = np.cumsum(np.random.uniform(-0.2, 0.2, n))
+        noise = noise / (np.max(np.abs(noise)) + 1e-10)
+    elif noise_type == 'black':
+        from scipy.signal import butter, lfilter
+        b_butter, a_butter = butter(4, 500/(sr/2), btype='high')
+        noise = lfilter(b_butter, a_butter, np.random.uniform(-1, 1, n))
+    else:
+        noise = np.random.uniform(-1, 1, n)
+    noise = noise / (np.max(np.abs(noise)) + 1e-10) * volume * 0.3
+    stereo = np.zeros((2, n), dtype=np.float64)
+    stereo[0] = noise; stereo[1] = noise
+    return stereo
+
+def apply_delay(audio, sr, delay_ms=250, feedback=0.3, mix_wet=0.3):
+    delay_samples = int(delay_ms / 1000 * sr)
+    if delay_samples < 2 or mix_wet <= 0: return audio
+    if audio.ndim == 1: audio = np.stack([audio, audio])
+    out = audio.copy().astype(np.float64)
+    n = audio.shape[-1]
+    for ch in range(audio.shape[0]):
+        delayed = np.zeros(n)
+        delayed[delay_samples:] = out[ch, :-delay_samples] + feedback * out[ch, :-delay_samples]
+        out[ch] = out[ch] * (1 - mix_wet) + delayed * mix_wet
+    return out
+
+def apply_reverb(audio, sr, room_size=0.5, mix_wet=0.2):
+    if mix_wet <= 0: return audio
+    if audio.ndim == 1: audio = np.stack([audio, audio])
+    out = audio.copy().astype(np.float64)
+    n = audio.shape[-1]
+    delays_ms = [20, 30, 40, 50, 60]
+    for ch in range(audio.shape[0]):
+        wet = np.zeros(n)
+        for d_ms in delays_ms:
+            d = int(d_ms / 1000 * sr * room_size)
+            if d < 1: d = 1
+            shifted = np.zeros(n)
+            shifted[d:] = out[ch, :-d] * 0.7
+            wet += shifted
+        wet /= len(delays_ms)
+        out[ch] = out[ch] * (1 - mix_wet) + wet * mix_wet
+    return out
+
+def apply_lfo_oscillation(audio, sr, lfo_rate=0.5, depth=0.3):
+    if audio.ndim == 1: audio = np.stack([audio, audio])
+    n = audio.shape[-1]
+    out = audio.copy().astype(np.float64)
+    t = np.linspace(0, n/sr, n, endpoint=False)
+    lfo = 1.0 - depth + depth * np.sin(2 * np.pi * lfo_rate * t)
+    out[0] *= lfo; out[1] *= lfo
+    return out
+
+def generate_binaural_layer(duration, sr, base=432.0, freq_left=None, freq_right=None, volume=0.0, delay_ms=0, feedback=0.3, reverb_room=0, lfo_rate=0, lfo_depth=0, noise_type=None, noise_vol=0, phase_lock=False):
+    if volume <= 0: return None
     n = int(sr * duration)
     t = np.linspace(0, duration, n, endpoint=False)
+    fl = freq_left if freq_left else base
+    fr = freq_right if freq_right else base + 8.0
+    phase = 0 if phase_lock else np.random.random() * 2 * np.pi
     env = np.ones(n)
     atk = min(int(1.5 * sr), n); rel = min(int(3.0 * sr), n)
-    env[:atk] = np.linspace(0, 1, atk)
-    env[-rel:] = np.linspace(1, 0, rel)
-    tone_left = np.sin(2 * np.pi * base * t) * env * volume * 0.25
-    tone_right = np.sin(2 * np.pi * (base + beat) * t) * env * volume * 0.25
+    env[:atk] = np.linspace(0, 1, atk); env[-rel:] = np.linspace(1, 0, rel)
+    tone_left = np.sin(2 * np.pi * fl * t + phase) * env * volume * 0.25
+    tone_right = np.sin(2 * np.pi * fr * t) * env * volume * 0.25
     stereo = np.zeros((2, n), dtype=np.float64)
     stereo[0] = tone_left; stereo[1] = tone_right
+    if delay_ms > 0: stereo = apply_delay(stereo, sr, delay_ms, feedback, 0.4)
+    if reverb_room > 0: stereo = apply_reverb(stereo, sr, reverb_room, 0.3)
+    if lfo_rate > 0: stereo = apply_lfo_oscillation(stereo, sr, lfo_rate, lfo_depth)
+    if noise_type and noise_vol > 0:
+        ns = generate_noise(duration, sr, noise_type, noise_vol)
+        if ns is not None:
+            nn = min(stereo.shape[-1], ns.shape[-1])
+            stereo[..., :nn] += ns[..., :nn]
     return stereo
 
 def apply_pytesla_swap(mix, sr, interval, left_tuning, right_tuning):
@@ -353,7 +439,13 @@ async def heal(request: HealRequest):
         mix[..., :n] += hc[..., :n]
 
     if request.binaural_enabled and request.binaural_vol > 0:
-        bi = generate_binaural_layer(dur, sr, request.binaural_base, request.binaural_beat, request.binaural_vol)
+        fl = request.binaural_left if request.binaural_left > 0 else None
+        fr = request.binaural_right if request.binaural_right > 0 else None
+        bi = generate_binaural_layer(dur, sr, request.binaural_base, fl, fr, request.binaural_vol,
+            request.binaural_delay_ms, request.binaural_feedback, request.binaural_reverb_room,
+            request.binaural_lfo_rate, request.binaural_lfo_depth,
+            request.binaural_noise_type if request.binaural_noise_type else None,
+            request.binaural_noise_vol, request.binaural_phase_lock)
         if bi is not None:
             n = min(mix.shape[-1], bi.shape[-1])
             mix[..., :n] += bi[..., :n]
@@ -544,6 +636,48 @@ def batch_scan(folder_path: str):
 
 
 
+
+PRESETS_FILE = os.path.join(WORK_DIR, '..', 'binaural_presets.json')
+PRESETS_FILE = os.path.abspath(os.path.join(os.path.dirname(__file__), 'binaural_presets.json'))
+
+@app.get("/api/binaural_presets")
+def get_binaural_presets():
+    if os.path.exists(PRESETS_FILE):
+        with open(PRESETS_FILE, 'r') as f:
+            return json.load(f)
+    return {"presets": {}}
+
+@app.post("/api/binaural_presets")
+def save_binaural_preset(name: str, preset: dict):
+    ps = {}
+    if os.path.exists(PRESETS_FILE):
+        with open(PRESETS_FILE, 'r') as f:
+            ps = json.load(f)
+    ps['presets'] = ps.get('presets', {})
+    ps['presets'][name] = preset
+    with open(PRESETS_FILE, 'w') as f:
+        json.dump(ps, f, indent=2)
+    return {"status": "saved", "name": name}
+
+@app.delete("/api/binaural_presets")
+def delete_binaural_preset(name: str):
+    if os.path.exists(PRESETS_FILE):
+        with open(PRESETS_FILE, 'r') as f:
+            ps = json.load(f)
+        ps['presets'] = ps.get('presets', {})
+        if name in ps['presets']:
+            del ps['presets'][name]
+            with open(PRESETS_FILE, 'w') as f:
+                json.dump(ps, f, indent=2)
+    return {"status": "deleted", "name": name}
+
+class BinauralPresetRequest(BaseModel):
+    name: str
+    preset: dict = {}
+
+@app.post("/api/binaural_presets/save")
+def save_binaural_preset_body(req: BinauralPresetRequest):
+    return save_binaural_preset(req.name, req.preset)
 
 @app.post("/api/report")
 def generate_report(req: ReportRequest):
