@@ -734,7 +734,8 @@ $('healBtn').onclick=async function(){
       binaural_delay_ms:+$('beDelay').value,binaural_feedback:+$('beFeedback').value/100,
       binaural_reverb_room:+$('beReverb').value/100,binaural_lfo_rate:+$('beLFO').value/50,
       binaural_lfo_depth:0.3,binaural_noise_type:$('beNoiseType').value,binaural_noise_vol:+$('beNoiseVol').value/100})
-    S.sid=r.session_id;S.srcName=r.source_name;S._bpm=r.bpm
+     S.sid=r.session_id;S.srcName=r.source_name;S._bpm=r.bpm
+     if(!S.sid){log('⚠️ No session_id in heal response');return}
     $('progFill').style.width='100%';setTimeout(()=>{$('progFill').style.width='0%'},500)
     if(_pyteslaEnabled){
       $('tuneDisplay').innerHTML='⚡ <span style="color:var(--ameth)">'+r.left_tuning.toFixed(0)+'L/'+r.right_tuning.toFixed(0)+'R</span> <span style="font-size:11px;color:var(--muted)">='+r.beat_hz.toFixed(2)+' Hz</span>'
@@ -797,7 +798,8 @@ async function saveFile(fmt){
   const b=(S.srcName||S.file||'healed').split('/').pop().replace(/\.[^.]+$/,'')+'_∞432'
   const d=await A.saveFile(b+'.'+fmt);if(!d)return
   const a=encodeURIComponent($('metaArtist').value||'Quantum Thoughter'),c=encodeURIComponent($('metaComposer').value||'Quantum Thoughter'),al=encodeURIComponent($('metaAlbum').value||'Harmonic Convergence'),cm=encodeURIComponent($('metaComment').value||'432 Hz Tuning Correction'),bp=$('metaBpm').checked&&S._bpm?'&bpm='+S._bpm:'',ly=$('metaInjectLyrics').checked&&$('metaLyrics').value.trim()?'&lyrics='+encodeURIComponent($('metaLyrics').value):''
-  try{const r=await A.downloadBuffer('/api/download/'+S.sid+'?format='+fmt+'&name='+encodeURIComponent(b)+'&artist='+a+'&composer='+c+'&album='+al+'&comment='+cm+bp+ly);await A.writeFile(d,Array.from(new Uint8Array(r)));st('💾 '+b+'.'+fmt);log('💾 <strong>Saved:</strong> '+b+'.'+fmt)}catch(e){st(e.message,1);log('❌ '+e.message)}
+  try{const r=await A.downloadBuffer('/api/download/'+S.sid+'?format='+fmt+'&name='+encodeURIComponent(b)+'&artist='+a+'&composer='+c+'&album='+al+'&comment='+cm+bp+ly+'&cleanup=1');if(!r||r.length<1000){st('Save failed: empty response',1);log('❌ Empty download, sid='+S.sid);return}
+  await A.writeFile(d,Array.from(new Uint8Array(r)));st('💾 '+b+'.'+fmt);log('💾 <strong>Saved:</strong> '+b+'.'+fmt+' ('+Math.round(r.length/1024)+' KB)')}catch(e){st(e.message,1);log('❌ '+e.message+' sid='+S.sid)}
 }
 $('wavBtn').onclick=()=>saveFile('wav');$('mp3Btn').onclick=()=>saveFile('mp3')
 $('bothBtn').onclick=async()=>{
